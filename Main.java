@@ -1,4 +1,5 @@
-import Presentation.Views.LoginCardView;
+import Presentation.Views.LoginWindow;
+import Presentation.Views.RegisterWindow;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -27,7 +28,7 @@ public class Main {
                 System.err.println("Error al leer el archivo de imagen: " + e.getMessage());
             }
 
-            frame.setContentPane(new LoginCardView());
+            frame.setContentPane(new RegisterWindow());
             frame.setVisible(true);
         });
     }

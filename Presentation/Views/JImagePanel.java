@@ -55,8 +55,35 @@ public class JImagePanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if(image != null) {
-            g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
+
+        // Si la imagen está lista y tiene dimensiones válidas
+        if (image != null && image.getWidth(this) > 0) {
+            Graphics2D g2d = (Graphics2D) g.create();
+
+            // Anti-aliasing y suavizado de píxeles al estirar
+            g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            int panelW = getWidth();
+            int panelH = getHeight();
+            int imgW = image.getWidth(this);
+            int imgH = image.getHeight(this);
+
+            // 1. Cálculo del Ratio de Contención Matemático
+            double ratio = Math.min((double) panelW / imgW, (double) panelH / imgH);
+
+            // 2. Nuevas dimensiones manteniendo la proporción estricta
+            int drawW = (int) (imgW * ratio);
+            int drawH = (int) (imgH * ratio);
+
+            // 3. Coordenadas para centrar la imagen en el panel (eje X e Y)
+            int x = (panelW - drawW) / 2;
+            int y = (panelH - drawH) / 2;
+
+            // Se dibuja con el tamaño calculado, no con el tamaño del panel
+            g2d.drawImage(image, x, y, drawW, drawH, this);
+
+            g2d.dispose();
         }
     }
 
