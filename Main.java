@@ -1,3 +1,8 @@
+import Bussiness.Managers.UserLogic;
+import Persistance.Configuration.JsonConfigurationDAO;
+import Persistance.Configuration.MySQLDAO;
+import Persistance.DAO.UserDAO;
+import Presentation.Controllers.ViewController;
 import Presentation.Views.LoginWindow;
 import Presentation.Views.RegisterWindow;
 
@@ -10,26 +15,16 @@ import java.net.URL;
 public class Main {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Coffee Clicker");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(1100, 700);
-            frame.setLocationRelativeTo(null);
 
-            try {
-                URL iconURL = Main.class.getResource("/assets/icono.png");
+            JsonConfigurationDAO jsonDAO = new JsonConfigurationDAO();
+            MySQLDAO mySQLDAO = MySQLDAO.getInstance(jsonDAO);
+            mySQLDAO.connect();
 
-                if (iconURL != null) {
-                    Image icon = ImageIO.read(iconURL);
-                    frame.setIconImage(icon);
-                } else {
-                    System.err.println("WARNING: No se encontró la imagen del icono.");
-                }
-            } catch (IOException e) {
-                System.err.println("Error al leer el archivo de imagen: " + e.getMessage());
-            }
 
-            frame.setContentPane(new RegisterWindow());
-            frame.setVisible(true);
+            UserDAO userDAO = new UserDAO(mySQLDAO);
+            UserLogic userLogic = new UserLogic(userDAO);
+
+            new ViewController(userLogic).start();
         });
     }
 }

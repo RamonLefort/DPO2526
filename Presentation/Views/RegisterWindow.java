@@ -15,6 +15,14 @@ public class RegisterWindow extends JPanel{
 
     private Timer animationTimer;
 
+    private JTextField userField;
+    private JTextField mailField;
+    private JPasswordField passwordField;
+    private JPasswordField confirmField;
+    private JLabel errorLabel;
+    private JLabel footerLabel;
+    private JButton registerBtn;
+
     private final static String CUP1 = "assets/gif-taza/gif1.png";
     private final static String CUP2 = "assets/gif-taza/gif2.png";
     private final static String CUP3 = "assets/gif-taza/gif3.png";
@@ -96,7 +104,7 @@ public class RegisterWindow extends JPanel{
     private JPanel createCardPanel() {
         JPanel cardPanel = new RoundedPanel(100, CARD_COLOR);
         cardPanel.setLayout(new BoxLayout(cardPanel, BoxLayout.Y_AXIS));
-        cardPanel.setMaximumSize(new Dimension(380, 500));
+        cardPanel.setMaximumSize(new Dimension(380, 560)); // Aumentado un poco el alto para el nuevo campo
 
         RoundedBorder lineBorder = new RoundedBorder(BACKGROUND_COLOR, 50, 25);
         Border padding = BorderFactory.createEmptyBorder(0, 20, 30, 20);
@@ -108,7 +116,6 @@ public class RegisterWindow extends JPanel{
         welcomeLabel.setForeground(TEXT_DARK);
         welcomeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         cardPanel.add(welcomeLabel);
-
         cardPanel.add(Box.createVerticalStrut(5));
 
         // Card Subtitulo
@@ -117,33 +124,49 @@ public class RegisterWindow extends JPanel{
         signinSubLabel.setForeground(TEXT_LIGHT);
         signinSubLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         cardPanel.add(signinSubLabel);
-        cardPanel.add(Box.createVerticalStrut(25));
-
-        // Input Email
-        cardPanel.add(createInputGroup("Email", createUsernameField("Enter email")));
-        cardPanel.add(Box.createVerticalStrut(15));
-
-        // Input Username
-        cardPanel.add(createInputGroup("Username", createUsernameField("Enter username")));
-        cardPanel.add(Box.createVerticalStrut(15));
-
-        // Input Login
-        cardPanel.add(createInputGroup("Password", createPasswordField("Enter password")));
-        cardPanel.add(Box.createVerticalStrut(30));
-
-        // Botón Login
-        RoundedButton loginBtn = new RoundedButton("Sign Up", 20, BUTTON_COLOR, CARD_COLOR, Color.WHITE, BUTTON_COLOR);
-        loginBtn.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        loginBtn.setMaximumSize(new Dimension(300, 35));
-        loginBtn.setPreferredSize(new Dimension(300, 35));
-        loginBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        loginBtn.setBorder(new RoundedBorder(BUTTON_COLOR, 20, 1f));
-
-        cardPanel.add(loginBtn);
         cardPanel.add(Box.createVerticalStrut(20));
 
-        //Footer
+        // --- CORRECCIÓN 1: Enlazar Email ---
+        this.mailField = createUsernameField("Enter email");
+        cardPanel.add(createInputGroup("Email", this.mailField));
+        cardPanel.add(Box.createVerticalStrut(10));
+
+        // --- CORRECCIÓN 2: Enlazar Username ---
+        this.userField = createUsernameField("Enter username");
+        cardPanel.add(createInputGroup("Username", this.userField));
+        cardPanel.add(Box.createVerticalStrut(10));
+
+        // --- CORRECCIÓN 3: Enlazar Password ---
+        this.passwordField = createPasswordField("Enter password");
+        cardPanel.add(createInputGroup("Password", this.passwordField));
+        cardPanel.add(Box.createVerticalStrut(10));
+
+        // --- CORRECCIÓN 4: Añadir e enlazar Confirm Password (¡Faltaba en la UI!) ---
+        this.confirmField = createPasswordField("Confirm password");
+        cardPanel.add(createInputGroup("Confirm Password", this.confirmField));
+        cardPanel.add(Box.createVerticalStrut(10));
+
+        // --- CORRECCIÓN 5: Inicializar ErrorLabel ---
+        this.errorLabel = new JLabel(" "); // Espacio para mantener el layout estático
+        this.errorLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        this.errorLabel.setForeground(Color.RED);
+        this.errorLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        this.errorLabel.setVisible(false);
+        cardPanel.add(this.errorLabel);
+        cardPanel.add(Box.createVerticalStrut(10));
+
+        // --- CORRECCIÓN 6: Enlazar Botón de Registro ---
+        this.registerBtn = new RoundedButton("Sign Up", 20, BUTTON_COLOR, CARD_COLOR, Color.WHITE, BUTTON_COLOR);
+        this.registerBtn.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        this.registerBtn.setMaximumSize(new Dimension(300, 35));
+        this.registerBtn.setPreferredSize(new Dimension(300, 35));
+        this.registerBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        ((JComponent)this.registerBtn).setBorder(new RoundedBorder(BUTTON_COLOR, 20, 1f));
+
+        cardPanel.add(this.registerBtn);
+        cardPanel.add(Box.createVerticalStrut(20));
+
+        // Footer
         JPanel footerPanel = new JPanel();
         footerPanel.setLayout(new BoxLayout(footerPanel, BoxLayout.X_AXIS));
         footerPanel.setOpaque(false);
@@ -153,27 +176,21 @@ public class RegisterWindow extends JPanel{
         textLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         textLabel.setForeground(TEXT_DARK);
 
-        //Link a la pantalla de login
-        JLabel linkLabel = new JLabel("Sign in");
-        linkLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        linkLabel.setForeground(BUTTON_COLOR);
-        linkLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        // --- CORRECCIÓN 7: Enlazar FooterLabel ---
+        this.footerLabel = new JLabel("Sign in");
+        this.footerLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        this.footerLabel.setForeground(BUTTON_COLOR);
+        this.footerLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        linkLabel.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                // TODO: Irse a la pantalla de Login
-                System.out.println("Navegando a la pantalla de login...");
-            }
-
+        this.footerLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                linkLabel.setText("Sign in");
+                footerLabel.setText("Sign in");
             }
         });
 
         footerPanel.add(textLabel);
-        footerPanel.add(linkLabel);
+        footerPanel.add(this.footerLabel);
 
         cardPanel.add(footerPanel);
         return cardPanel;
@@ -257,5 +274,17 @@ public class RegisterWindow extends JPanel{
         });
 
         return passField;
+    }
+
+    public JTextField getUserField(){ return userField;}
+    public JTextField getMailField(){ return mailField;}
+    public JPasswordField getPasswordField(){ return passwordField;}
+    public JPasswordField getConfirmField() { return confirmField;}
+    public JLabel getErrorLabel(){ return errorLabel;}
+    public JLabel getFooterLabel(){ return footerLabel;}
+    public JButton getRegisterButton(){ return registerBtn;}
+    public void showError(String message){
+        errorLabel.setText(message);
+        errorLabel.setVisible(true);
     }
 }
