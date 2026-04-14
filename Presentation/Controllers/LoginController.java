@@ -45,7 +45,7 @@ public class LoginController {
 		User user = userLogic.login(usernameOrEmail, password);
 
 		if (user != null) {
-			viewController.showView("GAME");
+			viewController.showView("SETTINGS");
 		} else {
 			view.showError("Usuario o contraseña incorrectos.");
 		}

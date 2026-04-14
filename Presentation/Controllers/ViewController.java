@@ -4,6 +4,7 @@ import Bussiness.Managers.UserLogic;
 import Presentation.Views.GameView;
 import Presentation.Views.LoginWindow;
 import Presentation.Views.RegisterWindow;
+import Presentation.Views.SettingView;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -25,9 +26,6 @@ public class ViewController {
         this.rootPanel = new JPanel(cardLayout);
 
         JFrame frame = new JFrame("Coffee Clicker");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1100, 700);
-        frame.setLocationRelativeTo(null);
         Image icon = new ImageIcon("assets/icono.png").getImage();
         frame.setIconImage(icon);
 
@@ -46,6 +44,7 @@ public class ViewController {
         LoginWindow loginView = new LoginWindow();
         RegisterWindow registerView = new RegisterWindow();
         GameView gameView = new GameView();
+        SettingView settingView = new SettingView();
 
         new LoginController(loginView, userLogic, this);
         new RegisterController(registerView, userLogic, this);
@@ -53,6 +52,7 @@ public class ViewController {
         rootPanel.add(loginView, "LOGIN");
         rootPanel.add(registerView, "REGISTER");
         rootPanel.add(gameView, "GAME");
+        rootPanel.add(settingView, "SETTINGS");
     }
 
     public void showView(String viewName) {
@@ -61,6 +61,6 @@ public class ViewController {
 
     public void start() {
         frame.setVisible(true);
-        showView("LOGIN");
+        showView("SETTINGS");
     }
 }
