@@ -5,7 +5,7 @@ import Persistance.DAO.UserDAO;
 import Presentation.Controllers.ViewController;
 import Presentation.Views.LoginWindow;
 import Presentation.Views.RegisterWindow;
-
+import Persistance.DAO.SettingDAO;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -20,9 +20,9 @@ public class Main {
             MySQLDAO mySQLDAO = MySQLDAO.getInstance(jsonDAO);
             mySQLDAO.connect();
 
-
             UserDAO userDAO = new UserDAO(mySQLDAO);
-            UserLogic userLogic = new UserLogic(userDAO);
+            SettingDAO settingDAO = new SettingDAO(mySQLDAO);
+            UserLogic userLogic = new UserLogic(userDAO, settingDAO);
 
             new ViewController(userLogic).start();
         });

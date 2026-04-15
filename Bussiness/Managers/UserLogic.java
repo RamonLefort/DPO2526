@@ -2,16 +2,19 @@ package Bussiness.Managers;
 
 import Bussiness.Entities.User;
 import Persistance.DAO.UserDAO;
+import Persistance.DAO.SettingDAO;
 
 public class UserLogic {
 
 	private UserDAO userDAO;
+	private SettingDAO settingDAO;
 	private User currentUser;
 
-
-	public UserLogic(UserDAO userDAO) {
+	public UserLogic(UserDAO userDAO, SettingDAO settingDAO) {
 		this.userDAO = userDAO;
+		this.settingDAO = settingDAO;
 	}
+
 	public boolean register(String username, String email, String password, String confirm) {
 		if (!password.equals(confirm) || !validateEmail(email) || !validatePassword(password)) {
 			return false;
@@ -49,6 +52,7 @@ public class UserLogic {
 	}
 
 	public void deleteAccount(String username) {
+		settingDAO.delete(username);
 		userDAO.delete(username);
 		if (currentUser != null && currentUser.getUsername().equals(username)) {
 			logout();
@@ -56,7 +60,9 @@ public class UserLogic {
 	}
 
 	public boolean validateEmail(String email) {
-		return email != null && email.endsWith("@gmail.com");
+		return email != null
+				&& email.endsWith("@gmail.com")
+				&& email.indexOf("@") > 0;
 	}
 
 	public boolean validatePassword(String password) {
