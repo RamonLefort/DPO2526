@@ -1,7 +1,0 @@
-{
-  "databaseHost": "localhost",
-  "databasePort": "3306",
-  "databaseName": "coffeeclicker",
-  "databaseUsername": "root",
-  "databasePassword": ""
-}
