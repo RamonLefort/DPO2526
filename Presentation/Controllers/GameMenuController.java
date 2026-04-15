@@ -9,7 +9,6 @@ public class GameMenuController {
 	private GameLogic gameLogic;
 
 	public GameMenuController(GameMenuView gameMenuView, GameLogic gameLogic) {
-		// 2. Usamos "gameMenuView" en minúscula para que coincida con la declaración
 		this.gameMenuView = gameMenuView;
 		this.gameLogic = gameLogic;
 	}

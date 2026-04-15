@@ -48,6 +48,7 @@ public class ViewController {
 
         new LoginController(loginView, userLogic, this);
         new RegisterController(registerView, userLogic, this);
+        new SettingController(settingView,userLogic, this);
 
         rootPanel.add(loginView, "LOGIN");
         rootPanel.add(registerView, "REGISTER");
@@ -61,6 +62,8 @@ public class ViewController {
 
     public void start() {
         frame.setVisible(true);
-        showView("SETTINGS");
+        showView("LOGIN");
     }
+
+
 }
