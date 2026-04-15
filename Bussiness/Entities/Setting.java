@@ -9,13 +9,6 @@ public class Setting {
 	private String username;
 
 
-	public Setting(String username) {
-		this.username = username;
-		this.volume = 50;       // Valor por defecto
-		this.skin = "default";  // Valor por defecto
-		this.background = "default";
-	}
-
 
 	public Setting(int idSetting, String username, int volume, String skin) {
 		this.idSetting = idSetting;
