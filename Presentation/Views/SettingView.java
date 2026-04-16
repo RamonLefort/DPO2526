@@ -2,13 +2,15 @@ package Presentation.Views;
 
 import javax.swing.*;
 import java.awt.*;
-
 public class SettingView extends JPanel {
+
+
+    public static final String BTN_LOGOUT = "BTN_LOGOUT";
+    public static final String BTN_DELETE_ACCOUNT = "BTN_DELETE_ACCOUNT";
 
     private JButton logoutBtn;
     private JButton deleteAccountBtn;
 
-    // Paleta de colores básica
     private final Color BACKGROUND_COLOR = new Color(248, 245, 240);
     private final Color DANGER_COLOR = new Color(220, 53, 69);
     private final Color BUTTON_COLOR = new Color(139, 69, 19);

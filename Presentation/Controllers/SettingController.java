@@ -6,29 +6,33 @@ import Presentation.Views.SettingView;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class SettingController {
+public class SettingController implements ActionListener {
 
-	private SettingView settingView;
-	private SettingLogic settingLogic;
-	private UserLogic userLogic;
-	private ViewController viewController;
+	private final SettingView settingView;
+	private final UserLogic userLogic;
+	private final ViewController viewController;
 
 	public SettingController(SettingView settingView, UserLogic userLogic, ViewController viewController) {
 		this.settingView = settingView;
 		this.userLogic = userLogic;
 		this.viewController = viewController;
 
-		this.settingView.getLogoutBtn().addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				handleLogout();
-			}
-		});
+		this.settingView.getLogoutBtn().addActionListener(e -> handleLogout());
+		this.settingView.getDeleteAccountBtn().addActionListener(e -> handleDeleteAccount());
+	}
 
-		this.settingView.getDeleteAccountBtn().addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		switch (e.getActionCommand()) {
+			case SettingView.BTN_LOGOUT:
+				handleLogout();
+				break;
+			case SettingView.BTN_DELETE_ACCOUNT:
 				handleDeleteAccount();
-			}
-		});
+				break;
+			default:
+				System.err.println("Unknown action command: " + e.getActionCommand());
+		}
 	}
 
 	public void handleSaveSettings() {

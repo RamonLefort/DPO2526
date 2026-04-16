@@ -1,12 +1,16 @@
 package Presentation.Controllers;
+
 import Bussiness.Entities.User;
 import Bussiness.Managers.UserLogic;
 import Presentation.Views.LoginWindow;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
-public class LoginController {
+
+public class LoginController implements ActionListener {
 	private final LoginWindow view;
 	private final UserLogic userLogic;
 	private final ViewController viewController;
@@ -16,33 +20,32 @@ public class LoginController {
 		this.userLogic = userLogic;
 		this.viewController = viewController;
 
-		initListeners();
-	}
+		this.view.setActionListener(e -> handleLogin());
 
-	private void initListeners() {
-		view.getFooterLabel().addMouseListener(new MouseListener() {
+		this.view.getFooterLabel().addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				viewController.showView("REGISTER");
 			}
-			@Override
-			public void mousePressed(MouseEvent e) {}
-			@Override
-			public void mouseReleased(MouseEvent e) {}
-			@Override
-			public void mouseEntered(MouseEvent e) {}
-			@Override
-			public void mouseExited(MouseEvent e) {}
 		});
-
-		view.getLoginButton().addActionListener(e -> HandleLogin());
 	}
 
-	private void HandleLogin() {
-		String usernameOrEmail = view.getUsernameField().getText().trim();
-		String password        = new String(view.getPasswordField().getPassword());
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		switch (e.getActionCommand()) {
+			case LoginWindow.BTN_LOGIN:
+				handleLogin();
+				break;
+			default:
+				System.err.println("Unknown action command: " + e.getActionCommand());
+		}
+	}
 
-		User user = userLogic.login(usernameOrEmail, password);
+	private void handleLogin() {
+		String username = view.getUsernameField().getText().trim();
+		String password = new String(view.getPasswordField().getPassword());
+
+		User user = userLogic.login(username, password);
 
 		if (user != null) {
 			viewController.showView("SETTINGS");
