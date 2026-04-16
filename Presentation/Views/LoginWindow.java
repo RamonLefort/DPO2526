@@ -109,7 +109,7 @@ public class LoginWindow extends JPanel {
         Border padding = BorderFactory.createEmptyBorder(0, 20, 30, 20);
         cardPanel.setBorder(BorderFactory.createCompoundBorder(lineBorder, padding));
 
-        // Titulo Card & Subtitulo
+        // Título
         JLabel welcomeLabel = new JLabel("Welcome Back");
         welcomeLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
         welcomeLabel.setForeground(TEXT_DARK);
@@ -117,6 +117,7 @@ public class LoginWindow extends JPanel {
         cardPanel.add(welcomeLabel);
         cardPanel.add(Box.createVerticalStrut(5));
 
+        //Subtítulo
         JLabel signinSubLabel = new JLabel("Sign in to continue your coffee journey");
         signinSubLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         signinSubLabel.setForeground(TEXT_LIGHT);
@@ -124,17 +125,18 @@ public class LoginWindow extends JPanel {
         cardPanel.add(signinSubLabel);
         cardPanel.add(Box.createVerticalStrut(25));
 
-        // --- CORRECCIÓN 1: Asignar a variables de instancia ---
+        // Username input
         this.userField = createUsernameField("Enter username or email");
         cardPanel.add(createInputGroup("Username or Email", this.userField));
         cardPanel.add(Box.createVerticalStrut(15));
 
+        //Password input
         this.passField = createPasswordField("Enter password");
         cardPanel.add(createInputGroup("Password", this.passField));
-        cardPanel.add(Box.createVerticalStrut(15)); // Reducido el strut para hacer hueco al errorLabel
+        cardPanel.add(Box.createVerticalStrut(15));
 
-        // --- CORRECCIÓN 2: Inicializar el errorLabel ---
-        this.errorLabel = new JLabel(" "); // Espacio por defecto para mantener la estructura
+        // Error Label
+        this.errorLabel = new JLabel(" ");
         this.errorLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
         this.errorLabel.setForeground(Color.RED);
         this.errorLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -142,15 +144,14 @@ public class LoginWindow extends JPanel {
         cardPanel.add(this.errorLabel);
         cardPanel.add(Box.createVerticalStrut(10));
 
-        // --- CORRECCIÓN 3: Evitar el Shadowing del botón ---
+        // Botón
         this.loginBtn = new RoundedButton("Sign In", 20, BUTTON_COLOR, CARD_COLOR, Color.WHITE, BUTTON_COLOR);
         this.loginBtn.setActionCommand(BTN_LOGIN);
         this.loginBtn.setFont(new Font("Segoe UI", Font.BOLD, 14));
         this.loginBtn.setMaximumSize(new Dimension(300, 35));
         this.loginBtn.setPreferredSize(new Dimension(300, 35));
         this.loginBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        // Cast a JComponent o JButton si tu clase RoundedButton no hereda de JButton
-        ((JComponent)this.loginBtn).setBorder(new RoundedBorder(BUTTON_COLOR, 20, 1f));
+        this.loginBtn.setBorder(new RoundedBorder(BUTTON_COLOR, 20, 1f));
 
         cardPanel.add(this.loginBtn);
         cardPanel.add(Box.createVerticalStrut(20));
@@ -165,19 +166,10 @@ public class LoginWindow extends JPanel {
         textLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         textLabel.setForeground(TEXT_DARK);
 
-        // --- CORRECCIÓN 4: Asignar el footerLabel ---
         this.footerLabel = new JLabel("Create one");
         this.footerLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
         this.footerLabel.setForeground(BUTTON_COLOR);
         this.footerLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        // El listener visual (hover) se queda en la vista, la lógica de navegación irá al Controlador.
-        this.footerLabel.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                footerLabel.setText("Create one");
-            }
-        });
 
         footerPanel.add(textLabel);
         footerPanel.add(this.footerLabel);
