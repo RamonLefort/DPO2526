@@ -63,7 +63,7 @@ public class ViewController {
 
     public void start() {
         frame.setVisible(true);
-        showView("GAME");
+        showView("LOGIN");
     }
 
 
