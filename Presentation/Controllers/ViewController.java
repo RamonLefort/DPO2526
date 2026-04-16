@@ -3,11 +3,8 @@ package Presentation.Controllers;
 import Bussiness.Managers.UserLogic;
 import Presentation.Views.*;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
-import java.net.URL;
 
 
 public class ViewController {

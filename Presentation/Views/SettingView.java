@@ -34,7 +34,6 @@ public class SettingView extends JPanel {
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         add(titleLabel);
-
         add(Box.createVerticalStrut(40));
 
         // Botón de logout
@@ -43,13 +42,9 @@ public class SettingView extends JPanel {
         // Botón de eliminar cuenta
         add(deleteAccountBtn);
 
-        // Empuja hacia arriba
         add(Box.createVerticalGlue());
     }
 
-    /**
-     * Método auxiliar para estandarizar el tamaño y diseño visual de los botones.
-     */
     private void formatButton(JButton btn, Color bc) {
         btn.setAlignmentX(Component.CENTER_ALIGNMENT);
         btn.setFont(new Font("Segoe UI", Font.BOLD, 14));
