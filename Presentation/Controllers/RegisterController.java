@@ -22,7 +22,7 @@ public class RegisterController implements ActionListener {
 		this.userLogic = userLogic;
 		this.viewController = viewController;
 
-		this.view.getRegisterButton().addActionListener(e -> handleRegister());
+		this.view.getRegisterButton().addActionListener(this);
 
 		this.view.getFooterLabel().addMouseListener(new MouseAdapter() {
 			@Override
