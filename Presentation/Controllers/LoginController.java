@@ -20,7 +20,7 @@ public class LoginController implements ActionListener {
 		this.userLogic = userLogic;
 		this.viewController = viewController;
 
-		this.view.setActionListener(e -> handleLogin());
+		this.view.setActionListener(this);
 
 		this.view.getFooterLabel().addMouseListener(new MouseAdapter() {
 			@Override
