@@ -128,28 +128,28 @@ public class RegisterWindow extends JPanel {
         cardPanel.add(signinSubLabel);
         cardPanel.add(Box.createVerticalStrut(20));
 
-        // --- CORRECCIÓN 1: Enlazar Email ---
+        // Email
         this.mailField = createUsernameField("Enter email");
         cardPanel.add(createInputGroup("Email", this.mailField));
         cardPanel.add(Box.createVerticalStrut(10));
 
-        // --- CORRECCIÓN 2: Enlazar Username ---
+        // Username
         this.userField = createUsernameField("Enter username");
         cardPanel.add(createInputGroup("Username", this.userField));
         cardPanel.add(Box.createVerticalStrut(10));
 
-        // --- CORRECCIÓN 3: Enlazar Password ---
+        // Password
         this.passwordField = createPasswordField("Enter password");
         cardPanel.add(createInputGroup("Password", this.passwordField));
         cardPanel.add(Box.createVerticalStrut(10));
 
-        // --- CORRECCIÓN 4: Añadir e enlazar Confirm Password (¡Faltaba en la UI!) ---
+        // Confirmar Password
         this.confirmField = createPasswordField("Confirm password");
         cardPanel.add(createInputGroup("Confirm Password", this.confirmField));
         cardPanel.add(Box.createVerticalStrut(10));
 
-        // --- CORRECCIÓN 5: Inicializar ErrorLabel ---
-        this.errorLabel = new JLabel(" "); // Espacio para mantener el layout estático
+        // Texto Error
+        this.errorLabel = new JLabel(" ");
         this.errorLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
         this.errorLabel.setForeground(Color.RED);
         this.errorLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -157,14 +157,14 @@ public class RegisterWindow extends JPanel {
         cardPanel.add(this.errorLabel);
         cardPanel.add(Box.createVerticalStrut(10));
 
-        // --- CORRECCIÓN 6: Enlazar Botón de Registro ---
+        // Botón Registro
         this.registerBtn = new RoundedButton("Sign Up", 20, BUTTON_COLOR, CARD_COLOR, Color.WHITE, BUTTON_COLOR);
         this.registerBtn.setActionCommand(BTN_REGISTER);
         this.registerBtn.setFont(new Font("Segoe UI", Font.BOLD, 14));
         this.registerBtn.setMaximumSize(new Dimension(300, 35));
         this.registerBtn.setPreferredSize(new Dimension(300, 35));
         this.registerBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        ((JComponent)this.registerBtn).setBorder(new RoundedBorder(BUTTON_COLOR, 20, 1f));
+        this.registerBtn.setBorder(new RoundedBorder(BUTTON_COLOR, 20, 1f));
 
         cardPanel.add(this.registerBtn);
         cardPanel.add(Box.createVerticalStrut(20));
@@ -179,7 +179,7 @@ public class RegisterWindow extends JPanel {
         textLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         textLabel.setForeground(TEXT_DARK);
 
-        // --- CORRECCIÓN 7: Enlazar FooterLabel ---
+        // Botón Login
         this.footerLabel = new JLabel("Sign in");
         this.footerLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
         this.footerLabel.setForeground(BUTTON_COLOR);
