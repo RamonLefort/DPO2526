@@ -43,7 +43,7 @@ public class SettingView extends JPanel {
 
 
     private void formatButton(JButton btn, Color bc, String command) {
-        btn.setActionCommand(command); // Esto vincula el botón con el Controller
+        btn.setActionCommand(command); 
         btn.setAlignmentX(Component.CENTER_ALIGNMENT);
         btn.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btn.setFocusPainted(false);
