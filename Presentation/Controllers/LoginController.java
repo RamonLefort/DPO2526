@@ -20,9 +20,7 @@ public class LoginController implements ActionListener {
 		this.userLogic = userLogic;
 		this.viewController = viewController;
 
-
 		this.view.setActionListener(e -> handleLogin());
-
 
 		this.view.getFooterLabel().addMouseListener(new MouseAdapter() {
 			@Override
@@ -32,10 +30,8 @@ public class LoginController implements ActionListener {
 		});
 	}
 
-
 	@Override
 	public void actionPerformed(ActionEvent e) {
-
 		switch (e.getActionCommand()) {
 			case LoginWindow.BTN_LOGIN:
 				handleLogin();
