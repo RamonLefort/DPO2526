@@ -2,11 +2,16 @@ package Presentation.Controllers;
 
 import Bussiness.Managers.UserLogic;
 import Presentation.Views.RegisterWindow;
-
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
-public class RegisterController {
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+
+
+
+public class RegisterController implements ActionListener {
 
 	private final RegisterWindow view;
 	private final UserLogic userLogic;
@@ -16,69 +21,73 @@ public class RegisterController {
 		this.view = view;
 		this.userLogic = userLogic;
 		this.viewController = viewController;
-		initListeners();
-	}
 
-	private void initListeners() {
-		view.getRegisterButton().addActionListener(e -> HandleRegister());
 
-		view.getFooterLabel().addMouseListener(new MouseListener() {
+		this.view.getRegisterButton().addActionListener(e -> handleRegister());
+
+		view.getFooterLabel().addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				MovetoLogin();
+				moveToLogin();
 			}
 			@Override
-			public void mousePressed(MouseEvent e) {}
-			@Override
-			public void mouseReleased(MouseEvent e) {}
-			@Override
-			public void mouseEntered(MouseEvent e) {}
-			@Override
-			public void mouseExited(MouseEvent e) {}
+			public void mouseExited(MouseEvent e) {
+				view.getFooterLabel().setText("Sign in");
+			}
 		});
 	}
 
-	private void HandleRegister() {
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		switch (e.getActionCommand()) {
+			case RegisterWindow.BTN_REGISTER:
+				handleRegister();
+				break;
+			default:
+				System.err.println("Unknown action command: " + e.getActionCommand());
+		}
+	}
+
+	private void handleRegister() {
 		String username = view.getUserField().getText().trim();
 		String email    = view.getMailField().getText().trim();
 		String password = new String(view.getPasswordField().getPassword()).trim();
 		String confirm  = new String(view.getConfirmField().getPassword()).trim();
 
-		if (userLogic.validateEmail(email) == false) {
+		if (!userLogic.validateEmail(email)) {
 			view.showError("El email no tiene un formato válido (@gmail.com).");
 			return;
 		}
 
-		if (userLogic.validatePassword(password) == false) {
+		if (!userLogic.validatePassword(password)) {
 			view.showError("La contraseña debe tener letras, números y una mayúscula.");
 			return;
 		}
 
-		if (password.equals(confirm) == false) {
+		if (!password.equals(confirm)) {
 			view.showError("Las contraseñas no coinciden.");
 			return;
 		}
 
-		if (userLogic.usernameExists(username) == true) {
+		if (userLogic.usernameExists(username)) {
 			view.showError("El nombre de usuario ya está en uso.");
 			return;
 		}
 
-		if (userLogic.emailExists(email) == true) {
+		if (userLogic.emailExists(email)) {
 			view.showError("El email ya está registrado.");
 			return;
 		}
 
-		boolean success = userLogic.register(username, email, password, confirm);
-
-		if (success == true) {
+		if (userLogic.register(username, email, password, confirm)) {
 			viewController.showView("LOGIN");
 		} else {
 			view.showError("Error al registrar. Inténtalo de nuevo.");
 		}
 	}
 
-	private void MovetoLogin() {
+
+	private void moveToLogin() {
 		viewController.showView("LOGIN");
 	}
 }

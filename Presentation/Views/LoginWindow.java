@@ -8,6 +8,7 @@ import java.util.Arrays;
 
 public class LoginWindow extends JPanel {
 
+    public static final String BTN_LOGIN = "LOGIN_SUBMIT";
     private final Color BACKGROUND_COLOR = new Color(248, 245, 240);
     private final Color CARD_COLOR = Color.WHITE;
     private final Color TEXT_DARK = new Color(51, 51, 51);
@@ -143,6 +144,7 @@ public class LoginWindow extends JPanel {
 
         // --- CORRECCIÓN 3: Evitar el Shadowing del botón ---
         this.loginBtn = new RoundedButton("Sign In", 20, BUTTON_COLOR, CARD_COLOR, Color.WHITE, BUTTON_COLOR);
+        this.loginBtn.setActionCommand(BTN_LOGIN);
         this.loginBtn.setFont(new Font("Segoe UI", Font.BOLD, 14));
         this.loginBtn.setMaximumSize(new Dimension(300, 35));
         this.loginBtn.setPreferredSize(new Dimension(300, 35));
@@ -266,8 +268,13 @@ public class LoginWindow extends JPanel {
 
     public JTextField     getUsernameField() { return userField;    }
     public JPasswordField getPasswordField() { return passField;    }
-    public JButton        getLoginButton()   { return loginBtn;     }
     public JLabel         getFooterLabel()   { return footerLabel;  }
+
+
+
+    public void setActionListener(java.awt.event.ActionListener listener) {
+        this.loginBtn.addActionListener(listener);
+    }
 
     public void showError(String message) {
         errorLabel.setText(message);

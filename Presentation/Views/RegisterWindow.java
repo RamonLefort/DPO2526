@@ -6,7 +6,9 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class RegisterWindow extends JPanel{
+public class RegisterWindow extends JPanel {
+
+    public static final String BTN_REGISTER = "BTN_REGISTER";
     private final Color BACKGROUND_COLOR = new Color(248, 245, 240);
     private final Color CARD_COLOR = Color.WHITE;
     private final Color TEXT_DARK = new Color(51, 51, 51);
@@ -157,6 +159,7 @@ public class RegisterWindow extends JPanel{
 
         // --- CORRECCIÓN 6: Enlazar Botón de Registro ---
         this.registerBtn = new RoundedButton("Sign Up", 20, BUTTON_COLOR, CARD_COLOR, Color.WHITE, BUTTON_COLOR);
+        this.registerBtn.setActionCommand(BTN_REGISTER);
         this.registerBtn.setFont(new Font("Segoe UI", Font.BOLD, 14));
         this.registerBtn.setMaximumSize(new Dimension(300, 35));
         this.registerBtn.setPreferredSize(new Dimension(300, 35));
