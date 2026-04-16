@@ -25,14 +25,10 @@ public class RegisterController implements ActionListener {
 
 		this.view.getRegisterButton().addActionListener(e -> handleRegister());
 
-		view.getFooterLabel().addMouseListener(new MouseAdapter() {
+		this.view.getFooterLabel().addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				moveToLogin();
-			}
-			@Override
-			public void mouseExited(MouseEvent e) {
-				view.getFooterLabel().setText("Sign in");
 			}
 		});
 	}
