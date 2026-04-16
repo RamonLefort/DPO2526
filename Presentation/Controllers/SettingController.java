@@ -17,8 +17,8 @@ public class SettingController implements ActionListener {
 		this.userLogic = userLogic;
 		this.viewController = viewController;
 
-		this.settingView.getLogoutBtn().addActionListener(e -> handleLogout());
-		this.settingView.getDeleteAccountBtn().addActionListener(e -> handleDeleteAccount());
+		this.settingView.getLogoutBtn().addActionListener(this);
+		this.settingView.getDeleteAccountBtn().addActionListener(this);
 	}
 
 	@Override
