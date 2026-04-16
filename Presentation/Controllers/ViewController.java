@@ -1,10 +1,7 @@
 package Presentation.Controllers;
 
 import Bussiness.Managers.UserLogic;
-import Presentation.Views.GameView;
-import Presentation.Views.LoginWindow;
-import Presentation.Views.RegisterWindow;
-import Presentation.Views.SettingView;
+import Presentation.Views.*;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -45,6 +42,8 @@ public class ViewController {
         RegisterWindow registerView = new RegisterWindow();
         GameView gameView = new GameView();
         SettingView settingView = new SettingView();
+        GameMenuView gameMenuView = new GameMenuView();
+        GameCreator gameCreator = new GameCreator();
 
         new LoginController(loginView, userLogic, this);
         new RegisterController(registerView, userLogic, this);
@@ -54,6 +53,8 @@ public class ViewController {
         rootPanel.add(registerView, "REGISTER");
         rootPanel.add(gameView, "GAME");
         rootPanel.add(settingView, "SETTINGS");
+        rootPanel.add(gameMenuView, "GAME MENU");
+        rootPanel.add(gameCreator, "GAME CREATOR");
     }
 
     public void showView(String viewName) {
@@ -62,7 +63,7 @@ public class ViewController {
 
     public void start() {
         frame.setVisible(true);
-        showView("LOGIN");
+        showView("GAME");
     }
 
 

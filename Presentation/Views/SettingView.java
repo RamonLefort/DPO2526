@@ -10,61 +10,55 @@ public class SettingView extends JPanel {
 
     // Paleta de colores básica
     private final Color BACKGROUND_COLOR = new Color(248, 245, 240);
-    private final Color DANGER_COLOR = new Color(220, 53, 69); // Rojo estándar para acciones destructivas
+    private final Color DANGER_COLOR = new Color(220, 53, 69);
     private final Color BUTTON_COLOR = new Color(139, 69, 19);
+    private final Color CARD_COLOR = Color.WHITE;
 
     public SettingView() {
-        // 1. Configuración base del Panel
         setBackground(BACKGROUND_COLOR);
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        // 2. Inicialización de componentes
-        logoutBtn = new JButton("Log Out");
-        formatButton(logoutBtn, BUTTON_COLOR, Color.WHITE);
+        logoutBtn = new RoundedButton("Log Out", 20, BUTTON_COLOR, CARD_COLOR, CARD_COLOR, BUTTON_COLOR);
+        formatButton(logoutBtn, BUTTON_COLOR);
 
-        deleteAccountBtn = new JButton("Delete Account");
-        formatButton(deleteAccountBtn, DANGER_COLOR, Color.WHITE);
+        deleteAccountBtn = new RoundedButton("Delete Account", 20, DANGER_COLOR, CARD_COLOR, CARD_COLOR, DANGER_COLOR);
+        formatButton(deleteAccountBtn, DANGER_COLOR);
 
-        // 3. Construcción del Layout (El "sándwich" de pegamento)
-
-        // Empuja todo hacia abajo
+        // Empuja hacia abajo
         add(Box.createVerticalGlue());
 
-        // Título opcional para dar contexto
+        // Título
         JLabel titleLabel = new JLabel("Settings");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         add(titleLabel);
 
-        add(Box.createVerticalStrut(40)); // Espacio fijo entre título y botones
+        add(Box.createVerticalStrut(40));
 
-        // Añadimos los botones centrados
+        // Botón de logout
         add(logoutBtn);
-        add(Box.createVerticalStrut(20)); // Espacio fijo entre botones
+        add(Box.createVerticalStrut(20));
+        // Botón de eliminar cuenta
         add(deleteAccountBtn);
 
-        // Empuja todo hacia arriba, colisionando en el centro
+        // Empuja hacia arriba
         add(Box.createVerticalGlue());
     }
 
     /**
      * Método auxiliar para estandarizar el tamaño y diseño visual de los botones.
      */
-    private void formatButton(JButton btn, Color bg, Color fg) {
+    private void formatButton(JButton btn, Color bc) {
         btn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btn.setBackground(bg);
-        btn.setForeground(fg);
         btn.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        btn.setFocusPainted(false); // Quita el recuadro feo al hacer clic
-
-        // Forzamos el tamaño para que ambos botones midan lo mismo
+        btn.setFocusPainted(false);
+        btn.setBorder(new RoundedBorder(bc, 20, 1f));
         Dimension buttonSize = new Dimension(200, 40);
         btn.setPreferredSize(buttonSize);
         btn.setMinimumSize(buttonSize);
         btn.setMaximumSize(buttonSize);
     }
 
-    // Getters para el Controlador
     public JButton getLogoutBtn() { return logoutBtn; }
     public JButton getDeleteAccountBtn() { return deleteAccountBtn; }
 }
