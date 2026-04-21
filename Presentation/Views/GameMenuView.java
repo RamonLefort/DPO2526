@@ -207,27 +207,28 @@ public class GameMenuView extends JPanel {
         btnNew.addActionListener(listener);
     }
 
-    public void loadCurrentGames(List<Game> games) {
+    public void clearCurrentGames() {
         currentGrid.removeAll();
-        for (int i = 0; i < games.size(); i++) {
-            currentGrid.add(createGameCard(20, CARD_COLOR, "Continue →", games.get(i).getNameGame(),
-                    String.valueOf((int) games.get(i).getMoney()),
-                    games.get(i).getMinutes(),
-                    games.get(i).getIdGame(),
-                    BTN_CONTINUE));
-        }
+    }
+
+    public void addCurrentGameCard(String name, String money, int minutes, int idGame) {
+        currentGrid.add(createGameCard(20, CARD_COLOR, "Continue →", name, money, minutes, idGame, BTN_CONTINUE));
+    }
+
+    public void refreshCurrentGames() {
         currentGrid.revalidate();
         currentGrid.repaint();
     }
-    public void loadFinishedGames(List<Stat> stats) {
+
+    public void clearFinishedGames() {
         finishedGrid.removeAll();
-        for (int i = 0; i < stats.size(); i++) {
-            finishedGrid.add(createGameCard(20, CARD_COLOR, "See statistics →", stats.get(i).getNameGame(),
-                    String.valueOf((int) stats.get(i).getMoney()),
-                    stats.get(i).getMinutes(),
-                    stats.get(i).getIdGame(),
-                    BTN_STATS));
-        }
+    }
+
+    public void addFinishedGameCard(String name, String money, int minutes, int idGame) {
+        finishedGrid.add(createGameCard(20, CARD_COLOR, "See statistics →", name, money, minutes, idGame, BTN_STATS));
+    }
+
+    public void refreshFinishedGames() {
         finishedGrid.revalidate();
         finishedGrid.repaint();
     }

@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import Bussiness.Managers.StatLogic;
+
 public class GameMenuController implements ActionListener {
 
 	private final GameMenuView gameMenuView;
@@ -34,7 +35,7 @@ public class GameMenuController implements ActionListener {
 			case GameMenuView.BTN_LOGOUT   -> handleLogout();
 			case GameMenuView.BTN_NEW_GAME -> handleNewGame();
 			default -> {
-				if (e.getActionCommand().contains(GameMenuView.BTN_CONTINUE)) {
+				if (e.getActionCommand().startsWith(GameMenuView.BTN_CONTINUE)) {
 					int idGame = Integer.parseInt(e.getActionCommand().replace(GameMenuView.BTN_CONTINUE, ""));
 					handleResumeGame(idGame);
 				} else if (e.getActionCommand().startsWith(GameMenuView.BTN_STATS)) {
@@ -72,11 +73,10 @@ public class GameMenuController implements ActionListener {
 		List<Stat> finishedGames = statLogic.getAllStats();
 
 		List<Game> currentGames = new ArrayList<>();
-		for (int i = 0; i < allGames.size(); i++) {
-			Game game = allGames.get(i);
+		for (Game game : allGames) {
 			boolean isFinished = false;
-			for (int j = 0; j < finishedGames.size(); j++) {
-				if (finishedGames.get(j).getIdGame() == game.getIdGame()) {
+			for (Stat stat : finishedGames) {
+				if (stat.getIdGame() == game.getIdGame()) {
 					isFinished = true;
 					break;
 				}
@@ -86,10 +86,35 @@ public class GameMenuController implements ActionListener {
 			}
 		}
 
-		gameMenuView.loadCurrentGames(currentGames);
-		gameMenuView.loadFinishedGames(finishedGames);
+		loadCurrentGames(currentGames);
+		loadFinishedGames(finishedGames);
 	}
 
+	public void loadCurrentGames(List<Game> games) {
+		gameMenuView.clearCurrentGames();
+		for (Game game : games) {
+			gameMenuView.addCurrentGameCard(
+					game.getNameGame(),
+					String.valueOf((int) game.getMoney()),
+					game.getMinutes(),
+					game.getIdGame()
+			);
+		}
+		gameMenuView.refreshCurrentGames();
+	}
+
+	public void loadFinishedGames(List<Stat> stats) {
+		gameMenuView.clearFinishedGames();
+		for (Stat stat : stats) {
+			gameMenuView.addFinishedGameCard(
+					stat.getNameGame(),
+					String.valueOf((int) stat.getMoney()),
+					stat.getMinutes(),
+					stat.getIdGame()
+			);
+		}
+		gameMenuView.refreshFinishedGames();
+	}
 
 	public void handleDeleteGame() {}
 	public void handleCloneGame() {}
