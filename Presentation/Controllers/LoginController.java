@@ -48,7 +48,7 @@ public class LoginController implements ActionListener {
 		User user = userLogic.login(username, password);
 
 		if (user != null) {
-			viewController.showView("SETTINGS");
+			viewController.showView("GAME MENU");
 		} else {
 			view.showError("Usuario o contraseña incorrectos.");
 		}

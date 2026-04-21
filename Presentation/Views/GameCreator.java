@@ -3,6 +3,7 @@ package Presentation.Views;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
 public class GameCreator extends JPanel {
 
@@ -11,6 +12,15 @@ public class GameCreator extends JPanel {
     private final Color TEXT_SECONDARY = new Color(110, 110, 110);
     private final Color TEXT_DARK = new Color(51, 51, 51);
     private final Color TEXT_LIGHT = new Color(136, 136, 136);
+
+    public static final String BTN_BACK = "BACK";
+    public static final String BTN_LOGOUT = "LOGOUT";
+    public static final String BTN_CREATE = "CREATE";
+
+    private JButton btnBack;
+    private JButton btnLogout;
+    private JButton btnCreate;
+    private JTextField nameField;
 
     public GameCreator() {
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -31,8 +41,9 @@ public class GameCreator extends JPanel {
         header.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // Botón de Back
-        JButton btnBack = new RoundedButton("< Atrás", 20, PRIMARY_COFFEE, BG_COLOR, BG_COLOR, PRIMARY_COFFEE);
-        btnBack.setBorder(new RoundedBorder(PRIMARY_COFFEE, 20,1));
+        btnBack = new RoundedButton("< Atrás", 20, PRIMARY_COFFEE, BG_COLOR, BG_COLOR, PRIMARY_COFFEE);
+        btnBack.setActionCommand(BTN_BACK);
+        btnBack.setBorder(new RoundedBorder(PRIMARY_COFFEE, 20, 1));
         btnBack.setPreferredSize(new Dimension(100, 35));
         btnBack.setMaximumSize(new Dimension(100, 35));
 
@@ -42,8 +53,9 @@ public class GameCreator extends JPanel {
         title.setForeground(PRIMARY_COFFEE);
 
         // Botón Logout
-        JButton btnLogout = new RoundedButton("Logout", 20, PRIMARY_COFFEE, BG_COLOR, BG_COLOR, PRIMARY_COFFEE);
-        btnLogout.setBorder(new RoundedBorder(PRIMARY_COFFEE, 20,1));
+        btnLogout = new RoundedButton("Logout", 20, PRIMARY_COFFEE, BG_COLOR, BG_COLOR, PRIMARY_COFFEE);
+        btnLogout.setActionCommand(BTN_LOGOUT);
+        btnLogout.setBorder(new RoundedBorder(PRIMARY_COFFEE, 20, 1));
         btnLogout.setPreferredSize(new Dimension(100, 35));
         btnLogout.setMaximumSize(new Dimension(100, 35));
 
@@ -87,12 +99,13 @@ public class GameCreator extends JPanel {
         cardPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // Name input
-        JTextField nameField = createUsernameField("My Coffee Empire");
+        nameField = createUsernameField("My Coffee Empire");
         cardPanel.add(createInputGroup("Game Name", nameField));
-        cardPanel.add(nameField);
+
 
         //Botón Create Game
-        JButton btnCreate = new RoundedButton("Create Game", 20, PRIMARY_COFFEE, Color.WHITE, Color.WHITE, PRIMARY_COFFEE);
+        btnCreate = new RoundedButton("Create Game", 20, PRIMARY_COFFEE, Color.WHITE, Color.WHITE, PRIMARY_COFFEE);
+        btnCreate.setActionCommand(BTN_CREATE);
         btnCreate.setBorder(new RoundedBorder(PRIMARY_COFFEE, 20,1));
         btnCreate.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
         btnCreate.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -151,5 +164,17 @@ public class GameCreator extends JPanel {
             }
         });
         return textField;
+    }
+    public void setActionListener(ActionListener listener) {
+        btnBack.addActionListener(listener);
+        btnLogout.addActionListener(listener);
+        btnCreate.addActionListener(listener);
+    }
+
+    public String getGameName() {
+        return nameField.getText().trim();
+    }
+    public void showError(String message) {
+        JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
