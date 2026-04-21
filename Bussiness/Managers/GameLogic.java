@@ -23,7 +23,7 @@ public class GameLogic {
 		List<Game> userGames = gameDAO.getGamesByUser(username);
 		for (int i = 0; i < userGames.size(); i++) {
 			if (userGames.get(i).getNameGame().equalsIgnoreCase(nameGame)) {
-				return -2;
+				return -1;
 			}
 		}
 		return gameDAO.createGame(nameGame, username);

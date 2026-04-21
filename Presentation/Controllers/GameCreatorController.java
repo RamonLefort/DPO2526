@@ -73,17 +73,17 @@ public class GameCreatorController implements ActionListener {
 
         int idGame = gameLogic.createGame(gameName, currentUsername);
 
-        if (idGame == -1) {
+        if (idGame == 0) {
             view.showError("No se pudo crear la partida. Inténtalo de nuevo.");
             return;
         }
 
-        if (idGame == -2) {
+        if (idGame == -1) {
             view.showError("Ya tienes una partida con ese nombre.");
             return;
         }
 
-        if (idGame != -1) {
+        if (idGame != 0) {
             viewController.showGameView(idGame, currentUsername);
         }
     }
