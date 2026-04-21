@@ -39,7 +39,7 @@ public class GameMenuController implements ActionListener {
 					handleResumeGame(idGame);
 				} else if (e.getActionCommand().startsWith(GameMenuView.BTN_STATS)) {
 					int idGame = Integer.parseInt(e.getActionCommand().replace(GameMenuView.BTN_STATS, ""));
-					handleStatistics(idGame);
+					handleStats(idGame);
 				}
 			}
 		}
@@ -49,8 +49,8 @@ public class GameMenuController implements ActionListener {
 		viewController.showGameView(idGame, userLogic.getCurrentUser().getUsername());
 	}
 
-	private void handleStatistics(int idGame) {
-		viewController.showStatisticsView(idGame);
+	private void handleStats(int idGame) {
+		viewController.showStats(idGame);
 	}
 
 	private void handleBack() {

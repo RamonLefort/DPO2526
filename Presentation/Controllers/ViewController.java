@@ -56,7 +56,7 @@ public class ViewController {
         StatsView statsView = new StatsView();
 
 
-        rootPanel.add(statsView, "STATISTICS");
+        rootPanel.add(statsView, "STATS");
         rootPanel.add(loginView, "LOGIN");
         rootPanel.add(registerView, "REGISTER");
         rootPanel.add(gameView, "GAME");
@@ -83,8 +83,8 @@ public class ViewController {
         frame.setContentPane(rootPanel);
     }
 
-    public void showStatisticsView(int idGame) {
-        cardLayout.show(rootPanel, "STATISTICS");
+    public void showStats(int idGame) {
+        cardLayout.show(rootPanel, "STATS");
     }
 
     public void start() {
