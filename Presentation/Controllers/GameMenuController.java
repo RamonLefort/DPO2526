@@ -36,13 +36,21 @@ public class GameMenuController implements ActionListener {
 			default -> {
 				if (e.getActionCommand().contains(GameMenuView.BTN_CONTINUE)) {
 					int idGame = Integer.parseInt(e.getActionCommand().replace(GameMenuView.BTN_CONTINUE, ""));
-					viewController.showGameView(idGame, userLogic.getCurrentUser().getUsername());
-				}else if (e.getActionCommand().startsWith(GameMenuView.BTN_STATS)) {
-				int idGame = Integer.parseInt(e.getActionCommand().replace(GameMenuView.BTN_STATS, ""));
-				viewController.showStatisticsView(idGame);
-			}
+					handleResumeGame(idGame);
+				} else if (e.getActionCommand().startsWith(GameMenuView.BTN_STATS)) {
+					int idGame = Integer.parseInt(e.getActionCommand().replace(GameMenuView.BTN_STATS, ""));
+					handleStatistics(idGame);
+				}
 			}
 		}
+	}
+
+	public void handleResumeGame(int idGame) {
+		viewController.showGameView(idGame, userLogic.getCurrentUser().getUsername());
+	}
+
+	private void handleStatistics(int idGame) {
+		viewController.showStatisticsView(idGame);
 	}
 
 	private void handleBack() {
@@ -83,8 +91,6 @@ public class GameMenuController implements ActionListener {
 	}
 
 
-
-	public void handleResumeGame() {}
 	public void handleDeleteGame() {}
 	public void handleCloneGame() {}
 }
