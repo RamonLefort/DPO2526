@@ -1,16 +1,13 @@
+import Bussiness.Managers.GameLogic;
+import Bussiness.Managers.StatLogic;
 import Bussiness.Managers.UserLogic;
 import Persistance.Configuration.JsonConfigurationDAO;
 import Persistance.Configuration.MySQLDAO;
-import Persistance.DAO.UserDAO;
+import Persistance.DAO.*;
 import Presentation.Controllers.ViewController;
-import Presentation.Views.LoginWindow;
-import Presentation.Views.RegisterWindow;
-import Persistance.DAO.SettingDAO;
-import javax.imageio.ImageIO;
+import Bussiness.Managers.GameplayLogic;
+
 import javax.swing.*;
-import java.awt.*;
-import java.io.IOException;
-import java.net.URL;
 
 public class Main {
     public static void main(String[] args) {
@@ -22,9 +19,18 @@ public class Main {
 
             UserDAO userDAO = new UserDAO(mySQLDAO);
             SettingDAO settingDAO = new SettingDAO(mySQLDAO);
-            UserLogic userLogic = new UserLogic(userDAO, settingDAO);
+            GameDAO gameDAO = new GameDAO(mySQLDAO);
+            GeneratorDAO generatorDAO = new GeneratorDAO();
+            StatDAO statDAO = new StatDAO(mySQLDAO);
+            UpgradeDAO upgradeDAO = new UpgradeDAO();
 
-            new ViewController(userLogic).start();
+            UserLogic userLogic = new UserLogic(userDAO, settingDAO);
+            GameLogic gameLogic = new GameLogic(gameDAO, generatorDAO, statDAO);
+            GameplayLogic gameplayLogic = new GameplayLogic(generatorDAO, upgradeDAO, gameLogic);
+            StatLogic statLogic = new StatLogic(statDAO, gameDAO, userDAO);
+
+            ViewController viewController = new ViewController(userLogic, gameLogic, gameplayLogic, statLogic);
+            viewController.start();
         });
     }
 }
