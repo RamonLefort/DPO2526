@@ -53,8 +53,10 @@ public class ViewController {
         new RegisterController(registerView, userLogic, this);
         new SettingController(settingView, userLogic, this);
         gameMenuController = new GameMenuController(gameMenuView, gameLogic, statLogic, userLogic, this);
+        StatsView statsView = new StatsView();
 
 
+        rootPanel.add(statsView, "STATISTICS");
         rootPanel.add(loginView, "LOGIN");
         rootPanel.add(registerView, "REGISTER");
         rootPanel.add(gameView, "GAME");
@@ -81,6 +83,9 @@ public class ViewController {
         frame.setContentPane(rootPanel);
     }
 
+    public void showStatisticsView(int idGame) {
+        cardLayout.show(rootPanel, "STATISTICS");
+    }
 
     public void start() {
         frame.setVisible(true);

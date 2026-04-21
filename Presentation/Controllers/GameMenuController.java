@@ -37,7 +37,10 @@ public class GameMenuController implements ActionListener {
 				if (e.getActionCommand().contains(GameMenuView.BTN_CONTINUE)) {
 					int idGame = Integer.parseInt(e.getActionCommand().replace(GameMenuView.BTN_CONTINUE, ""));
 					viewController.showGameView(idGame, userLogic.getCurrentUser().getUsername());
-				}
+				}else if (e.getActionCommand().startsWith(GameMenuView.BTN_STATS)) {
+				int idGame = Integer.parseInt(e.getActionCommand().replace(GameMenuView.BTN_STATS, ""));
+				viewController.showStatisticsView(idGame);
+			}
 			}
 		}
 	}

@@ -13,6 +13,7 @@ public class GameMenuView extends JPanel {
     public static final String BTN_LOGOUT = "LOGOUT";
     public static final String BTN_NEW_GAME = "NEW_GAME";
     public static final String BTN_CONTINUE = "CONTINUE";
+    public static final String BTN_STATS = "STATS";
 
     private final Color BG_COLOR = new Color(248, 245, 240);
     private final Color CARD_COLOR = Color.WHITE;
@@ -132,7 +133,7 @@ public class GameMenuView extends JPanel {
         return panel;
     }
 
-    private JPanel createGameCard(int radius, Color colorbg, String btnText, String name, String money, int minutes, int idGame) {
+    private JPanel createGameCard(int radius, Color colorbg, String btnText, String name, String money, int minutes, int idGame, String actionCommand) {
         RoundedPanel card = new RoundedPanel(radius, colorbg);
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setPreferredSize(new Dimension(220, 200));
@@ -186,7 +187,7 @@ public class GameMenuView extends JPanel {
         btn.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btn.setBorder(new RoundedBorder(PRIMARY_COFFEE, 20, 1));
         btn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btn.setActionCommand(BTN_CONTINUE + idGame);
+        btn.setActionCommand(actionCommand + idGame);
         btn.addActionListener(actionListener);
 
         Dimension btnDim = new Dimension(180, 30);
@@ -212,19 +213,20 @@ public class GameMenuView extends JPanel {
             currentGrid.add(createGameCard(20, CARD_COLOR, "Continue →", games.get(i).getNameGame(),
                     String.valueOf((int) games.get(i).getMoney()),
                     games.get(i).getMinutes(),
-                    games.get(i).getIdGame()));
+                    games.get(i).getIdGame(),
+                    BTN_CONTINUE));
         }
         currentGrid.revalidate();
         currentGrid.repaint();
     }
-
     public void loadFinishedGames(List<Stat> stats) {
         finishedGrid.removeAll();
         for (int i = 0; i < stats.size(); i++) {
             finishedGrid.add(createGameCard(20, CARD_COLOR, "See statistics →", stats.get(i).getNameGame(),
                     String.valueOf((int) stats.get(i).getMoney()),
                     stats.get(i).getMinutes(),
-                    stats.get(i).getIdGame()));
+                    stats.get(i).getIdGame(),
+                    BTN_STATS));
         }
         finishedGrid.revalidate();
         finishedGrid.repaint();
