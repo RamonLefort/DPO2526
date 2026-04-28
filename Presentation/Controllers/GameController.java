@@ -1,11 +1,16 @@
 package Presentation.Controllers;
 
 import Bussiness.Entities.Game;
+import Bussiness.Entities.Generator;
 import Bussiness.Managers.*;
+import Persistance.DAO.GeneratorDAO;
 import Presentation.Views.GameView;
 
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 
 public class GameController implements ActionListener {
@@ -20,6 +25,7 @@ public class GameController implements ActionListener {
 	private String username;
 	private UserLogic userLogic;
 	private final StatLogic statLogic;
+	private List<Generator> generators = new ArrayList<>();
 
 	public GameController(GameView gameView, GameplayLogic gameplayLogic, ViewController viewController, int idGame, String username, GameLogic gameLogic, UserLogic userLogic, StatLogic statLogic) {
 		this.gameView = gameView;
@@ -39,6 +45,7 @@ public class GameController implements ActionListener {
 			case GameView.BTN_BACK   -> handleBack();
 			case GameView.BTN_FINISH -> handleFinishGame();
 			case GameView.BTN_COFFEE -> handleClickGenerate();
+			case GameView.BTN_BARISTA -> handleBarista();
 		}
 	}
 
@@ -47,7 +54,15 @@ public class GameController implements ActionListener {
 		this.username = username;
 		this.coffeeCount = 0;
 		this.currentGame = gameLogic.loadGame(username, idGame);
-		gameView.updateCoffeeCount((int) currentGame.getMoney());  // <-- dinero real
+		gameView.updateCoffeeCount((int) currentGame.getMoney());
+		try {
+			generators = gameLogic.getGenerators(idGame);
+		}catch (Exception e){
+			generators = gameLogic.createGenerators(idGame);
+		}
+		gameplayLogic.startAutoGenerators(idGame, currentGame, generators, newTotal -> {
+			SwingUtilities.invokeLater(() -> gameView.updateCoffeeCount((int) newTotal));
+		});
 	}
 
 	private void handleBack() {
@@ -66,7 +81,39 @@ public class GameController implements ActionListener {
 	private void handleClickGenerate() {
 		coffeeCount++;
 		gameView.updateCoffeeCount((int) currentGame.getMoney() + coffeeCount);
+	}
 
+	public void handleBarista() {
+		Generator barista = null;
+		for (Generator g : generators) {
+			if (g.getName().equalsIgnoreCase("Barista")) {
+				barista = g;
+				break;
+			}
+		}
+
+		if (barista != null) {
+			int currentPrice = (int) (barista.getPrice() * Math.pow(1.15, barista.getQuantity()));
+
+			if (currentGame.getMoney() >= currentPrice) {
+				currentGame.setMoney(currentGame.getMoney() - currentPrice);
+				barista.setQuantity(barista.getQuantity() + 1);
+
+				gameLogic.updateGenerators(idGame, barista);
+				gameLogic.saveGame(username, idGame, currentGame.getMoney(), currentGame.getMinutes(), currentGame.getSeconds());
+
+				GeneratorThread thread = new GeneratorThread(barista, currentGame, newTotal -> {
+					SwingUtilities.invokeLater(() -> gameView.updateCoffeeCount((int) newTotal));
+				});
+				thread.start();
+
+				gameView.updateCoffeeCount((int) currentGame.getMoney());
+				System.out.println("Barista lanzado");
+			} else {
+				System.out.println("Barista not enough");
+				//gameView.showError("No tienes suficientes cafés para contratar a un Barista.");
+			}
+		}
 	}
 
 

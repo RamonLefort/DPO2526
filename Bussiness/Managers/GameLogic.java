@@ -1,6 +1,7 @@
 package Bussiness.Managers;
 
 import Bussiness.Entities.Game;
+import Bussiness.Entities.Generator;
 import Bussiness.Entities.Stat;
 import Persistance.DAO.GameDAO;
 import Persistance.DAO.GeneratorDAO;
@@ -65,5 +66,17 @@ public class GameLogic {
 
 	public boolean gameNameExists(String nameGame) {
 		return gameDAO.existsByName(nameGame);
+	}
+
+	public List<Generator> getGenerators(int idGame){
+		return generatorDAO.readByGame(idGame);
+	}
+
+	public List<Generator> createGenerators(int idGame){
+		return generatorDAO.createInitialGenerators(idGame);
+	}
+
+	public void updateGenerators(int idGame, Generator generator){
+		generatorDAO.update(idGame, generator);
 	}
 }

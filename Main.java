@@ -1,12 +1,12 @@
 import Bussiness.Managers.GameLogic;
+import Bussiness.Managers.GameplayLogic;
 import Bussiness.Managers.StatLogic;
 import Bussiness.Managers.UserLogic;
 import Persistance.Configuration.JsonConfigurationDAO;
 import Persistance.Configuration.MySQLDAO;
 import Persistance.DAO.*;
 import Presentation.Controllers.ViewController;
-import Bussiness.Managers.GameplayLogic;
-
+import Persistance.DAO.SettingDAO;
 import javax.swing.*;
 
 public class Main {
@@ -20,10 +20,9 @@ public class Main {
             UserDAO userDAO = new UserDAO(mySQLDAO);
             SettingDAO settingDAO = new SettingDAO(mySQLDAO);
             GameDAO gameDAO = new GameDAO(mySQLDAO);
-            GeneratorDAO generatorDAO = new GeneratorDAO();
+            GeneratorDAO generatorDAO = new GeneratorDAO(mySQLDAO);
             StatDAO statDAO = new StatDAO(mySQLDAO);
             UpgradeDAO upgradeDAO = new UpgradeDAO();
-
             UserLogic userLogic = new UserLogic(userDAO, settingDAO);
             GameLogic gameLogic = new GameLogic(gameDAO, generatorDAO, statDAO);
             GameplayLogic gameplayLogic = new GameplayLogic(generatorDAO, upgradeDAO, gameLogic);

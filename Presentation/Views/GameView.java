@@ -10,10 +10,16 @@ public class GameView extends JPanel {
     public static final String BTN_BACK   = "BTN_BACK";
     public static final String BTN_FINISH = "BTN_FINISH";
     public static final String BTN_COFFEE = "BTN_COFFEE";
+    public static final String BTN_BARISTA = "BTN_BARISTA";
+    public static final String BTN_MACHINE = "BTN_MACHINE";
+    public static final String BTN_PLANTATION = "BTN_PLANTATION";
     private JButton btnBack;
     private JButton btnFinish;
     private JButton coffeeBtn;
     private JLabel countNum;
+    private JButton btnBarista;
+    private JButton btnMachine;
+    private JButton btnCoffee;
 
     private final Color BG_COLOR = new Color(248, 245, 240);
     private final Color PRIMARY_COFFEE = new Color(74, 44, 23);
@@ -164,17 +170,17 @@ public class GameView extends JPanel {
         right.add(Box.createRigidArea(new Dimension(0, 20)));
 
         // Lista de la tienda
-        right.add(createStoreItem("Barista", "A skilled barista who makes espresso shots", "0.20/s", "14 coffees"));
+        right.add(createStoreItem("Barista", "A skilled barista who makes espresso shots", "0.20/s", "14 coffees", BTN_BARISTA));
         right.add(Box.createRigidArea(new Dimension(0, 15)));
-        right.add(createStoreItem("Espresso Machine", "Automatic espresso machine for quick brews", "0.71/s", "150 coffees"));
+        right.add(createStoreItem("Espresso Machine", "Automatic espresso machine for quick brews", "0.71/s", "150 coffees", BTN_MACHINE));
         right.add(Box.createRigidArea(new Dimension(0, 15)));
-        right.add(createStoreItem("Coffee Plantation", "Your own coffee bean plantation", "0.23/s", "2.00K coffees"));
+        right.add(createStoreItem("Coffee Plantation", "Your own coffee bean plantation", "0.23/s", "2.00K coffees", BTN_PLANTATION));
 
         right.add(Box.createVerticalGlue());
         return right;
     }
 
-    private JPanel createStoreItem(String title, String desc, String rate, String price) {
+    private JPanel createStoreItem(String title, String desc, String rate, String price, String ActionCommand) {
         RoundedPanel item = new RoundedPanel(15, Color.WHITE);
         item.setLayout(new BorderLayout(15, 5)); // Aumentamos el gap vertical a 5
         item.setBorder(new EmptyBorder(15, 15, 15, 15));
@@ -222,6 +228,14 @@ public class GameView extends JPanel {
 
         // Botón
         RoundedButton btnBuy = new RoundedButton("Buy for " + price, 20, PRIMARY_COFFEE, Color.WHITE, Color.WHITE, PRIMARY_COFFEE);
+        if (!ActionCommand.isEmpty()) {
+            btnBuy.setActionCommand(ActionCommand);
+            switch (ActionCommand){
+                case BTN_BARISTA -> btnBarista = btnBuy;
+                case BTN_MACHINE -> btnMachine = btnBuy;
+                case BTN_COFFEE -> btnCoffee = btnBuy;
+            }
+        }
         btnBuy.setFont(new Font("Segoe UI", Font.BOLD, 12));
         btnBuy.setPreferredSize(new Dimension(Integer.MAX_VALUE, 35));
         btnBuy.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -267,6 +281,9 @@ public class GameView extends JPanel {
         btnBack.addActionListener(listener);
         btnFinish.addActionListener(listener);
         coffeeBtn.addActionListener(listener);
+        btnBarista.addActionListener(listener);
+        btnMachine.addActionListener(listener);
+        //btnCoffee.addActionListener(listener);
     }
 
     public void updateCoffeeCount(int count) {

@@ -91,6 +91,4 @@ public class ViewController {
         frame.setVisible(true);
         showView("LOGIN");
     }
-
-
 }

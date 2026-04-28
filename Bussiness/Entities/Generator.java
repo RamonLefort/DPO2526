@@ -36,4 +36,29 @@ public class Generator {
 		return 0;
 	}
 
+	public int getQuantity(){return quantity;}
+
+	public int getPeriod(){return period;}
+
+	public String getName(){return name;}
+
+	public int getPrice(){return price;}
+
+	public void setQuantity(int quantity){this.quantity = quantity;}
+
+	public void setIdGenerator(int idGenerator) {
+		this.idGenerator = idGenerator;
+	}
+
+	public void setPrice(int price) {
+		this.price = price;
+	}
+
+	public void setPeriod(int period) {
+		this.period = period;
+	}
+
+	public void setEarning(int earning) {
+		this.earning = earning;
+	}
 }
