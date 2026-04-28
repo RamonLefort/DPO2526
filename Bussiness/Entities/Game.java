@@ -10,7 +10,6 @@ public class Game {
 	private int coffeePerClick;
 	private String username;
 
-
 	public Game(int idGame, String nameGame, double money, int minutes, int seconds, int coffeePerClick, String username) {
 		this.idGame = idGame;
 		this.nameGame = nameGame;
@@ -21,45 +20,17 @@ public class Game {
 		this.username = username;
 	}
 
-	public Game(String nameGame, String username) {
-		this.nameGame = nameGame;
-		this.username = username;
-		this.money = 0.0;
-		this.minutes = 0;
-		this.seconds = 0;
-		this.coffeePerClick = 1;
-	}
+	public int getIdGame()            { return idGame; }
+	public String getNameGame()       { return nameGame; }
+	public double getMoney()          { return money; }
+	public int getMinutes()           { return minutes; }
+	public int getSeconds()           { return seconds; }
+	public int getCoffeePerClick()    { return coffeePerClick; }
+	public String getUsername()       { return username; }
 
-
-	public int getIdGame() {
-		return idGame;
-	}
-
-	public String getNameGame() {
-		return nameGame;
-	}
-
-	public double getMoney() {
-		return money;
-	}
-
-	public void addMoney(double amount) {
-		this.money += amount;
-	}
-
-	public int getCoffeePerClick() {
-		return coffeePerClick;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public int getMinutes() {
-		return minutes;
-	}
-
-	public int getSeconds() {
-		return seconds;
-	}
+	public void addMoney(double amount)         { this.money += amount; }
+	public void setMoney(double money)          { this.money = money; }
+	public void setMinutes(int minutes)         { this.minutes = minutes; }
+	public void setSeconds(int seconds)         { this.seconds = seconds; }
+	public void setCoffeePerClick(int coffeePerClick) { this.coffeePerClick = coffeePerClick; }
 }

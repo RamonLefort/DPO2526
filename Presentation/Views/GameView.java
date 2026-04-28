@@ -3,8 +3,17 @@ package Presentation.Views;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
 public class GameView extends JPanel {
+
+    public static final String BTN_BACK   = "BTN_BACK";
+    public static final String BTN_FINISH = "BTN_FINISH";
+    public static final String BTN_COFFEE = "BTN_COFFEE";
+    private JButton btnBack;
+    private JButton btnFinish;
+    private JButton coffeeBtn;
+    private JLabel countNum;
 
     private final Color BG_COLOR = new Color(248, 245, 240);
     private final Color PRIMARY_COFFEE = new Color(74, 44, 23);
@@ -39,7 +48,8 @@ public class GameView extends JPanel {
         header.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
 
         // Botón Atrás
-        JButton btnBack = new RoundedButton("< Atrás", 20, PRIMARY_COFFEE, BG_COLOR, BG_COLOR, PRIMARY_COFFEE);
+        btnBack = new RoundedButton("< Atrás", 20, PRIMARY_COFFEE, BG_COLOR, BG_COLOR, PRIMARY_COFFEE);
+        btnBack.setActionCommand(BTN_BACK);
         btnBack.setBorder(new RoundedBorder(PRIMARY_COFFEE, 20, 1));
 
         Dimension dim = new Dimension(80, 35);
@@ -53,7 +63,8 @@ public class GameView extends JPanel {
         title.setForeground(PRIMARY_COFFEE);
 
         // Botón Finish Game
-        JButton btnFinish = new RoundedButton("Finish Game", 20, PRIMARY_COFFEE, BG_COLOR, BG_COLOR, PRIMARY_COFFEE);
+        btnFinish = new RoundedButton("Finish Game", 20, PRIMARY_COFFEE, BG_COLOR, BG_COLOR, PRIMARY_COFFEE);
+        btnFinish.setActionCommand(BTN_FINISH);
         btnFinish.setBorder(new RoundedBorder(PRIMARY_COFFEE, 20, 1));
 
         Dimension dimFinish = new Dimension(100, 35);
@@ -84,7 +95,7 @@ public class GameView extends JPanel {
         labelsContainer.setOpaque(false);
 
         //Número de cafes
-        JLabel countNum = new JLabel("42");
+        countNum = new JLabel("0");
         countNum.setFont(new Font("Segoe UI", Font.BOLD, 40));
         countNum.setForeground(Color.BLACK);
         countNum.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -109,7 +120,8 @@ public class GameView extends JPanel {
         scorePanel.add(labelsContainer);
 
         // Botón café
-        JButton coffeeBtn = new RoundedButton("☕", 100, PRIMARY_COFFEE, BG_COLOR, BG_COLOR, PRIMARY_COFFEE);
+        coffeeBtn = new RoundedButton("☕", 100, PRIMARY_COFFEE, BG_COLOR, BG_COLOR, PRIMARY_COFFEE);
+        coffeeBtn.setActionCommand(BTN_COFFEE);
         coffeeBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         coffeeBtn.setBorder(new RoundedBorder(PRIMARY_COFFEE, 100, 1));
         Dimension coffeeDim = new Dimension(150, 150);
@@ -249,5 +261,15 @@ public class GameView extends JPanel {
         p.add(scroll, BorderLayout.CENTER);
 
         return p;
+    }
+
+    public void setActionListener(ActionListener listener) {
+        btnBack.addActionListener(listener);
+        btnFinish.addActionListener(listener);
+        coffeeBtn.addActionListener(listener);
+    }
+
+    public void updateCoffeeCount(int count) {
+        countNum.setText(String.valueOf(count));
     }
 }

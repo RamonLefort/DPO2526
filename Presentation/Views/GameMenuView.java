@@ -1,15 +1,30 @@
 package Presentation.Views;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionListener;
+import Bussiness.Entities.Game;
+import Bussiness.Entities.Stat;
+import java.util.List;
 
 public class GameMenuView extends JPanel {
+    public static final String BTN_BACK = "BACK";
+    public static final String BTN_LOGOUT = "LOGOUT";
+    public static final String BTN_NEW_GAME = "NEW_GAME";
+    public static final String BTN_CONTINUE = "CONTINUE";
+    public static final String BTN_STATS = "STATS";
 
     private final Color BG_COLOR = new Color(248, 245, 240);
     private final Color CARD_COLOR = Color.WHITE;
     private final Color PRIMARY_COFFEE = new Color(139, 69, 19);
+    private JPanel currentGrid;
+    private JPanel finishedGrid;
+
+    private JButton btnNew;
+    private JButton btnBack;
+    private JButton btnLogout;
+    private ActionListener actionListener;
 
     public GameMenuView() {
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -27,7 +42,7 @@ public class GameMenuView extends JPanel {
         currentHeader.setAlignmentX(Component.CENTER_ALIGNMENT);
         currentHeader.setMaximumSize(new Dimension(1000, 50));
         this.add(currentHeader);
-        JPanel currentGrid = createResponsiveCenteredGrid(4, "Continue →");
+        currentGrid = createResponsiveCenteredGrid();
         this.add(currentGrid);
         this.add(Box.createRigidArea(new Dimension(0, 20)));
 
@@ -36,7 +51,7 @@ public class GameMenuView extends JPanel {
         finishedHeader.setAlignmentX(Component.CENTER_ALIGNMENT);
         finishedHeader.setMaximumSize(new Dimension(1000, 50));
         this.add(finishedHeader);
-        JPanel finishedGrid = createResponsiveCenteredGrid(4, "See statistics →");
+        finishedGrid = createResponsiveCenteredGrid();
         this.add(finishedGrid);
         this.add(Box.createVerticalGlue());
     }
@@ -44,15 +59,11 @@ public class GameMenuView extends JPanel {
     /**
      * Crea un panel que envuelve las cartas (wrapping) y las mantiene centradas.
      */
-    private JPanel createResponsiveCenteredGrid(int count, String btnText) {
+    private JPanel createResponsiveCenteredGrid() {
         JPanel grid = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
         grid.setOpaque(false);
         grid.setAlignmentX(Component.CENTER_ALIGNMENT);
-        for (int i = 0; i < count; i++) {
-            grid.add(createGameCard(20, CARD_COLOR, btnText));
-        }
-        grid.setMaximumSize(new Dimension(1100, grid.getPreferredSize().height));
-
+        grid.setMaximumSize(new Dimension(1100, 300));
         return grid;
     }
 
@@ -64,9 +75,9 @@ public class GameMenuView extends JPanel {
         header.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         // Botón de back
-        JButton btnBack = new RoundedButton("< Atrás", 20, PRIMARY_COFFEE, BG_COLOR, BG_COLOR, PRIMARY_COFFEE);
+        btnBack = new RoundedButton("< Atrás", 20, PRIMARY_COFFEE, BG_COLOR, BG_COLOR, PRIMARY_COFFEE);
+        btnBack.setActionCommand(BTN_BACK);
         btnBack.setBorder(new RoundedBorder(PRIMARY_COFFEE, 20, 1));
-
         Dimension backDim = new Dimension(85, 35);
         btnBack.setPreferredSize(backDim);
         btnBack.setMinimumSize(backDim);
@@ -78,9 +89,9 @@ public class GameMenuView extends JPanel {
         title.setForeground(PRIMARY_COFFEE);
 
         // Botón de logout
-        JButton btnLogout = new RoundedButton("Logout", 20, PRIMARY_COFFEE, BG_COLOR, BG_COLOR, PRIMARY_COFFEE);
+        btnLogout = new RoundedButton("Logout", 20, PRIMARY_COFFEE, BG_COLOR, BG_COLOR, PRIMARY_COFFEE);
+        btnLogout.setActionCommand(BTN_LOGOUT);
         btnLogout.setBorder(new RoundedBorder(PRIMARY_COFFEE, 20, 1));
-
         Dimension logoutDim = new Dimension(75, 35);
         btnLogout.setPreferredSize(logoutDim);
         btnLogout.setMaximumSize(logoutDim);
@@ -107,13 +118,13 @@ public class GameMenuView extends JPanel {
 
         if (btnText != null) {
             panel.add(Box.createHorizontalGlue());
-            JButton btnNew = new RoundedButton(btnText, 20, PRIMARY_COFFEE, BG_COLOR, BG_COLOR, PRIMARY_COFFEE);
+            btnNew = new RoundedButton(btnText, 20, PRIMARY_COFFEE, BG_COLOR, BG_COLOR, PRIMARY_COFFEE);
+            btnNew.setActionCommand(BTN_NEW_GAME);
             btnNew.setBorder(new RoundedBorder(PRIMARY_COFFEE, 20, 1));
-
-            Dimension logoutDim = new Dimension(100, 40);
-            btnNew.setPreferredSize(logoutDim);
-            btnNew.setMaximumSize(logoutDim);
-            btnNew.setMinimumSize(logoutDim);
+            Dimension d = new Dimension(100, 40);
+            btnNew.setPreferredSize(d);
+            btnNew.setMaximumSize(d);
+            btnNew.setMinimumSize(d);
             panel.add(btnNew);
         } else {
             panel.add(Box.createHorizontalGlue());
@@ -122,23 +133,7 @@ public class GameMenuView extends JPanel {
         return panel;
     }
 
-    private JPanel createGameGrid(int count, String btnText) {
-        JPanel container = new JPanel();
-        container.setLayout(new BoxLayout(container, BoxLayout.X_AXIS));
-        container.setOpaque(false);
-        container.setMaximumSize(new Dimension(Integer.MAX_VALUE, 300));
-
-        for (int i = 0; i < count; i++) {
-            container.add(createGameCard(20, CARD_COLOR, btnText));
-            container.add(Box.createRigidArea(new Dimension(15, 0)));
-        }
-        container.add(Box.createHorizontalGlue());
-
-        return container;
-    }
-
-    // GameCard
-    private JPanel createGameCard(int radius, Color colorbg, String btnText) {
+    private JPanel createGameCard(int radius, Color colorbg, String btnText, String name, String money, int minutes, int idGame, String actionCommand) {
         RoundedPanel card = new RoundedPanel(radius, colorbg);
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setPreferredSize(new Dimension(220, 200));
@@ -146,7 +141,7 @@ public class GameMenuView extends JPanel {
         card.setBorder(BorderFactory.createCompoundBorder(new RoundedBorder(PRIMARY_COFFEE, radius, 1), new EmptyBorder(0, 15, 0, 15)));
 
         // Nombre de la partida
-        JLabel title = new JLabel("My coffee empire");
+        JLabel title = new JLabel(name);
         title.setFont(new Font("Segoe UI", Font.BOLD, 16));
         title.setForeground(PRIMARY_COFFEE);
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -154,7 +149,7 @@ public class GameMenuView extends JPanel {
         card.add(Box.createRigidArea(new Dimension(0, 10)));
 
         // Estadísticas
-        String[] stats = {"Coffees: 2.4k", "Coffees/sec: 12", "Time spend: 25 mins"};
+        String[] stats = {"Coffees: " + money, "Time: " + minutes + " mins"};
         for (String s : stats) {
             JLabel lbl = new JLabel(s);
             lbl.setFont(new Font("Segoe UI", Font.PLAIN, 14));
@@ -173,7 +168,6 @@ public class GameMenuView extends JPanel {
         iconsRow.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         String[] iconData = {"👤 x2", "☕ x2", "\uD83C\uDF3F x2"};
-
         for (int i = 0; i < iconData.length; i++) {
             JLabel iconLbl = new JLabel(iconData[i]);
             iconLbl.setForeground(PRIMARY_COFFEE);
@@ -193,6 +187,8 @@ public class GameMenuView extends JPanel {
         btn.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btn.setBorder(new RoundedBorder(PRIMARY_COFFEE, 20, 1));
         btn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btn.setActionCommand(actionCommand + idGame);
+        btn.addActionListener(actionListener);
 
         Dimension btnDim = new Dimension(180, 30);
         btn.setPreferredSize(btnDim);
@@ -202,5 +198,38 @@ public class GameMenuView extends JPanel {
         card.add(btn);
 
         return card;
+    }
+
+    public void setActionListener(ActionListener listener) {
+        this.actionListener = listener;
+        btnBack.addActionListener(listener);
+        btnLogout.addActionListener(listener);
+        btnNew.addActionListener(listener);
+    }
+
+    public void clearCurrentGames() {
+        currentGrid.removeAll();
+    }
+
+    public void addCurrentGameCard(String name, String money, int minutes, int idGame) {
+        currentGrid.add(createGameCard(20, CARD_COLOR, "Continue →", name, money, minutes, idGame, BTN_CONTINUE));
+    }
+
+    public void refreshCurrentGames() {
+        currentGrid.revalidate();
+        currentGrid.repaint();
+    }
+
+    public void clearFinishedGames() {
+        finishedGrid.removeAll();
+    }
+
+    public void addFinishedGameCard(String name, String money, int minutes, int idGame) {
+        finishedGrid.add(createGameCard(20, CARD_COLOR, "See statistics →", name, money, minutes, idGame, BTN_STATS));
+    }
+
+    public void refreshFinishedGames() {
+        finishedGrid.revalidate();
+        finishedGrid.repaint();
     }
 }

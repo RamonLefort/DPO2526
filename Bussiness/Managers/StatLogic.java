@@ -23,9 +23,12 @@ public class StatLogic {
 		this.userDAO = userDAO;
 	}
 
-	public List<Stat> getStatsByGame(int idGames) {
+	public List<Stat> getAllStats() {
+		return statDAO.readAllStats();
+	}
 
-		return statDAO.readStatsByGame(idGames);
+	public void saveStat(int idGame, double money, int minutes, String nameGame) {
+		statDAO.create(new Stat(money, minutes, idGame, nameGame));
 	}
 
 	public List<User> getAllUsers() {

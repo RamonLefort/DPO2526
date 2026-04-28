@@ -72,7 +72,7 @@ public class UserLogic {
 
 		boolean hasLetter    = false;
 		boolean hasDigit     = false;
-		boolean hasUpperCase = false;
+		boolean hasMLetter = false;
 
 		for (int i = 0; i < password.length(); i++) {
 			char c = password.charAt(i);
@@ -80,13 +80,21 @@ public class UserLogic {
 				hasLetter    = true;
 			}
 			if (c >= 'A' && c <= 'Z') {
-				hasLetter  = true; hasUpperCase = true; }
+				hasLetter  = true; hasMLetter = true; }
 			if (c >= '0' && c <= '9'){
 				hasDigit     = true;
 			}
 		}
-
-		return hasLetter && hasDigit && hasUpperCase;
+		if (hasLetter == false) {
+			return false;
+		}
+		if (hasMLetter == false) {
+			return false;
+		}
+		if (hasDigit == false) {
+			return false;
+		}
+		return true;
 	}
 
 	public User getCurrentUser() {
