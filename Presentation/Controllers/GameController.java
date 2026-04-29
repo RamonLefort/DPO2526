@@ -55,14 +55,11 @@ public class GameController implements ActionListener {
 		this.coffeeCount = 0;
 		this.currentGame = gameLogic.loadGame(username, idGame);
 		gameView.updateCoffeeCount((int) currentGame.getMoney());
-		try {
-			generators = gameLogic.getGenerators(idGame);
-		}catch (Exception e){
+		generators = gameLogic.getGenerators(idGame);
+		if(generators.isEmpty()) {
 			generators = gameLogic.createGenerators(idGame);
 		}
-		gameplayLogic.startAutoGenerators(idGame, currentGame, generators, newTotal -> {
-			SwingUtilities.invokeLater(() -> gameView.updateCoffeeCount((int) newTotal));
-		});
+		gameView.updateCoffeeCount((int) currentGame.getMoney());
 	}
 
 	private void handleBack() {
@@ -84,9 +81,10 @@ public class GameController implements ActionListener {
 	}
 
 	public void handleBarista() {
+		// 1. Buscamos el generador en la lista local (asumiendo que 'generators' es un atributo de clase)
 		Generator barista = null;
 		for (Generator g : generators) {
-			if (g.getName().equalsIgnoreCase("Barista")) {
+			if (g.getName() != null && g.getName().equalsIgnoreCase("Barista")) {
 				barista = g;
 				break;
 			}
@@ -96,26 +94,22 @@ public class GameController implements ActionListener {
 			int currentPrice = (int) (barista.getPrice() * Math.pow(1.15, barista.getQuantity()));
 
 			if (currentGame.getMoney() >= currentPrice) {
-				currentGame.setMoney(currentGame.getMoney() - currentPrice);
-				barista.setQuantity(barista.getQuantity() + 1);
+				synchronized (currentGame) {
+					currentGame.setMoney(currentGame.getMoney() - currentPrice);
+					barista.setQuantity(barista.getQuantity() + 1);
+				}
 
+				// Persistencia
 				gameLogic.updateGenerators(idGame, barista);
 				gameLogic.saveGame(username, idGame, currentGame.getMoney(), currentGame.getMinutes(), currentGame.getSeconds());
 
-				GeneratorThread thread = new GeneratorThread(barista, currentGame, newTotal -> {
-					SwingUtilities.invokeLater(() -> gameView.updateCoffeeCount((int) newTotal));
-				});
-				thread.start();
-
 				gameView.updateCoffeeCount((int) currentGame.getMoney());
-				System.out.println("Barista lanzado");
+				System.out.println("Barista lanzado y produciendo");
 			} else {
-				System.out.println("Barista not enough");
-				//gameView.showError("No tienes suficientes cafés para contratar a un Barista.");
+				System.out.println("No hay suficiente dinero para el Barista");
 			}
 		}
 	}
-
 
 	public void handleBuyGenerator() {
 

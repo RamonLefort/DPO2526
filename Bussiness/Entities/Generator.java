@@ -17,7 +17,8 @@ public class Generator {
 	private int earning;
 
 	public Generator(String name, int idGame) {
-
+		this.name = name;
+		this.idGame = idGame;
 	}
 
 	public int getIdGenerator() {
@@ -28,19 +29,19 @@ public class Generator {
 		return 0;
 	}
 
-	public int getTotalProduction() {
-		return 0;
-	}
-
-	public int getGlobalPercent(int totalProduction) {
-		return 0;
-	}
-
 	public int getQuantity(){return quantity;}
 
 	public int getPeriod(){return period;}
 
 	public String getName(){return name;}
+
+	public int getIdGame() {
+		return idGame;
+	}
+
+	public int getEarning() {
+		return earning;
+	}
 
 	public int getPrice(){return price;}
 
@@ -61,4 +62,6 @@ public class Generator {
 	public void setEarning(int earning) {
 		this.earning = earning;
 	}
+
+
 }

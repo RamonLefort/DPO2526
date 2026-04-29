@@ -2,40 +2,40 @@ package Bussiness.Managers;
 
 import Bussiness.Entities.Generator;
 import Bussiness.Entities.Game;
+import Presentation.Views.GameView;
+import javax.swing.SwingUtilities;
 
 public class GeneratorThread extends Thread {
     private final Generator generator;
     private final Game game;
-    private final GameViewUpdateListener listener;
+    private final GameView gameView;
     private boolean running = true;
 
-    // Interfaz para notificar a la vista sin acoplamiento fuerte
-    public interface GameViewUpdateListener {
-        void onProductionUpdate(double newTotal);
-    }
-
-    public GeneratorThread(Generator generator, Game game, GameViewUpdateListener listener) {
+    public GeneratorThread(Generator generator, Game game, GameView gameView) {
         this.generator = generator;
         this.game = game;
-        this.listener = listener;
+        this.gameView = gameView;
     }
 
     @Override
     public void run() {
         while (running) {
             try {
-                // El periodo suele estar en milisegundos en la DB
                 Thread.sleep(generator.getPeriod());
 
+                double production = generator.getEarning() * generator.getQuantity();
+
                 synchronized (game) {
-                    double production = generator.getTotalProduction();
                     game.addMoney(production);
-                    if (listener != null) {
-                        listener.onProductionUpdate(game.getMoney());
-                    }
+                    double currentMoney = game.getMoney();
+                    System.out.println("Dinero actualizado: " + currentMoney);
+                    // 3. Actualización en pantalla dentro del EDT
+                    SwingUtilities.invokeLater(() -> {
+                        gameView.updateCoffeeCount((int) currentMoney);
+                    });
                 }
             } catch (InterruptedException e) {
-                running = false; // Detener si el hilo es interrumpido
+                running = false;
             }
         }
     }
