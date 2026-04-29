@@ -25,13 +25,10 @@ public class GameplayLogic {
 
 	public void startAutoGenerators(int gameId, Game game, List<Generator> generators, GameView gameView) {
 		stopAutoGenerators();
-
 		for (Generator gen : generators) {
-			if (gen.getQuantity() > 0) {
-				GeneratorThread t = new GeneratorThread(gen, game, gameView);
-				activeThreads.add(t);
-				t.start();
-			}
+			GeneratorThread t = new GeneratorThread(gen, game, gameView);
+			activeThreads.add(t);
+			t.start();
 		}
 	}
 

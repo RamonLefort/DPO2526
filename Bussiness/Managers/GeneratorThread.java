@@ -28,8 +28,7 @@ public class GeneratorThread extends Thread {
                 synchronized (game) {
                     game.addMoney(production);
                     double currentMoney = game.getMoney();
-                    System.out.println("Dinero actualizado: " + currentMoney);
-                    // 3. Actualización en pantalla dentro del EDT
+
                     SwingUtilities.invokeLater(() -> {
                         gameView.updateCoffeeCount((int) currentMoney);
                     });

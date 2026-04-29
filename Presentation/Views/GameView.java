@@ -182,9 +182,9 @@ public class GameView extends JPanel {
 
     private JPanel createStoreItem(String title, String desc, String rate, String price, String ActionCommand) {
         RoundedPanel item = new RoundedPanel(15, Color.WHITE);
-        item.setLayout(new BorderLayout(15, 5)); // Aumentamos el gap vertical a 5
+        item.setLayout(new BorderLayout(15, 5));
         item.setBorder(new EmptyBorder(15, 15, 15, 15));
-        item.setMaximumSize(new Dimension(Integer.MAX_VALUE, 140)); // Aumentamos un poco el alto máximo
+        item.setMaximumSize(new Dimension(Integer.MAX_VALUE, 140));
 
         // Foto tienda
         RoundedPanel icon = new RoundedPanel(10, BG_COLOR);
@@ -233,7 +233,7 @@ public class GameView extends JPanel {
             switch (ActionCommand){
                 case BTN_BARISTA -> btnBarista = btnBuy;
                 case BTN_MACHINE -> btnMachine = btnBuy;
-                case BTN_COFFEE -> btnCoffee = btnBuy;
+                case BTN_PLANTATION -> btnCoffee = btnBuy;
             }
         }
         btnBuy.setFont(new Font("Segoe UI", Font.BOLD, 12));
@@ -283,7 +283,7 @@ public class GameView extends JPanel {
         coffeeBtn.addActionListener(listener);
         btnBarista.addActionListener(listener);
         btnMachine.addActionListener(listener);
-        //btnCoffee.addActionListener(listener);
+        btnCoffee.addActionListener(listener);
     }
 
     public void updateCoffeeCount(int count) {

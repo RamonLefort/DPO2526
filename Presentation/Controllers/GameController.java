@@ -46,13 +46,15 @@ public class GameController implements ActionListener {
 			case GameView.BTN_FINISH -> handleFinishGame();
 			case GameView.BTN_COFFEE -> handleClickGenerate();
 			case GameView.BTN_BARISTA -> handleBarista();
+			case GameView.BTN_MACHINE -> handleMachine();
+			case GameView.BTN_PLANTATION -> handlePlantation();
 		}
 	}
 
 	public void loadGame(int idGame, String username) {
 		this.idGame = idGame;
 		this.username = username;
-		this.coffeeCount = 0;
+		this.coffeeCount = 1;
 		this.currentGame = gameLogic.loadGame(username, idGame);
 		gameView.updateCoffeeCount((int) currentGame.getMoney());
 		generators = gameLogic.getGenerators(idGame);
@@ -60,11 +62,13 @@ public class GameController implements ActionListener {
 			generators = gameLogic.createGenerators(idGame);
 		}
 		gameView.updateCoffeeCount((int) currentGame.getMoney());
+		gameplayLogic.startAutoGenerators(idGame, currentGame, this.generators, gameView);
 	}
 
 	private void handleBack() {
 		double totalMoney = currentGame.getMoney() + coffeeCount;
 		gameLogic.saveGame(username, idGame, totalMoney, currentGame.getMinutes(), currentGame.getSeconds());
+		gameplayLogic.stopAutoGenerators();
 		viewController.showView("GAME MENU");
 	}
 
@@ -72,16 +76,16 @@ public class GameController implements ActionListener {
 		double totalMoney = currentGame.getMoney() + coffeeCount;
 		gameLogic.saveGame(username, idGame, totalMoney, currentGame.getMinutes(), currentGame.getSeconds());
 		statLogic.saveStat(idGame, totalMoney, currentGame.getMinutes(), currentGame.getNameGame());
+		gameplayLogic.stopAutoGenerators();
 		viewController.showView("GAME MENU");
 	}
 
 	private void handleClickGenerate() {
-		coffeeCount++;
-		gameView.updateCoffeeCount((int) currentGame.getMoney() + coffeeCount);
+		currentGame.addMoney(coffeeCount);
+		gameView.updateCoffeeCount((int) currentGame.getMoney());
 	}
 
 	public void handleBarista() {
-		// 1. Buscamos el generador en la lista local (asumiendo que 'generators' es un atributo de clase)
 		Generator barista = null;
 		for (Generator g : generators) {
 			if (g.getName() != null && g.getName().equalsIgnoreCase("Barista")) {
@@ -94,7 +98,7 @@ public class GameController implements ActionListener {
 			int currentPrice = (int) (barista.getPrice() * Math.pow(1.15, barista.getQuantity()));
 
 			if (currentGame.getMoney() >= currentPrice) {
-				synchronized (currentGame) {
+				synchronized (currentGame){
 					currentGame.setMoney(currentGame.getMoney() - currentPrice);
 					barista.setQuantity(barista.getQuantity() + 1);
 				}
@@ -111,8 +115,64 @@ public class GameController implements ActionListener {
 		}
 	}
 
-	public void handleBuyGenerator() {
+	public void handleMachine() {
+		Generator machine = null;
+		for (Generator g : generators) {
+			if (g.getName() != null && g.getName().equalsIgnoreCase("Espresso Machine")) {
+				machine = g;
+				break;
+			}
+		}
 
+		if (machine != null) {
+			int currentPrice = (int) (machine.getPrice() * Math.pow(1.15, machine.getQuantity()));
+
+			if (currentGame.getMoney() >= currentPrice) {
+				synchronized (currentGame){
+					currentGame.setMoney(currentGame.getMoney() - currentPrice);
+					machine.setQuantity(machine.getQuantity() + 1);
+				}
+
+				// Persistencia
+				gameLogic.updateGenerators(idGame, machine);
+				gameLogic.saveGame(username, idGame, currentGame.getMoney(), currentGame.getMinutes(), currentGame.getSeconds());
+
+				gameView.updateCoffeeCount((int) currentGame.getMoney());
+				System.out.println("Espresso Machine lanzado y produciendo");
+			} else {
+				System.out.println("No hay suficiente dinero para el Espresso Machine");
+			}
+		}
+	}
+
+	public void handlePlantation() {
+		Generator plantation = null;
+		for (Generator g : generators) {
+			if (g.getName() != null && g.getName().equalsIgnoreCase("Coffee Plantation")) {
+				plantation = g;
+				break;
+			}
+		}
+
+		if (plantation != null) {
+			int currentPrice = (int) (plantation.getPrice() * Math.pow(1.15, plantation.getQuantity()));
+
+			if (currentGame.getMoney() >= currentPrice) {
+				synchronized (currentGame){
+					currentGame.setMoney(currentGame.getMoney() - currentPrice);
+					plantation.setQuantity(plantation.getQuantity() + 1);
+				}
+
+				// Persistencia
+				gameLogic.updateGenerators(idGame, plantation);
+				gameLogic.saveGame(username, idGame, currentGame.getMoney(), currentGame.getMinutes(), currentGame.getSeconds());
+
+				gameView.updateCoffeeCount((int) currentGame.getMoney());
+				System.out.println("Plantación lanzado y produciendo");
+			} else {
+				System.out.println("No hay suficiente dinero para el Plantación");
+			}
+		}
 	}
 
 	public void handleBuyUpgrade() {
