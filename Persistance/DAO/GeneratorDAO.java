@@ -49,12 +49,13 @@ public class GeneratorDAO {
 		String query = "UPDATE generador SET quantity = ?, price = ? WHERE id_generator = ? AND id_game = ?";
 		try (PreparedStatement ps = mySQLDAO.getConnection().prepareStatement(query)) {
 			ps.setInt(1, generator.getQuantity());
-			ps.setInt(2, generator.calcNextPrice());
+			ps.setInt(2, generator.getPrice());
 			ps.setInt(3, generator.getIdGenerator());
 			ps.setInt(4, idGame);
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 	}
 

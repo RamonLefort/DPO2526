@@ -66,14 +66,14 @@ public class GameController implements ActionListener {
 	}
 
 	private void handleBack() {
-		double totalMoney = currentGame.getMoney() + coffeeCount;
+		double totalMoney = currentGame.getMoney();
 		gameLogic.saveGame(username, idGame, totalMoney, currentGame.getMinutes(), currentGame.getSeconds());
 		gameplayLogic.stopAutoGenerators();
 		viewController.showView("GAME MENU");
 	}
 
 	private void handleFinishGame() {
-		double totalMoney = currentGame.getMoney() + coffeeCount;
+		double totalMoney = currentGame.getMoney();
 		gameLogic.saveGame(username, idGame, totalMoney, currentGame.getMinutes(), currentGame.getSeconds());
 		statLogic.saveStat(idGame, totalMoney, currentGame.getMinutes(), currentGame.getNameGame());
 		gameplayLogic.stopAutoGenerators();
@@ -95,14 +95,14 @@ public class GameController implements ActionListener {
 		}
 
 		if (barista != null) {
-			int currentPrice = (int) (barista.getPrice() * Math.pow(1.15, barista.getQuantity()));
 
-			if (currentGame.getMoney() >= currentPrice) {
+			if (currentGame.getMoney() >= barista.getPrice()) {
 				synchronized (currentGame){
-					currentGame.setMoney(currentGame.getMoney() - currentPrice);
+					currentGame.setMoney(currentGame.getMoney() - barista.getPrice());
 					barista.setQuantity(barista.getQuantity() + 1);
 				}
-
+				barista.setPrice((int) (barista.getPrice() + (0.5 * barista.getPrice())));
+				gameView.updateBaristaPrice(barista.getPrice());
 				// Persistencia
 				gameLogic.updateGenerators(idGame, barista);
 				gameLogic.saveGame(username, idGame, currentGame.getMoney(), currentGame.getMinutes(), currentGame.getSeconds());
@@ -125,14 +125,14 @@ public class GameController implements ActionListener {
 		}
 
 		if (machine != null) {
-			int currentPrice = (int) (machine.getPrice() * Math.pow(1.15, machine.getQuantity()));
 
-			if (currentGame.getMoney() >= currentPrice) {
+			if (currentGame.getMoney() >= machine.getPrice()) {
 				synchronized (currentGame){
-					currentGame.setMoney(currentGame.getMoney() - currentPrice);
+					currentGame.setMoney(currentGame.getMoney() - machine.getPrice());
 					machine.setQuantity(machine.getQuantity() + 1);
 				}
-
+				machine.setPrice((int) (machine.getPrice() + (0.5 * machine.getPrice())));
+				gameView.updateMachinePrice(machine.getPrice());
 				// Persistencia
 				gameLogic.updateGenerators(idGame, machine);
 				gameLogic.saveGame(username, idGame, currentGame.getMoney(), currentGame.getMinutes(), currentGame.getSeconds());
@@ -155,14 +155,13 @@ public class GameController implements ActionListener {
 		}
 
 		if (plantation != null) {
-			int currentPrice = (int) (plantation.getPrice() * Math.pow(1.15, plantation.getQuantity()));
-
-			if (currentGame.getMoney() >= currentPrice) {
+			if (currentGame.getMoney() >= plantation.getPrice()) {
 				synchronized (currentGame){
-					currentGame.setMoney(currentGame.getMoney() - currentPrice);
+					currentGame.setMoney(currentGame.getMoney() - plantation.getPrice());
 					plantation.setQuantity(plantation.getQuantity() + 1);
 				}
-
+				plantation.setPrice((int) (plantation.getPrice() + (0.5 * plantation.getPrice())));
+				gameView.updatePlantationPrice(plantation.getPrice());
 				// Persistencia
 				gameLogic.updateGenerators(idGame, plantation);
 				gameLogic.saveGame(username, idGame, currentGame.getMoney(), currentGame.getMinutes(), currentGame.getSeconds());

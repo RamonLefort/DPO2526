@@ -22,11 +22,7 @@ public class Generator {
 	}
 
 	public int getIdGenerator() {
-		return 0;
-	}
-
-	public int calcNextPrice() {
-		return 0;
+		return idGenerator;
 	}
 
 	public int getQuantity(){return quantity;}

@@ -170,11 +170,11 @@ public class GameView extends JPanel {
         right.add(Box.createRigidArea(new Dimension(0, 20)));
 
         // Lista de la tienda
-        right.add(createStoreItem("Barista", "A skilled barista who makes espresso shots", "0.20/s", "14 coffees", BTN_BARISTA));
+        right.add(createStoreItem("Barista", "A skilled barista who makes espresso shots", "0.20/s", "15 coffees", BTN_BARISTA));
         right.add(Box.createRigidArea(new Dimension(0, 15)));
-        right.add(createStoreItem("Espresso Machine", "Automatic espresso machine for quick brews", "0.71/s", "150 coffees", BTN_MACHINE));
+        right.add(createStoreItem("Espresso Machine", "Automatic espresso machine for quick brews", "0.67/s", "150 coffees", BTN_MACHINE));
         right.add(Box.createRigidArea(new Dimension(0, 15)));
-        right.add(createStoreItem("Coffee Plantation", "Your own coffee bean plantation", "0.23/s", "2.00K coffees", BTN_PLANTATION));
+        right.add(createStoreItem("Coffee Plantation", "Your own coffee bean plantation", "1/s", "2.00K coffees", BTN_PLANTATION));
 
         right.add(Box.createVerticalGlue());
         return right;
@@ -231,9 +231,15 @@ public class GameView extends JPanel {
         if (!ActionCommand.isEmpty()) {
             btnBuy.setActionCommand(ActionCommand);
             switch (ActionCommand){
-                case BTN_BARISTA -> btnBarista = btnBuy;
-                case BTN_MACHINE -> btnMachine = btnBuy;
-                case BTN_PLANTATION -> btnCoffee = btnBuy;
+                case BTN_BARISTA:
+                    btnBarista = btnBuy;
+                    break;
+                case BTN_MACHINE:
+                    btnMachine = btnBuy;
+                    break;
+                case BTN_PLANTATION:
+                    btnCoffee = btnBuy;
+                    break;
             }
         }
         btnBuy.setFont(new Font("Segoe UI", Font.BOLD, 12));
@@ -288,5 +294,17 @@ public class GameView extends JPanel {
 
     public void updateCoffeeCount(int count) {
         countNum.setText(String.valueOf(count));
+    }
+
+    public void updateBaristaPrice(int price){
+        btnBarista.setText("Buy for " + price + " coffees");
+    }
+
+    public void updateMachinePrice(int price){
+        btnMachine.setText("Buy for " + price + " coffees");
+    }
+
+    public void updatePlantationPrice(int price){
+        btnCoffee.setText("Buy for " + price + " coffees");
     }
 }
