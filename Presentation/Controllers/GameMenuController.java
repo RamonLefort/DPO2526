@@ -1,9 +1,11 @@
 package Presentation.Controllers;
 
 import Bussiness.Entities.Game;
+import Bussiness.Entities.Generator;
 import Bussiness.Entities.Stat;
 import Bussiness.Managers.GameLogic;
 import Bussiness.Managers.UserLogic;
+import Persistance.DAO.GeneratorDAO;
 import Presentation.Views.GameMenuView;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -93,11 +95,25 @@ public class GameMenuController implements ActionListener {
 	public void loadCurrentGames(List<Game> games) {
 		gameMenuView.clearCurrentGames();
 		for (Game game : games) {
+			List<Generator> gens = gameLogic.getGenerators(game.getIdGame());
+			int baristas = 0, machines = 0, plantations = 0;
+			for(Generator gen : gens) {
+				if(gen.getName().equals("Barista")){
+					baristas = gen.getQuantity();
+				}else if(gen.getName().equals("Espresso Machine")){
+					machines = gen.getQuantity();
+				}else if(gen.getName().equals("Coffee Plantation")){
+					plantations = gen.getQuantity();
+				}
+			}
 			gameMenuView.addCurrentGameCard(
 					game.getNameGame(),
 					String.valueOf((int) game.getMoney()),
 					game.getMinutes(),
-					game.getIdGame()
+					game.getIdGame(),
+					baristas,
+					machines,
+					plantations
 			);
 		}
 		gameMenuView.refreshCurrentGames();
@@ -106,11 +122,25 @@ public class GameMenuController implements ActionListener {
 	public void loadFinishedGames(List<Stat> stats) {
 		gameMenuView.clearFinishedGames();
 		for (Stat stat : stats) {
+			List<Generator> gens = gameLogic.getGenerators(stat.getIdGame());
+			int baristas = 0, machines = 0, plantations = 0;
+			for(Generator gen : gens) {
+				if(gen.getName().equals("Barista")){
+					baristas = gen.getQuantity();
+				}else if(gen.getName().equals("Espresso Machine")){
+					machines = gen.getQuantity();
+				}else if(gen.getName().equals("Coffee Plantation")){
+					plantations = gen.getQuantity();
+				}
+			}
 			gameMenuView.addFinishedGameCard(
 					stat.getNameGame(),
 					String.valueOf((int) stat.getMoney()),
 					stat.getMinutes(),
-					stat.getIdGame()
+					stat.getIdGame(),
+					baristas,
+					machines,
+					plantations
 			);
 		}
 		gameMenuView.refreshFinishedGames();

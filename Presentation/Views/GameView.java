@@ -1,9 +1,13 @@
 package Presentation.Views;
 
+import Bussiness.Entities.Generator;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 public class GameView extends JPanel {
 
@@ -17,9 +21,12 @@ public class GameView extends JPanel {
     private JButton btnFinish;
     private JButton coffeeBtn;
     private JLabel countNum;
+    private JLabel gameName;
+    private JLabel gameProduction;
     private JButton btnBarista;
     private JButton btnMachine;
     private JButton btnCoffee;
+    private DefaultTableModel tableModel;
 
     private final Color BG_COLOR = new Color(248, 245, 240);
     private final Color PRIMARY_COFFEE = new Color(74, 44, 23);
@@ -64,9 +71,9 @@ public class GameView extends JPanel {
         btnBack.setMinimumSize(dim);
 
         // Título del Juego
-        JLabel title = new JLabel("Game Title");
-        title.setFont(new Font("Segoe UI", Font.BOLD, 24));
-        title.setForeground(PRIMARY_COFFEE);
+        gameName = new JLabel("Game Title");
+        gameName.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        gameName.setForeground(PRIMARY_COFFEE);
 
         // Botón Finish Game
         btnFinish = new RoundedButton("Finish Game", 20, PRIMARY_COFFEE, BG_COLOR, BG_COLOR, PRIMARY_COFFEE);
@@ -80,7 +87,7 @@ public class GameView extends JPanel {
 
         header.add(btnBack);
         header.add(Box.createRigidArea(new Dimension(20, 0)));
-        header.add(title);
+        header.add(gameName);
         header.add(Box.createHorizontalGlue());
         header.add(btnFinish);
         return header;
@@ -112,15 +119,15 @@ public class GameView extends JPanel {
         countText.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // Cafés por segundo
-        JLabel rateText = new JLabel("+1.0 per second");
-        rateText.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        rateText.setForeground(PRIMARY_COFFEE);
-        rateText.setAlignmentX(Component.CENTER_ALIGNMENT);
+        gameProduction = new JLabel("+1.0 per second");
+        gameProduction.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        gameProduction.setForeground(PRIMARY_COFFEE);
+        gameProduction.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         labelsContainer.add(countNum);
         labelsContainer.add(countText);
         labelsContainer.add(Box.createRigidArea(new Dimension(0, 10)));
-        labelsContainer.add(rateText);
+        labelsContainer.add(gameProduction);
         labelsContainer.add(Box.createRigidArea(new Dimension(0, 10)));
 
         scorePanel.add(labelsContainer);
@@ -264,9 +271,15 @@ public class GameView extends JPanel {
         p.add(title, BorderLayout.NORTH);
 
         String[] cols = {"Name", "Qty", "Rate", "Total", "%"};
-        Object[][] data = {{"John", "5", "0.20/s", "1.0/s", "100.0%"}};
 
-        JTable table = new JTable(data, cols);
+        tableModel = new DefaultTableModel(cols, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        JTable table = new JTable(tableModel);
         table.setRowHeight(35);
         table.setShowGrid(false);
         table.setIntercellSpacing(new Dimension(0, 0));
@@ -306,5 +319,36 @@ public class GameView extends JPanel {
 
     public void updatePlantationPrice(int price){
         btnCoffee.setText("Buy for " + price + " coffees");
+    }
+
+    public void updateGameName(String name){
+        gameName.setText(name);
+    }
+
+    public void updateProductionXSec(float production){
+        gameProduction.setText("+ " + String.format("%.2f/s", production) + " per second");
+    }
+
+    public void updateGenerationsData(List<Generator> generators) {
+        tableModel.setRowCount(0);
+
+        double globalTotal = 0;
+        for (Generator g : generators) {
+            globalTotal += g.getEarning() * g.getQuantity();
+        }
+
+        for (Generator g : generators) {
+            double rowTotal = (double) g.getEarning() / (g.getPeriod() / 1000.0);
+            double percentage = (globalTotal > 0) ? ((g.getEarning() * g.getQuantity()) / globalTotal) * 100 : 0;
+
+            Object[] row = {
+                    g.getName(),
+                    String.valueOf(g.getQuantity()),
+                    String.format("%.2f/s", rowTotal),
+                    String.format("%.2f/s", rowTotal * g.getQuantity()),
+                    String.format("%.1f%%", percentage)
+            };
+            tableModel.addRow(row);
+        }
     }
 }

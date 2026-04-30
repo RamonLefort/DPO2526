@@ -20,6 +20,7 @@ public class GameMenuView extends JPanel {
     private final Color PRIMARY_COFFEE = new Color(139, 69, 19);
     private JPanel currentGrid;
     private JPanel finishedGrid;
+    private JPanel iconsRow;
 
     private JButton btnNew;
     private JButton btnBack;
@@ -75,7 +76,7 @@ public class GameMenuView extends JPanel {
         header.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         // Botón de back
-        btnBack = new RoundedButton("< Atrás", 20, PRIMARY_COFFEE, BG_COLOR, BG_COLOR, PRIMARY_COFFEE);
+        btnBack = new RoundedButton("Ajustes", 20, PRIMARY_COFFEE, BG_COLOR, BG_COLOR, PRIMARY_COFFEE);
         btnBack.setActionCommand(BTN_BACK);
         btnBack.setBorder(new RoundedBorder(PRIMARY_COFFEE, 20, 1));
         Dimension backDim = new Dimension(85, 35);
@@ -133,7 +134,7 @@ public class GameMenuView extends JPanel {
         return panel;
     }
 
-    private JPanel createGameCard(int radius, Color colorbg, String btnText, String name, String money, int minutes, int idGame, String actionCommand) {
+    private JPanel createGameCard(int radius, Color colorbg, String btnText, String name, String money, int minutes, int idGame, String actionCommand, int baristas, int machines, int plantations) {
         RoundedPanel card = new RoundedPanel(radius, colorbg);
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setPreferredSize(new Dimension(220, 200));
@@ -162,12 +163,12 @@ public class GameMenuView extends JPanel {
         card.add(Box.createRigidArea(new Dimension(0, 10)));
 
         // Generadores
-        JPanel iconsRow = new JPanel();
+        iconsRow = new JPanel();
         iconsRow.setLayout(new BoxLayout(iconsRow, BoxLayout.X_AXIS));
         iconsRow.setOpaque(false);
         iconsRow.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        String[] iconData = {"👤 x2", "☕ x2", "\uD83C\uDF3F x2"};
+        String[] iconData = {"👤 x" + baristas, "☕ x" + machines, "\uD83C\uDF3F x" + plantations};
         for (int i = 0; i < iconData.length; i++) {
             JLabel iconLbl = new JLabel(iconData[i]);
             iconLbl.setForeground(PRIMARY_COFFEE);
@@ -211,8 +212,8 @@ public class GameMenuView extends JPanel {
         currentGrid.removeAll();
     }
 
-    public void addCurrentGameCard(String name, String money, int minutes, int idGame) {
-        currentGrid.add(createGameCard(20, CARD_COLOR, "Continue →", name, money, minutes, idGame, BTN_CONTINUE));
+    public void addCurrentGameCard(String name, String money, int minutes, int idGame, int baristas, int machines, int plantations) {
+        currentGrid.add(createGameCard(20, CARD_COLOR, "Continue →", name, money, minutes, idGame, BTN_CONTINUE, baristas, machines, plantations));
     }
 
     public void refreshCurrentGames() {
@@ -224,8 +225,8 @@ public class GameMenuView extends JPanel {
         finishedGrid.removeAll();
     }
 
-    public void addFinishedGameCard(String name, String money, int minutes, int idGame) {
-        finishedGrid.add(createGameCard(20, CARD_COLOR, "See statistics →", name, money, minutes, idGame, BTN_STATS));
+    public void addFinishedGameCard(String name, String money, int minutes, int idGame, int baristas, int machines, int plantations) {
+        finishedGrid.add(createGameCard(20, CARD_COLOR, "See statistics →", name, money, minutes, idGame, BTN_STATS, baristas, machines, plantations));
     }
 
     public void refreshFinishedGames() {

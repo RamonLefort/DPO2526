@@ -30,16 +30,8 @@ public class GameLogic {
 		return gameDAO.createGame(nameGame, username);
 	}
 
-	public void saveGame(String username, int idGame, double money, int minutes, int seconds) {
-		List<Game> games = gameDAO.getGamesByUser(username);
-		for (int i = 0; i < games.size(); i++) {
-			Game game = games.get(i);
-			if (game.getIdGame() == idGame) {
-				gameDAO.updateGame(idGame, money, minutes, seconds, game.getCoffeePerClick());
-				return;
-			}
-		}
-		throw new IllegalArgumentException("Game not found with id: " + idGame);
+	public void saveGame(String username, int idGame, double money, int hours, int minutes, int seconds, int coffeexclick, float prodxsec) {
+		gameDAO.updateGame(username, idGame, money, hours, minutes, seconds, coffeexclick, prodxsec);
 	}
 
 	public void deleteGame(int idGame) {

@@ -45,10 +45,13 @@ public class GameDAO {
 						rs.getInt("id_game"),
 						rs.getString("name_game"),
 						rs.getDouble("money"),
+						rs.getInt("hours"),
 						rs.getInt("minutes"),
 						rs.getInt("seconds"),
 						rs.getInt("coffee_per_click"),
-						rs.getString("username")
+						rs.getFloat("production_per_second"),
+						rs.getString("username"),
+						rs.getBoolean("finished")
 				));
 			}
 		} catch (SQLException e) {
@@ -71,14 +74,17 @@ public class GameDAO {
 		return false;
 	}
 
-	public void updateGame(int idGame, double money, int minutes, int seconds, int coffeePerClick) {
-		String query = "UPDATE game SET money = ?, minutes = ?, seconds = ?, coffee_per_click = ? WHERE id_game = ?";
+	public void updateGame(String username, int idGame, double money, int hours, int minutes, int seconds, int coffeexclicks, float production_per_second) {
+		String query = "UPDATE game SET money = ?, minutes = ?, seconds = ?, hours = ?, coffee_per_click = ?, production_per_second = ? WHERE id_game = ?";
+
 		try (PreparedStatement ps = mySQLDAO.getConnection().prepareStatement(query)) {
 			ps.setDouble(1, money);
 			ps.setInt(2, minutes);
 			ps.setInt(3, seconds);
-			ps.setInt(4, coffeePerClick);
-			ps.setInt(5, idGame);
+			ps.setInt(4, hours);
+			ps.setInt(5, coffeexclicks);
+			ps.setFloat(6, production_per_second);
+			ps.setInt(7, idGame);
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -96,10 +102,13 @@ public class GameDAO {
 						rs.getInt("id_game"),
 						rs.getString("name_game"),
 						rs.getDouble("money"),
+						rs.getInt("hours"),
 						rs.getInt("minutes"),
 						rs.getInt("seconds"),
 						rs.getInt("coffee_per_click"),
-						rs.getString("username")
+						rs.getFloat("production_per_second"),
+						rs.getString("username"),
+						rs.getBoolean("finished")
 				));
 			}
 		} catch (SQLException e) {
