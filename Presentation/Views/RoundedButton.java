@@ -25,6 +25,13 @@ public class RoundedButton extends JButton {
         setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
 
+    public void resetButtonColors(Color normalBg, Color pressedBg, Color normalText, Color pressedText){
+        this.normalBackgroundColor = normalBg;
+        this.pressedBackgroundColor = pressedBg;
+        this.normalTextColor = normalText;
+        this.pressedTextColor = pressedText;
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g.create();

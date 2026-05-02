@@ -48,6 +48,11 @@ public class GameController implements ActionListener {
 			case GameView.BTN_BARISTA -> handleBarista();
 			case GameView.BTN_MACHINE -> handleMachine();
 			case GameView.BTN_PLANTATION -> handlePlantation();
+			case GameView.BTN_UP_BARISTA -> handleUpgradeBarista();
+			case GameView.BTN_UP_MACHINE -> handleUpgradeMachine();
+			case GameView.BTN_UP_PLANTATION -> handleUpgradePlantation();
+			case GameView.BTN_GENERATORS -> handleGenerators();
+			case GameView.BTN_UPGRADES -> handleUpgrades();
 		}
 	}
 
@@ -87,7 +92,6 @@ public class GameController implements ActionListener {
 			if (seconds >= 60) {
 				currentGame.setSeconds(0);
 				currentGame.setMinutes(currentGame.getMinutes() + 1);
-				System.out.println("Minutes: " +currentGame.getMinutes());
 			} else {
 				currentGame.setSeconds(seconds);
 			}
@@ -95,7 +99,6 @@ public class GameController implements ActionListener {
 			if (currentGame.getMinutes() >= 60) {
 				currentGame.setMinutes(0);
 				currentGame.setHours(currentGame.getHours() + 1);
-				System.out.println("Hours: " +currentGame.getHours());
 			}
 
 			if (currentGame.getSeconds() % 30 == 0) {
@@ -227,7 +230,104 @@ public class GameController implements ActionListener {
 		}
 	}
 
-	public void handleBuyUpgrade() {
+	public void handleUpgradeBarista() {
+		Generator barista = null;
+		for (Generator g : generators) {
+			if (g.getName() != null && g.getName().equalsIgnoreCase("Barista")) {
+				barista = g;
+				break;
+			}
+		}
 
+		int upgradePrice = 15000;
+		if (barista != null && currentGame.getMoney() >= upgradePrice && barista.getEarning() == 1) {
+			synchronized (currentGame) {
+				currentGame.setMoney(currentGame.getMoney() - upgradePrice);
+				barista.setEarning(2);
+			}
+
+			float extraProd = (float) (barista.getQuantity() * 0.2);
+			currentGame.setProduction_per_sec(currentGame.getProduction_per_sec() + extraProd);
+
+			gameLogic.updateGenerators(idGame, barista);
+			saveCurrentProgress();
+
+			gameView.updateCoffeeCount((int) currentGame.getMoney());
+			gameView.updateProductionXSec(currentGame.getProduction_per_sec());
+			gameView.updateUpgradeBaristaText();
+			System.out.println("Barista mejorado y guardado");
+		}else{
+			System.out.println("Dinero no suficiente para la mejora del Barista");
+		}
+	}
+
+	public void handleUpgradeMachine() {
+		Generator machine = null;
+		for (Generator g : generators) {
+			if (g.getName() != null && g.getName().equalsIgnoreCase("Espresso Machine")) {
+				machine = g;
+				break;
+			}
+		}
+
+		int upgradePrice = 150000;
+		if (machine != null && currentGame.getMoney() >= upgradePrice && machine.getEarning() == 1) {
+			synchronized (currentGame) {
+				currentGame.setMoney(currentGame.getMoney() - upgradePrice);
+				machine.setEarning(6);
+			}
+
+			float extraProd = (float) (machine.getQuantity() * 0.66);
+			currentGame.setProduction_per_sec(currentGame.getProduction_per_sec() + extraProd);
+
+			gameLogic.updateGenerators(idGame, machine);
+			saveCurrentProgress();
+
+			gameView.updateCoffeeCount((int) currentGame.getMoney());
+			gameView.updateProductionXSec(currentGame.getProduction_per_sec());
+			gameView.updateUpgradeMachineText();
+			System.out.println("Machine mejorado y guardado");
+		}else{
+			System.out.println("Dinero no suficiente para la mejora de la Espresso Machine");
+		}
+	}
+
+	public void handleUpgradePlantation() {
+		Generator plantation = null;
+		for (Generator g : generators) {
+			if (g.getName() != null && g.getName().equalsIgnoreCase("Coffee Plantation")) {
+				plantation = g;
+				break;
+			}
+		}
+
+		int upgradePrice = 200000;
+		if (plantation != null && currentGame.getMoney() >= upgradePrice && plantation.getEarning() == 1) {
+			synchronized (currentGame) {
+				currentGame.setMoney(currentGame.getMoney() - upgradePrice);
+				plantation.setEarning(2);
+			}
+
+			float extraProd = (float) (plantation.getQuantity() * 1);
+			currentGame.setProduction_per_sec(currentGame.getProduction_per_sec() + extraProd);
+
+			gameLogic.updateGenerators(idGame, plantation);
+			saveCurrentProgress();
+
+			gameView.updateCoffeeCount((int) currentGame.getMoney());
+			gameView.updateProductionXSec(currentGame.getProduction_per_sec());
+			gameView.updateUpgradeBaristaText();
+			System.out.println("Coffee Plantation mejorada y guardada");
+		}else{
+			System.out.println("Dinero no suficiente para la mejora de la Coffee Plantation");
+		}
+	}
+
+	public void handleGenerators() {
+		gameView.putGenerators();
+	}
+
+	public void handleUpgrades() {
+		gameView.putUpgrades();
 	}
 }

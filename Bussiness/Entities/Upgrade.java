@@ -8,32 +8,47 @@ public class Upgrade {
 
 	private int idGame;
 
-	private String name;
-
-	private int level;
+	private boolean active;
 
 	private int price;
 
-	private int earningMultiplier;
-
-	public Upgrade(int idUpgrade, int idGenerator, int idGame) {
-
+	public Upgrade(int idUpgrade, int idGenerator, int idGame, boolean active, int price) {
+		this.idUpgrade = idUpgrade;
+		this.idGenerator = idGenerator;
+		this.idGame = idGame;
+		this.active = active;
+		this.price = price;
 	}
 
 	public int getIdUpgrade() {
-		return 0;
+		return idUpgrade;
 	}
 
-	public int getMultiplier() {
-		return 0;
+	public void setIdUpgrade(int idUpgrade) {
+		this.idUpgrade = idUpgrade;
+	}
+
+	public int getIdGenerator() {
+		return idGenerator;
+	}
+
+	public int getIdGame() {
+		return idGame;
+	}
+
+	public void setIdGame(int idGame) {
+		this.idGame = idGame;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 
 	public int getPrice() {
-		return 0;
+		return price;
 	}
-
-	public int getLevel() {
-		return 0;
-	}
-
 }

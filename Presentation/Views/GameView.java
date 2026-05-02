@@ -17,6 +17,11 @@ public class GameView extends JPanel {
     public static final String BTN_BARISTA = "BTN_BARISTA";
     public static final String BTN_MACHINE = "BTN_MACHINE";
     public static final String BTN_PLANTATION = "BTN_PLANTATION";
+    public static final String BTN_UP_BARISTA = "BTN_UP_BARISTA";
+    public static final String BTN_UP_MACHINE = "BTN_UP_MACHINE";
+    public static final String BTN_UP_PLANTATION = "BTN_UP_PLANTATION";
+    public static final String BTN_GENERATORS = "BTN_GENERATORS";
+    public static final String BTN_UPGRADES = "BTN_UPGRADES";
     private JButton btnBack;
     private JButton btnFinish;
     private JButton coffeeBtn;
@@ -26,7 +31,16 @@ public class GameView extends JPanel {
     private JButton btnBarista;
     private JButton btnMachine;
     private JButton btnCoffee;
+    private JButton btnUpBarista;
+    private JButton btnUpMachine;
+    private JButton btnUpPlantation;
+    private JPanel right;
     private DefaultTableModel tableModel;
+    private RoundedButton navGeneratorsBtn;
+    private RoundedButton navUpgradesBtn;
+    private CardLayout cardLayout;
+    private JPanel cardsContainer;
+    private JPanel centerPanel;
 
     private final Color BG_COLOR = new Color(248, 245, 240);
     private final Color PRIMARY_COFFEE = new Color(74, 44, 23);
@@ -34,21 +48,37 @@ public class GameView extends JPanel {
     public GameView() {
         this.setLayout(new BorderLayout());
         this.setBackground(BG_COLOR);
-
-        // Header
         this.add(createTopHeader(), BorderLayout.NORTH);
 
-        JPanel centerPanel = new JPanel();
+        centerPanel = new JPanel();
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.X_AXIS));
         centerPanel.setOpaque(false);
         centerPanel.setBorder(new EmptyBorder(20, 40, 20, 40));
 
-        // Columna botón café
+        // Columna Izquierda Fija
         centerPanel.add(createLeftColumn());
-        centerPanel.add(Box.createRigidArea(new Dimension(40, 0))); // Espacio entre columnas
+        centerPanel.add(Box.createRigidArea(new Dimension(40, 0)));
 
-        // Columna tienda
-        centerPanel.add(createRightColumn());
+        // Columna Derecha con CardLayout
+        JPanel rightPanel = new JPanel();
+        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
+        rightPanel.setOpaque(false);
+        rightPanel.setMaximumSize(new Dimension(300, Integer.MAX_VALUE));
+
+        // 1. SELECTOR ÚNICO (Solo se crea una vez aquí)
+        rightPanel.add(createSelectorPanel());
+        rightPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+
+        // 2. CONTENEDOR DE TARJETAS
+        cardLayout = new CardLayout();
+        cardsContainer = new JPanel(cardLayout);
+        cardsContainer.setOpaque(false);
+
+        cardsContainer.add(createGeneratorsContent(), "GENERATORS");
+        cardsContainer.add(createUpgradesContent(), "UPGRADES");
+
+        rightPanel.add(cardsContainer);
+        centerPanel.add(rightPanel);
 
         this.add(centerPanel, BorderLayout.CENTER);
     }
@@ -155,39 +185,57 @@ public class GameView extends JPanel {
         return left;
     }
 
-    private JPanel createRightColumn() {
-        JPanel right = new JPanel();
-        right.setLayout(new BoxLayout(right, BoxLayout.Y_AXIS));
-        right.setOpaque(false);
-        right.setMaximumSize(new Dimension(300, Integer.MAX_VALUE));
-        right.setPreferredSize(new Dimension(300, Integer.MAX_VALUE));
-
-        // Botón cambio de tienda
+    private JPanel createSelectorPanel() {
         JPanel selector = new JPanel(new GridLayout(1, 2, 5, 0));
         selector.setOpaque(false);
-        selector.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
-        RoundedButton generatorsBtn = new RoundedButton("Generators", 20, PRIMARY_COFFEE, BG_COLOR, BG_COLOR, PRIMARY_COFFEE);
-        generatorsBtn.setBorder(new RoundedBorder(PRIMARY_COFFEE, 20, 1));
-        selector.add(generatorsBtn);
-        RoundedButton upgradesBtn = new RoundedButton("Upgrades", 20, Color.WHITE, Color.LIGHT_GRAY, Color.LIGHT_GRAY, Color.WHITE);
-        upgradesBtn.setBorder(new RoundedBorder(Color.LIGHT_GRAY, 20, 1));
-        selector.add(upgradesBtn);
+        selector.setMaximumSize(new Dimension(350, 40));
+        selector.setPreferredSize(new Dimension(350, 40));
 
-        right.add(selector);
-        right.add(Box.createRigidArea(new Dimension(0, 20)));
+        navGeneratorsBtn = new RoundedButton("Generators", 20, PRIMARY_COFFEE, BG_COLOR, BG_COLOR, PRIMARY_COFFEE);
+        navGeneratorsBtn.setBorder(new RoundedBorder(PRIMARY_COFFEE, 20, 1));
+        navGeneratorsBtn.setActionCommand(BTN_GENERATORS);
 
-        // Lista de la tienda
-        right.add(createStoreItem("Barista", "A skilled barista who makes espresso shots", "0.20/s", "15 coffees", BTN_BARISTA));
-        right.add(Box.createRigidArea(new Dimension(0, 15)));
-        right.add(createStoreItem("Espresso Machine", "Automatic espresso machine for quick brews", "0.67/s", "150 coffees", BTN_MACHINE));
-        right.add(Box.createRigidArea(new Dimension(0, 15)));
-        right.add(createStoreItem("Coffee Plantation", "Your own coffee bean plantation", "1/s", "2.00K coffees", BTN_PLANTATION));
+        navUpgradesBtn = new RoundedButton("Upgrades", 20, Color.WHITE, Color.LIGHT_GRAY, Color.LIGHT_GRAY, Color.WHITE);
+        navUpgradesBtn.setBorder(new RoundedBorder(Color.LIGHT_GRAY, 20, 1));
+        navUpgradesBtn.setActionCommand(BTN_UPGRADES);
 
-        right.add(Box.createVerticalGlue());
-        return right;
+        selector.add(navGeneratorsBtn);
+        selector.add(navUpgradesBtn);
+        return selector;
     }
 
-    private JPanel createStoreItem(String title, String desc, String rate, String price, String ActionCommand) {
+    private JPanel createGeneratorsContent() {
+        JPanel content = new JPanel();
+        content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
+        content.setOpaque(false);
+
+        // Al crear el item, asignamos el botón a la variable de clase específica
+        content.add(createStoreItem("The Sleepy Intern Barista", "He’s only here for the college credits and free caffeine. Occasionally puts milk in the espresso.", "0.20/s", "15", BTN_BARISTA, 1));
+        content.add(Box.createRigidArea(new Dimension(0, 15)));
+        content.add(createStoreItem("The Steam-Punk 3000 Machine", "A rusty contraption that hisses like a dragon. Makes great coffee, but might explode at any moment.", "0.67/s", "150", BTN_MACHINE, 1));
+        content.add(Box.createRigidArea(new Dimension(0, 15)));
+        content.add(createStoreItem("Java Jungle Coffee Plantation", "An entire ecosystem dedicated to the bean. The birds here don't chirp, they just vibrate.", "1/s", "2K", BTN_PLANTATION, 1));
+
+        content.add(Box.createVerticalGlue());
+        return content;
+    }
+
+    private JPanel createUpgradesContent() {
+        JPanel content = new JPanel();
+        content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
+        content.setOpaque(false);
+
+        content.add(createStoreItem("Liquid Courage", "We replaced the intern's water with pure ristretto. He hasn't blinked in three days, but production is doubled!", "x2", "15k", BTN_UP_BARISTA, 2));
+        content.add(Box.createRigidArea(new Dimension(0, 15)));
+        content.add(createStoreItem("Nuclear Boiler", "By overclocking the steam valves, we’ve reached 'Mach-Coffee' speeds. Use of safety goggles is highly advised.", "x2", "150k", BTN_UP_MACHINE, 2));
+        content.add(Box.createRigidArea(new Dimension(0, 15)));
+        content.add(createStoreItem("Glow-in-the-Dark Beans", "Genetically modified seeds that grow via sheer willpower and radioactive fertilizer. Twice the beans, half the DNA integrity.", "x2", "200k", BTN_UP_PLANTATION, 2));
+
+        content.add(Box.createVerticalGlue());
+        return content;
+    }
+
+    private JPanel createStoreItem(String title, String desc, String rate, String price, String ActionCommand, int tab) {
         RoundedPanel item = new RoundedPanel(15, Color.WHITE);
         item.setLayout(new BorderLayout(15, 5));
         item.setBorder(new EmptyBorder(15, 15, 15, 15));
@@ -219,8 +267,8 @@ public class GameView extends JPanel {
         areaDesc.setOpaque(false);
         areaDesc.setBackground(new Color(0, 0, 0, 0));
         areaDesc.setAlignmentX(Component.LEFT_ALIGNMENT);
-        areaDesc.setMaximumSize(new Dimension(300, 40));
-        areaDesc.setPreferredSize(new Dimension(300, 40));
+        areaDesc.setMaximumSize(new Dimension(300, 45));
+        areaDesc.setPreferredSize(new Dimension(300, 45));
 
         // Cafes/seg
         JLabel lblRate = new JLabel("+" + rate + " per unit");
@@ -235,18 +283,23 @@ public class GameView extends JPanel {
 
         // Botón
         RoundedButton btnBuy = new RoundedButton("Buy for " + price, 20, PRIMARY_COFFEE, Color.WHITE, Color.WHITE, PRIMARY_COFFEE);
-        if (!ActionCommand.isEmpty()) {
-            btnBuy.setActionCommand(ActionCommand);
-            switch (ActionCommand){
-                case BTN_BARISTA:
-                    btnBarista = btnBuy;
-                    break;
-                case BTN_MACHINE:
-                    btnMachine = btnBuy;
-                    break;
-                case BTN_PLANTATION:
-                    btnCoffee = btnBuy;
-                    break;
+        btnBuy.setActionCommand(ActionCommand);
+
+        if (tab == 1) { // Generadores
+            if (ActionCommand.equals(BTN_BARISTA)) {
+                this.btnBarista = btnBuy;
+            } else if (ActionCommand.equals(BTN_MACHINE)) {
+                this.btnMachine = btnBuy;
+            } else if (ActionCommand.equals(BTN_PLANTATION)) {
+                this.btnCoffee = btnBuy;
+            }
+        } else { // Upgrades
+            if (ActionCommand.equals(BTN_UP_BARISTA)) {
+                this.btnUpBarista = btnBuy;
+            } else if (ActionCommand.equals(BTN_UP_MACHINE)) {
+                this.btnUpMachine = btnBuy;
+            } else if (ActionCommand.equals(BTN_UP_PLANTATION)) {
+                this.btnUpPlantation = btnBuy;
             }
         }
         btnBuy.setFont(new Font("Segoe UI", Font.BOLD, 12));
@@ -300,9 +353,16 @@ public class GameView extends JPanel {
         btnBack.addActionListener(listener);
         btnFinish.addActionListener(listener);
         coffeeBtn.addActionListener(listener);
+        navGeneratorsBtn.addActionListener(listener);
+        navUpgradesBtn.addActionListener(listener);
+        // Tienda Generators
         btnBarista.addActionListener(listener);
         btnMachine.addActionListener(listener);
         btnCoffee.addActionListener(listener);
+        // Tienda Upgrades
+        btnUpBarista.addActionListener(listener);
+        btnUpMachine.addActionListener(listener);
+        btnUpPlantation.addActionListener(listener);
     }
 
     public void updateCoffeeCount(int count) {
@@ -350,5 +410,37 @@ public class GameView extends JPanel {
             };
             tableModel.addRow(row);
         }
+    }
+
+    public void updateUpgradeBaristaText(){
+        btnUpBarista.setText("Upgraded");
+    }
+
+    public void updateUpgradeMachineText(){
+        btnUpMachine.setText("Upgraded");
+    }
+
+    public void updateUpgradePlantationText(){
+        btnUpPlantation.setText("Upgraded");
+    }
+
+    public void putGenerators() {
+        cardLayout.show(cardsContainer, "GENERATORS");
+        navGeneratorsBtn.resetButtonColors(PRIMARY_COFFEE, BG_COLOR, BG_COLOR, PRIMARY_COFFEE);
+        navGeneratorsBtn.setBorder(new RoundedBorder(PRIMARY_COFFEE, 20, 1));
+        navUpgradesBtn.resetButtonColors(Color.WHITE, Color.LIGHT_GRAY, Color.LIGHT_GRAY, Color.WHITE);
+        navUpgradesBtn.setBorder(new RoundedBorder(Color.LIGHT_GRAY, 20, 1));
+        navGeneratorsBtn.repaint();
+        navUpgradesBtn.repaint();
+    }
+
+    public void putUpgrades() {
+        cardLayout.show(cardsContainer, "UPGRADES");
+        navUpgradesBtn.resetButtonColors(PRIMARY_COFFEE, BG_COLOR, BG_COLOR, PRIMARY_COFFEE);
+        navUpgradesBtn.setBorder(new RoundedBorder(PRIMARY_COFFEE, 20, 1));
+        navGeneratorsBtn.resetButtonColors(Color.WHITE, Color.LIGHT_GRAY, Color.LIGHT_GRAY, Color.WHITE);
+        navGeneratorsBtn.setBorder(new RoundedBorder(Color.LIGHT_GRAY, 20, 1));
+        navGeneratorsBtn.repaint();
+        navUpgradesBtn.repaint();
     }
 }
