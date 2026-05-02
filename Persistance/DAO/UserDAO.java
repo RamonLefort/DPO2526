@@ -84,13 +84,11 @@ public class UserDAO {
 		}
 	}
 
-
-	public User loginCheck(String usernameOrEmail, String password) {
-		String query = "SELECT * FROM user WHERE (username = ? OR email = ?) AND password = ?";
+	public User loginCheck(String usernameOrEmail) {
+		String query = "SELECT * FROM user WHERE username = ? OR email = ?";
 		try (PreparedStatement ps = mySQLDAO.getConnection().prepareStatement(query)) {
 			ps.setString(1, usernameOrEmail);
 			ps.setString(2, usernameOrEmail);
-			ps.setString(3, password);
 			ResultSet rs = ps.executeQuery();
 			if (rs.next()) {
 				return new User(
