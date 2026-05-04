@@ -2,10 +2,8 @@ package Presentation.Controllers;
 
 import Bussiness.Entities.Game;
 import Bussiness.Entities.Generator;
-import Bussiness.Entities.Stat;
 import Bussiness.Managers.GameLogic;
 import Bussiness.Managers.UserLogic;
-import Persistance.DAO.GeneratorDAO;
 import Presentation.Views.GameMenuView;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -72,15 +70,14 @@ public class GameMenuController implements ActionListener {
 	public void loadGames() {
 		String username = userLogic.getCurrentUser().getUsername();
 		List<Game> allGames = gameLogic.getUserGames(username);
-		List<Stat> finishedGames = statLogic.getAllStats();
+		List<Game> finishedGames = statLogic.getFinishedGames(username);
 
 		List<Game> currentGames = new ArrayList<>();
 		for (Game game : allGames) {
 			boolean isFinished = false;
-			for (Stat stat : finishedGames) {
-				if (stat.getIdGame() == game.getIdGame()) {
+			for (Game g : finishedGames) {
+				if (g.getIdGame() == game.getIdGame()) {
 					isFinished = true;
-					break;
 				}
 			}
 			if (!isFinished) {
@@ -119,10 +116,10 @@ public class GameMenuController implements ActionListener {
 		gameMenuView.refreshCurrentGames();
 	}
 
-	public void loadFinishedGames(List<Stat> stats) {
+	public void loadFinishedGames(List<Game> games) {
 		gameMenuView.clearFinishedGames();
-		for (Stat stat : stats) {
-			List<Generator> gens = gameLogic.getGenerators(stat.getIdGame());
+		for (Game game : games) {
+			List<Generator> gens = gameLogic.getGenerators(game.getIdGame());
 			int baristas = 0, machines = 0, plantations = 0;
 			for(Generator gen : gens) {
 				if(gen.getName().equals("Barista")){
@@ -134,10 +131,10 @@ public class GameMenuController implements ActionListener {
 				}
 			}
 			gameMenuView.addFinishedGameCard(
-					stat.getNameGame(),
-					String.valueOf((int) stat.getMoney()),
-					stat.getMinutes(),
-					stat.getIdGame(),
+					game.getNameGame(),
+					String.valueOf((int) game.getMoney()),
+					game.getMinutes(),
+					game.getIdGame(),
 					baristas,
 					machines,
 					plantations

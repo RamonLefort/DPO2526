@@ -4,9 +4,6 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import Bussiness.Entities.Game;
-import Bussiness.Entities.Stat;
-import java.util.List;
 
 public class GameMenuView extends JPanel {
     public static final String BTN_BACK = "BACK";

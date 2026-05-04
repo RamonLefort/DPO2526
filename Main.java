@@ -24,7 +24,7 @@ public class Main {
             StatDAO statDAO = new StatDAO(mySQLDAO);
             UpgradeDAO upgradeDAO = new UpgradeDAO(mySQLDAO);
             UserLogic userLogic = new UserLogic(userDAO, settingDAO);
-            GameLogic gameLogic = new GameLogic(gameDAO, generatorDAO, statDAO);
+            GameLogic gameLogic = new GameLogic(gameDAO, generatorDAO, upgradeDAO);
             GameplayLogic gameplayLogic = new GameplayLogic(generatorDAO, upgradeDAO, gameLogic);
             StatLogic statLogic = new StatLogic(statDAO, gameDAO, userDAO);
 

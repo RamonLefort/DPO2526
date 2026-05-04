@@ -5,6 +5,7 @@ import Bussiness.Entities.Generator;
 import Bussiness.Entities.Upgrade;
 import Persistance.DAO.GeneratorDAO;
 import Persistance.DAO.UpgradeDAO;
+import Presentation.Controllers.GameController;
 import Presentation.Views.GameView;
 
 import java.util.ArrayList;
@@ -23,10 +24,10 @@ public class GameplayLogic {
 		this.gameLogic = gameLogic;
 	}
 
-	public void startAutoGenerators(int gameId, Game game, List<Generator> generators, GameView gameView) {
+	public void startAutoGenerators(int gameId, Game game, List<Generator> generators, GameView gameView, GameController gameController) {
 		stopAutoGenerators();
 		for (Generator gen : generators) {
-			GeneratorThread t = new GeneratorThread(gen, game, gameView);
+			GeneratorThread t = new GeneratorThread(gen, game, gameView, gameController);
 			activeThreads.add(t);
 			t.start();
 		}

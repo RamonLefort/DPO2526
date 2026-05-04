@@ -2,6 +2,7 @@ package Bussiness.Managers;
 
 import Bussiness.Entities.Generator;
 import Bussiness.Entities.Game;
+import Presentation.Controllers.GameController;
 import Presentation.Views.GameView;
 import javax.swing.SwingUtilities;
 
@@ -9,12 +10,14 @@ public class GeneratorThread extends Thread {
     private final Generator generator;
     private final Game game;
     private final GameView gameView;
+    private final GameController gameController;
     private boolean running = true;
 
-    public GeneratorThread(Generator generator, Game game, GameView gameView) {
+    public GeneratorThread(Generator generator, Game game, GameView gameView, GameController gameController) {
         this.generator = generator;
         this.game = game;
         this.gameView = gameView;
+        this.gameController = gameController;
     }
 
     @Override
@@ -27,6 +30,7 @@ public class GeneratorThread extends Thread {
 
                 synchronized (game) {
                     game.addMoney(production);
+                    gameController.addAutogen(production);
                     double currentMoney = game.getMoney();
 
                     SwingUtilities.invokeLater(() -> {

@@ -2,10 +2,11 @@ package Presentation.Controllers;
 
 import Bussiness.Entities.Game;
 import Bussiness.Entities.Generator;
+import Bussiness.Entities.Stat;
+import Bussiness.Entities.Upgrade;
 import Bussiness.Managers.*;
 import Presentation.Views.GameView;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -19,22 +20,23 @@ public class GameController implements ActionListener {
 	private final GameplayLogic gameplayLogic;
 	private final ViewController viewController;
 	private final GameLogic gameLogic;
-	private int idGame;
+	private int idGame, clicks = 0, clicks_per_min = 0;
 	private int coffeeCount = 0;
 	private String username;
-	private UserLogic userLogic;
 	private final StatLogic statLogic;
 	private List<Generator> generators = new ArrayList<>();
 	private Timer gameTimer;
+	private float maxprod = 0;
+	private double expenses = 0, autogen;
+	private List<Upgrade> upgrades;
 
-	public GameController(GameView gameView, GameplayLogic gameplayLogic, ViewController viewController, int idGame, String username, GameLogic gameLogic, UserLogic userLogic, StatLogic statLogic) {
+	public GameController(GameView gameView, GameplayLogic gameplayLogic, ViewController viewController, int idGame, String username, GameLogic gameLogic, StatLogic statLogic) {
 		this.gameView = gameView;
 		this.gameplayLogic = gameplayLogic;
 		this.viewController = viewController;
 		this.idGame = idGame;
 		this.username = username;
 		this.gameLogic = gameLogic;
-		this.userLogic = userLogic;
 		this.statLogic = statLogic;
 		this.gameView.setActionListener(this);
 	}
@@ -62,14 +64,11 @@ public class GameController implements ActionListener {
 		this.coffeeCount = 1;
 		this.currentGame = gameLogic.loadGame(username, idGame);
 		generators = gameLogic.getGenerators(idGame);
-		if(generators.isEmpty()) {
-			generators = gameLogic.createGenerators(idGame);
-		}
+		upgrades = gameLogic.getUpgrades(idGame);
 		gameView.updateCoffeeCount((int) currentGame.getMoney());
 		gameView.updateGameName(currentGame.getNameGame());
 		gameView.updateProductionXSec(currentGame.getProduction_per_sec());
-		List<Generator> gens = gameLogic.getGenerators(currentGame.getIdGame());
-		for(Generator gen : gens) {
+		for(Generator gen : generators) {
 			if(gen.getName().equals("Barista")){
 				gameView.updateBaristaPrice(gen.getPrice());
 			}else if(gen.getName().equals("Espresso Machine")){
@@ -77,8 +76,25 @@ public class GameController implements ActionListener {
 			}else if(gen.getName().equals("Coffee Plantation")){
 				gameView.updatePlantationPrice(gen.getPrice());
 			}
+			for(Upgrade upgrade: upgrades){
+				if(upgrade.getIdGenerator() == gen.getIdGenerator() && upgrade.isActive()){
+					gen.setEarning(gen.getEarning() * 2);
+					if(gen.getName().equals("Barista")){
+						gameView.updateUpgradeBaristaText();
+					}else if(gen.getName().equals("Espresso Machine")){
+						gameView.updateUpgradeMachineText();
+					}else if(gen.getName().equals("Coffee Plantation")){
+						gameView.updateUpgradePlantationText();
+					}
+				}
+			}
 		}
-		gameplayLogic.startAutoGenerators(idGame, currentGame, this.generators, gameView);
+		gameView.updateProductionXSec(currentGame.getProduction_per_sec());
+		Stat stat = statLogic.getLastMinuteStat(idGame);
+		clicks = stat.getManualClicksTotal();
+		maxprod = stat.getMaxProductionRate();
+		expenses = stat.getUpgradesExpenses();
+		gameplayLogic.startAutoGenerators(idGame, currentGame, this.generators, gameView, this);
 		gameView.updateGenerationsData(generators);
 		startTimer();
 	}
@@ -92,6 +108,10 @@ public class GameController implements ActionListener {
 			if (seconds >= 60) {
 				currentGame.setSeconds(0);
 				currentGame.setMinutes(currentGame.getMinutes() + 1);
+				float temp_maxprod = (float) (clicks_per_min + autogen);
+				maxprod = Math.max(maxprod, temp_maxprod);
+				statLogic.saveStat(idGame, currentGame.getMinutes(), currentGame.getMoney(), clicks, autogen, maxprod, expenses);
+				autogen = clicks_per_min = 0;
 			} else {
 				currentGame.setSeconds(seconds);
 			}
@@ -121,13 +141,16 @@ public class GameController implements ActionListener {
 
 	private void handleFinishGame() {
 		saveCurrentProgress();
-		statLogic.saveStat(idGame, currentGame.getMoney(), currentGame.getMinutes(), currentGame.getNameGame());
+		gameLogic.finishGame(idGame);
+		statLogic.saveStat(idGame, currentGame.getMinutes(), currentGame.getMoney(), clicks, currentGame.getProduction_per_sec(), maxprod, expenses);
 		gameplayLogic.stopAutoGenerators();
 		gameTimer.stop();
 		viewController.showView("GAME MENU");
 	}
 
 	private void handleClickGenerate() {
+		this.clicks++;
+		this.clicks_per_min++;
 		currentGame.addMoney(coffeeCount);
 		gameView.updateCoffeeCount((int) currentGame.getMoney());
 	}
@@ -150,12 +173,12 @@ public class GameController implements ActionListener {
 				}
 				barista.setPrice((int) (barista.getPrice() + (0.5 * barista.getPrice())));
 				gameView.updateBaristaPrice(barista.getPrice());
+				expenses += barista.getPrice();
 				currentGame.setProduction_per_sec((float) (currentGame.getProduction_per_sec() + 0.2));
 				gameView.updateProductionXSec(currentGame.getProduction_per_sec());
 				// Persistencia
 				gameLogic.updateGenerators(idGame, barista);
 				gameLogic.saveGame(username, idGame, currentGame.getMoney(), currentGame.getHours(), currentGame.getMinutes(), currentGame.getSeconds(), currentGame.getCoffeePerClick(), currentGame.getProduction_per_sec());
-
 				gameView.updateCoffeeCount((int) currentGame.getMoney());
 				gameView.updateGenerationsData(generators);
 				System.out.println("Barista lanzado y produciendo");
@@ -183,6 +206,7 @@ public class GameController implements ActionListener {
 				}
 				machine.setPrice((int) (machine.getPrice() + (0.5 * machine.getPrice())));
 				gameView.updateMachinePrice(machine.getPrice());
+				expenses += machine.getPrice();
 				currentGame.setProduction_per_sec((float) (currentGame.getProduction_per_sec() + 0.66));
 				gameView.updateProductionXSec(currentGame.getProduction_per_sec());
 				// Persistencia
@@ -215,6 +239,7 @@ public class GameController implements ActionListener {
 				}
 				plantation.setPrice((int) (plantation.getPrice() + (0.5 * plantation.getPrice())));
 				gameView.updatePlantationPrice(plantation.getPrice());
+				expenses += plantation.getPrice();
 				// Persistencia
 				currentGame.setProduction_per_sec(currentGame.getProduction_per_sec() + 1);
 				gameView.updateProductionXSec(currentGame.getProduction_per_sec());
@@ -239,17 +264,26 @@ public class GameController implements ActionListener {
 			}
 		}
 
-		int upgradePrice = 15000;
-		if (barista != null && currentGame.getMoney() >= upgradePrice && barista.getEarning() == 1) {
+		Upgrade upgrade = null;
+		for (Upgrade g : upgrades) {
+			if (g.getIdGenerator() == barista.getIdGenerator()) {
+				upgrade = g;
+				break;
+			}
+		}
+
+		if (barista != null && currentGame.getMoney() >= upgrade.getPrice() && !upgrade.isActive()) {
 			synchronized (currentGame) {
-				currentGame.setMoney(currentGame.getMoney() - upgradePrice);
-				barista.setEarning(2);
+				currentGame.setMoney(currentGame.getMoney() - upgrade.getPrice());
+				barista.setEarning(barista.getEarning() * 2);
 			}
 
 			float extraProd = (float) (barista.getQuantity() * 0.2);
 			currentGame.setProduction_per_sec(currentGame.getProduction_per_sec() + extraProd);
+			expenses += upgrade.getPrice();
 
 			gameLogic.updateGenerators(idGame, barista);
+			gameLogic.updateUpgrades(idGame, barista.getIdGenerator());
 			saveCurrentProgress();
 
 			gameView.updateCoffeeCount((int) currentGame.getMoney());
@@ -270,17 +304,26 @@ public class GameController implements ActionListener {
 			}
 		}
 
-		int upgradePrice = 150000;
-		if (machine != null && currentGame.getMoney() >= upgradePrice && machine.getEarning() == 1) {
+		Upgrade upgrade = null;
+		for (Upgrade g : upgrades) {
+			if (g.getIdGenerator() == machine.getIdGenerator()) {
+				upgrade = g;
+				break;
+			}
+		}
+
+		if (machine != null && currentGame.getMoney() >= upgrade.getPrice() && !upgrade.isActive()) {
 			synchronized (currentGame) {
-				currentGame.setMoney(currentGame.getMoney() - upgradePrice);
-				machine.setEarning(6);
+				currentGame.setMoney(currentGame.getMoney() - upgrade.getPrice());
+				machine.setEarning(machine.getEarning() * 2);
 			}
 
 			float extraProd = (float) (machine.getQuantity() * 0.66);
 			currentGame.setProduction_per_sec(currentGame.getProduction_per_sec() + extraProd);
+			expenses += upgrade.getPrice();
 
 			gameLogic.updateGenerators(idGame, machine);
+			gameLogic.updateUpgrades(idGame, machine.getIdGenerator());
 			saveCurrentProgress();
 
 			gameView.updateCoffeeCount((int) currentGame.getMoney());
@@ -301,22 +344,31 @@ public class GameController implements ActionListener {
 			}
 		}
 
-		int upgradePrice = 200000;
-		if (plantation != null && currentGame.getMoney() >= upgradePrice && plantation.getEarning() == 1) {
+		Upgrade upgrade = null;
+		for (Upgrade g : upgrades) {
+			if (g.getIdGenerator() == plantation.getIdGenerator()) {
+				upgrade = g;
+				break;
+			}
+		}
+
+		if (plantation != null && currentGame.getMoney() >= upgrade.getPrice() && !upgrade.isActive()) {
 			synchronized (currentGame) {
-				currentGame.setMoney(currentGame.getMoney() - upgradePrice);
-				plantation.setEarning(2);
+				currentGame.setMoney(currentGame.getMoney() - upgrade.getPrice());
+				plantation.setEarning(plantation.getEarning() * 2);
 			}
 
 			float extraProd = (float) (plantation.getQuantity() * 1);
 			currentGame.setProduction_per_sec(currentGame.getProduction_per_sec() + extraProd);
+			expenses += upgrade.getPrice();
 
 			gameLogic.updateGenerators(idGame, plantation);
+			gameLogic.updateUpgrades(idGame, plantation.getIdGenerator());
 			saveCurrentProgress();
 
 			gameView.updateCoffeeCount((int) currentGame.getMoney());
 			gameView.updateProductionXSec(currentGame.getProduction_per_sec());
-			gameView.updateUpgradeBaristaText();
+			gameView.updateUpgradePlantationText();
 			System.out.println("Coffee Plantation mejorada y guardada");
 		}else{
 			System.out.println("Dinero no suficiente para la mejora de la Coffee Plantation");
@@ -329,5 +381,9 @@ public class GameController implements ActionListener {
 
 	public void handleUpgrades() {
 		gameView.putUpgrades();
+	}
+
+	public void addAutogen(double quantity){
+		autogen += quantity;
 	}
 }

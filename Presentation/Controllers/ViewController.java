@@ -46,8 +46,8 @@ public class ViewController {
         GameMenuView gameMenuView = new GameMenuView();
         gameCreator = new GameCreator();
 
-        gameCreatorController = new GameCreatorController(gameCreator, gameLogic, userLogic, this, "");
-        gameController = new GameController(gameView, gameplayLogic, this, 0, "", gameLogic, userLogic, statLogic);
+        gameCreatorController = new GameCreatorController(gameCreator, gameLogic, userLogic, statLogic,this, "");
+        gameController = new GameController(gameView, gameplayLogic, this, 0, "", gameLogic, statLogic);
 
         new LoginController(loginView, userLogic, this);
         new RegisterController(registerView, userLogic, this);

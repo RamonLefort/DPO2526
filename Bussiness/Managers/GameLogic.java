@@ -3,21 +3,24 @@ package Bussiness.Managers;
 import Bussiness.Entities.Game;
 import Bussiness.Entities.Generator;
 import Bussiness.Entities.Stat;
+import Bussiness.Entities.Upgrade;
 import Persistance.DAO.GameDAO;
 import Persistance.DAO.GeneratorDAO;
 import Persistance.DAO.StatDAO;
+import Persistance.DAO.UpgradeDAO;
+
 import java.util.List;
 
 public class GameLogic {
 
 	private GameDAO gameDAO;
 	private GeneratorDAO generatorDAO;
-	private StatDAO statDAO;
+	private UpgradeDAO upgradeDAO;
 
-	public GameLogic(GameDAO gameDAO, GeneratorDAO generatorDAO, StatDAO statDAO) {
+	public GameLogic(GameDAO gameDAO, GeneratorDAO generatorDAO, UpgradeDAO upgradeDAO) {
 		this.gameDAO = gameDAO;
 		this.generatorDAO = generatorDAO;
-		this.statDAO = statDAO;
+		this.upgradeDAO = upgradeDAO;
 	}
 
 	public int createGame(String nameGame, String username) {
@@ -38,6 +41,8 @@ public class GameLogic {
 		gameDAO.deleteGame(idGame);
 	}
 
+	public void finishGame(int idGame){gameDAO.finishGame(idGame);}
+
     public Game loadGame(String username, int idGame) {
         List<Game> games = gameDAO.getGamesByUser(username);
         for (int i = 0; i < games.size(); i++) {
@@ -47,10 +52,6 @@ public class GameLogic {
         }
         throw new IllegalArgumentException("Game not found with id: " + idGame);
     }
-
-	public void saveStat(int idGame, double money, int minutes, String nameGame) {
-		statDAO.create(new Stat(money, minutes, idGame, nameGame));
-	}
 
 	public List<Game> getUserGames(String username) {
 		return gameDAO.getGamesByUser(username);
@@ -70,5 +71,27 @@ public class GameLogic {
 
 	public void updateGenerators(int idGame, Generator generator){
 		generatorDAO.update(idGame, generator);
+	}
+
+	public void createUpgrades(int idGame, List<Generator> generators){
+		int idBarista = 0, idMachine = 0, idPlantation = 0;
+		for(Generator g: generators){
+			if(g.getName().equals("Barista")){
+				idBarista = g.getIdGenerator();
+			}else if(g.getName().equals("Espresso Machine")){
+				idMachine = g.getIdGenerator();
+			}else if(g.getName().equals("Coffee Plantation")){
+				idPlantation = g.getIdGenerator();
+			}
+		}
+		upgradeDAO.createInitialUpgrades(idGame, idBarista, idMachine, idPlantation);
+	}
+
+	public void updateUpgrades(int idGame, int idGenerator){
+		upgradeDAO.update(idGame, idGenerator, true);
+	}
+
+	public List<Upgrade> getUpgrades(int idGame){
+		return upgradeDAO.readByGame(idGame);
 	}
 }

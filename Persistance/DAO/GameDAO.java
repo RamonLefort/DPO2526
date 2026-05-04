@@ -64,6 +64,18 @@ public class GameDAO {
 		mySQLDAO.deleteObject("game", "id_game", String.valueOf(idGame));
 	}
 
+	public void finishGame(int idGame){
+		String query = "UPDATE game SET finished = ? WHERE id_game = ?";
+
+		try (PreparedStatement ps = mySQLDAO.getConnection().prepareStatement(query)) {
+			ps.setDouble(1, 1);
+			ps.setInt(2, idGame);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public boolean existsByName(String nameGame) {
 		ResultSet rs = mySQLDAO.readSpecific("game", "name_game", nameGame);
 		try {

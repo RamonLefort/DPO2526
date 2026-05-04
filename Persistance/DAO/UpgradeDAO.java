@@ -1,5 +1,6 @@
 package Persistance.DAO;
 
+import Bussiness.Entities.Generator;
 import Bussiness.Entities.Upgrade;
 import Persistance.Configuration.MySQLDAO;
 
@@ -23,6 +24,38 @@ public class UpgradeDAO {
 			ps.setDouble(4, upgrade.getPrice());
 			ps.executeUpdate();
 		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void createInitialUpgrades(int idGame, int idBarista, int idMachine, int idPlantation) {
+		String query = "INSERT INTO upgrade (id_generator, id_game, active, price) VALUES (?, ?, ?, ?)";
+
+		try (PreparedStatement ps = mySQLDAO.getConnection().prepareStatement(query)) {
+			// Upgrade 1: Barista
+			ps.setInt(1, idBarista); //Para el Barista
+			ps.setInt(2, idGame);
+			ps.setInt(3, 0);
+			ps.setInt(4, 15000);
+			ps.addBatch();
+
+			// Upgrade 2: Máquina de Espresso
+			ps.setInt(1, idMachine); //Para la maquina
+			ps.setInt(2, idGame);
+			ps.setInt(3, 0);
+			ps.setInt(4, 150000);
+			ps.addBatch();
+
+			// Upgrade 3: Plantación de Café
+			ps.setInt(1, idPlantation); //Para la plantación
+			ps.setInt(2, idGame);
+			ps.setInt(3, 0);
+			ps.setInt(4, 200000);
+			ps.addBatch();
+
+			ps.executeBatch();
+		} catch (SQLException e) {
+			System.err.println("Error al inicializar generadores: " + e.getMessage());
 			e.printStackTrace();
 		}
 	}
@@ -71,12 +104,12 @@ public class UpgradeDAO {
 		return upgrades;
 	}
 
-	public void update(Upgrade upgrade) {
-		String query = "UPDATE upgrade SET active = ?, price = ? WHERE id_upgrade = ?";
+	public void update(int idGame, int idGenerator, boolean active) {
+		String query = "UPDATE upgrade SET active = ? WHERE id_game = ? AND id_generator = ?";
 		try (PreparedStatement ps = mySQLDAO.getConnection().prepareStatement(query)) {
-			ps.setBoolean(1, upgrade.isActive());
-			ps.setDouble(2, upgrade.getPrice());
-			ps.setInt(3, upgrade.getIdUpgrade());
+			ps.setBoolean(1, active);
+			ps.setDouble(2, idGame);
+			ps.setInt(3, idGenerator);
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
