@@ -3,6 +3,7 @@ package Bussiness.Managers;
 import Bussiness.Entities.User;
 import Persistance.DAO.UserDAO;
 import Persistance.DAO.SettingDAO;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class UserLogic {
 
@@ -19,16 +20,22 @@ public class UserLogic {
 		if (!password.equals(confirm) || !validateEmail(email) || !validatePassword(password)) {
 			return false;
 		}
+		if (userDAO.usernameExists(username)) return false;
+		if (userDAO.emailExists(email)) return false;
 
-		if (userDAO.usernameExists(username)) {
-			return false;
+
+		String hashed = BCrypt.hashpw(password, BCrypt.gensalt());
+		return userDAO.create(new User(username, email, hashed));
+	}
+
+	public User login(String usernameOrEmail, String pass) {
+
+		User user = userDAO.loginCheck(usernameOrEmail);
+		if (user != null && BCrypt.checkpw(pass, user.getPassword())) {
+			this.currentUser = user;
+			return user;
 		}
-
-		if (userDAO.emailExists(email)) {
-			return false;
-		}
-
-		return userDAO.create(new User(username, email, password));
+		return null;
 	}
 
 	public boolean usernameExists(String username) {
@@ -39,13 +46,7 @@ public class UserLogic {
 		return userDAO.emailExists(email);
 	}
 
-	public User login(String usernameOrEmail, String pass) {
-		User user = userDAO.loginCheck(usernameOrEmail, pass);
-		if (user != null) {
-			this.currentUser = user;
-		}
-		return user;
-	}
+	
 
 	public void logout() {
 		this.currentUser = null;
