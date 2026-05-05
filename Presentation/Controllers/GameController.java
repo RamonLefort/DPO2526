@@ -174,7 +174,7 @@ public class GameController implements ActionListener {
 				barista.setPrice((int) (barista.getPrice() + (0.5 * barista.getPrice())));
 				gameView.updateBaristaPrice(barista.getPrice());
 				expenses += barista.getPrice();
-				currentGame.setProduction_per_sec((float) (currentGame.getProduction_per_sec() + 0.2));
+				currentGame.setProduction_per_sec((currentGame.getProduction_per_sec() + ((float) barista.getEarning() / (barista.getPeriod() / 1000))));
 				gameView.updateProductionXSec(currentGame.getProduction_per_sec());
 				// Persistencia
 				gameLogic.updateGenerators(idGame, barista);
@@ -207,7 +207,7 @@ public class GameController implements ActionListener {
 				machine.setPrice((int) (machine.getPrice() + (0.5 * machine.getPrice())));
 				gameView.updateMachinePrice(machine.getPrice());
 				expenses += machine.getPrice();
-				currentGame.setProduction_per_sec((float) (currentGame.getProduction_per_sec() + 0.66));
+				currentGame.setProduction_per_sec((float) (currentGame.getProduction_per_sec() + ((float) machine.getEarning() / (machine.getPeriod() / 1000))));
 				gameView.updateProductionXSec(currentGame.getProduction_per_sec());
 				// Persistencia
 				gameLogic.updateGenerators(idGame, machine);
@@ -241,7 +241,7 @@ public class GameController implements ActionListener {
 				gameView.updatePlantationPrice(plantation.getPrice());
 				expenses += plantation.getPrice();
 				// Persistencia
-				currentGame.setProduction_per_sec(currentGame.getProduction_per_sec() + 1);
+				currentGame.setProduction_per_sec(currentGame.getProduction_per_sec() + ((float) plantation.getEarning() / (plantation.getPeriod() / 1000)));
 				gameView.updateProductionXSec(currentGame.getProduction_per_sec());
 				gameLogic.updateGenerators(idGame, plantation);
 				gameLogic.saveGame(username, idGame, currentGame.getMoney(), currentGame.getHours(), currentGame.getMinutes(), currentGame.getSeconds(), currentGame.getCoffeePerClick(), currentGame.getProduction_per_sec());

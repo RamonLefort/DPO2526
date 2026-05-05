@@ -19,6 +19,7 @@ public class ViewController {
     private GameCreator gameCreator;
     private GameCreatorController gameCreatorController;
     private GameController gameController;
+    private StatsController statsController;
     private final StatLogic statLogic;
     private GameMenuController gameMenuController;
 
@@ -44,6 +45,7 @@ public class ViewController {
         GameView gameView = new GameView();
         SettingView settingView = new SettingView();
         GameMenuView gameMenuView = new GameMenuView();
+        StatsView statsView = new StatsView();
         gameCreator = new GameCreator();
 
         gameCreatorController = new GameCreatorController(gameCreator, gameLogic, userLogic, statLogic,this, "");
@@ -53,7 +55,7 @@ public class ViewController {
         new RegisterController(registerView, userLogic, this);
         new SettingController(settingView, userLogic, this);
         gameMenuController = new GameMenuController(gameMenuView, gameLogic, statLogic, userLogic, this);
-        StatsView statsView = new StatsView();
+        statsController = new StatsController(statsView, statLogic, this);
 
 
         rootPanel.add(statsView, "STATS");
@@ -85,6 +87,7 @@ public class ViewController {
 
     public void showStats(int idGame) {
         cardLayout.show(rootPanel, "STATS");
+        statsController.loadStatsData(idGame);
     }
 
     public void start() {
