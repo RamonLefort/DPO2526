@@ -44,15 +44,6 @@ CREATE TABLE IF NOT EXISTS `game` (
   KEY `username` (`username`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `game`
---
-
-INSERT INTO `game` (`id_game`, `name_game`, `money`, `hours`, `minutes`, `seconds`, `coffee_per_click`, `production_per_second`, `username`, `finished`) VALUES
-(1, 'Ejemplo', 1465.00, 0, 16, 49, 1, 3.64, 'Prueba', 0),
-(2, 'Hola', 30.00, 0, 0, 0, 1, 0, 'Bala', 0),
-(3, 'Prueba', 0.00, 0, 0, 19, 1, 0, 'Prueba', 0);
-
 -- --------------------------------------------------------
 
 --
@@ -70,18 +61,6 @@ CREATE TABLE IF NOT EXISTS `generador` (
   PRIMARY KEY (`id_generator`),
   KEY `id_game` (`id_game`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `generador`
---
-
-INSERT INTO `generador` (`id_generator`, `name`, `id_game`, `quantity`, `price`, `period`, `earning`) VALUES
-(4, 'Barista', 1, 5, 549, 5000.0, 1.0),
-(5, 'Espresso Machine', 1, 4, 757, 3000.0, 2.0),
-(6, 'Coffee Plantation', 1, 0, 2000, 1000.0, 1.0),
-(7, 'Barista', 3, 0, 15, 5000.0, 1.0),
-(8, 'Espresso Machine', 3, 0, 150, 3000.0, 2.0),
-(9, 'Coffee Plantation', 3, 0, 2000, 1000.0, 1.0);
 
 -- --------------------------------------------------------
 
@@ -149,14 +128,6 @@ CREATE TABLE IF NOT EXISTS `user` (
   `password` varchar(255) NOT NULL,
   PRIMARY KEY (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `user`
---
-
-INSERT INTO `user` (`username`, `email`, `password`) VALUES
-('Bala', 'bala@gmail.com', 'Bala@123'),
-('Prueba', 'prueba@gmail.com', 'lolo123');
 
 --
 -- Restricciones para tablas volcadas
