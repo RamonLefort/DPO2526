@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 04-05-2026 a las 16:33:58
+-- Tiempo de generación: 06-05-2026 a las 18:07:34
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -20,8 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `coffeeclicker`
 --
-CREATE DATABASE IF NOT EXISTS `coffeeclicker` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE `coffeeclicker`;
 
 -- --------------------------------------------------------
 
@@ -29,8 +27,8 @@ USE `coffeeclicker`;
 -- Estructura de tabla para la tabla `game`
 --
 
-CREATE TABLE IF NOT EXISTS `game` (
-  `id_game` int(100) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `game` (
+  `id_game` int(100) NOT NULL,
   `name_game` varchar(100) DEFAULT NULL,
   `money` double(100,2) DEFAULT 0.00,
   `hours` int(11) NOT NULL DEFAULT 0,
@@ -39,43 +37,33 @@ CREATE TABLE IF NOT EXISTS `game` (
   `coffee_per_click` int(100) DEFAULT 1,
   `production_per_second` float NOT NULL DEFAULT 0,
   `username` varchar(50) DEFAULT NULL,
-  `finished` tinyint(1) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id_game`),
-  KEY `username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
+  `finished` tinyint(1) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Estructura de tabla para la tabla `generador`
 --
 
-CREATE TABLE IF NOT EXISTS `generador` (
-  `id_generator` int(100) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `generador` (
+  `id_generator` int(100) NOT NULL,
   `name` varchar(100) DEFAULT NULL,
   `id_game` int(100) DEFAULT NULL,
   `quantity` int(100) DEFAULT 0,
   `price` int(100) DEFAULT NULL,
   `period` double(100,1) DEFAULT NULL,
-  `earning` double(100,1) DEFAULT NULL,
-  PRIMARY KEY (`id_generator`),
-  KEY `id_game` (`id_game`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
+  `earning` double(100,1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Estructura de tabla para la tabla `setting`
 --
 
-CREATE TABLE IF NOT EXISTS `setting` (
-  `id_setting` int(100) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `setting` (
+  `id_setting` int(100) NOT NULL,
   `volume` int(100) DEFAULT NULL,
   `background` varchar(255) DEFAULT NULL,
   `skin` varchar(255) DEFAULT NULL,
-  `username` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`id_setting`),
-  KEY `username` (`username`)
+  `username` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -84,50 +72,118 @@ CREATE TABLE IF NOT EXISTS `setting` (
 -- Estructura de tabla para la tabla `stat`
 --
 
-CREATE TABLE IF NOT EXISTS `stat` (
-  `id_stat` int(100) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `stat` (
+  `id_stat` int(100) NOT NULL,
   `id_games` int(100) NOT NULL,
   `minute_mark` int(11) NOT NULL,
   `money_at_minute` double(100,2) NOT NULL,
   `manual_clicks_total` int(100) DEFAULT 0,
-  `auto_generated_total` double(100,2) DEFAULT 0,
+  `auto_generated_total` double(100,2) DEFAULT 0.00,
   `max_production_rate` float DEFAULT 0,
-  `upgrades_expenses` double(100,2) DEFAULT 0,
-  PRIMARY KEY (`id_stat`),
-  KEY `id_games` (`id_games`),
-  CONSTRAINT `stat_ibfk_1` FOREIGN KEY (`id_games`) 
-    REFERENCES `game` (`id_game`) ON DELETE CASCADE
+  `upgrades_expenses` double(100,2) DEFAULT 0.00
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `upgrade`
 --
 
-CREATE TABLE IF NOT EXISTS `upgrade` (
-  `id_upgrade` int(100) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `upgrade` (
+  `id_upgrade` int(100) NOT NULL,
   `id_generator` int(100) DEFAULT NULL,
   `id_game` int(100) DEFAULT NULL,
   `active` tinyint(1) NOT NULL DEFAULT 0,
-  `price` int(100) DEFAULT NULL,
-  PRIMARY KEY (`id_upgrade`),
-  KEY `id_generator` (`id_generator`),
-  KEY `id_game` (`id_game`)
+  `price` int(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `user`
 --
 
-CREATE TABLE IF NOT EXISTS `user` (
+CREATE TABLE `user` (
   `username` varchar(50) NOT NULL,
   `email` varchar(100) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  PRIMARY KEY (`username`)
+  `password` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Índices para tablas volcadas
+--
+
+--
+-- Indices de la tabla `game`
+--
+ALTER TABLE `game`
+  ADD PRIMARY KEY (`id_game`),
+  ADD KEY `username` (`username`);
+
+--
+-- Indices de la tabla `generador`
+--
+ALTER TABLE `generador`
+  ADD PRIMARY KEY (`id_generator`),
+  ADD KEY `id_game` (`id_game`);
+
+--
+-- Indices de la tabla `setting`
+--
+ALTER TABLE `setting`
+  ADD PRIMARY KEY (`id_setting`),
+  ADD KEY `username` (`username`);
+
+--
+-- Indices de la tabla `stat`
+--
+ALTER TABLE `stat`
+  ADD PRIMARY KEY (`id_stat`),
+  ADD KEY `id_games` (`id_games`);
+
+--
+-- Indices de la tabla `upgrade`
+--
+ALTER TABLE `upgrade`
+  ADD PRIMARY KEY (`id_upgrade`),
+  ADD KEY `id_generator` (`id_generator`),
+  ADD KEY `id_game` (`id_game`);
+
+--
+-- Indices de la tabla `user`
+--
+ALTER TABLE `user`
+  ADD PRIMARY KEY (`username`);
+
+--
+-- AUTO_INCREMENT de las tablas volcadas
+--
+
+--
+-- AUTO_INCREMENT de la tabla `game`
+--
+ALTER TABLE `game`
+  MODIFY `id_game` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT de la tabla `generador`
+--
+ALTER TABLE `generador`
+  MODIFY `id_generator` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+
+--
+-- AUTO_INCREMENT de la tabla `setting`
+--
+ALTER TABLE `setting`
+  MODIFY `id_setting` int(100) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `stat`
+--
+ALTER TABLE `stat`
+  MODIFY `id_stat` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+
+--
+-- AUTO_INCREMENT de la tabla `upgrade`
+--
+ALTER TABLE `upgrade`
+  MODIFY `id_upgrade` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Restricciones para tablas volcadas
