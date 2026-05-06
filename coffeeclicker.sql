@@ -11,23 +11,39 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
 
-
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
---
--- Base de datos: `coffeeclicker`
---
+-- --------------------------------------------------------
+-- 1. CREACIÓN DE LA BASE DE DATOS Y SELECCIÓN
+-- --------------------------------------------------------
+
+CREATE DATABASE IF NOT EXISTS `coffeeclicker` 
+  DEFAULT CHARACTER SET utf8mb4 
+  COLLATE utf8mb4_general_ci;
+
+USE `coffeeclicker`;
 
 -- --------------------------------------------------------
+-- 2. ESTRUCTURA DE TABLAS (CON IF NOT EXISTS)
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `user`
+-- (Se crea primero porque 'game' y 'setting' dependen de ella)
+--
+CREATE TABLE IF NOT EXISTS `user` (
+  `username` varchar(50) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `password` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Estructura de tabla para la tabla `game`
 --
-
-CREATE TABLE `game` (
+CREATE TABLE IF NOT EXISTS `game` (
   `id_game` int(100) NOT NULL,
   `name_game` varchar(100) DEFAULT NULL,
   `money` double(100,2) DEFAULT 0.00,
@@ -43,8 +59,7 @@ CREATE TABLE `game` (
 --
 -- Estructura de tabla para la tabla `generador`
 --
-
-CREATE TABLE `generador` (
+CREATE TABLE IF NOT EXISTS `generador` (
   `id_generator` int(100) NOT NULL,
   `name` varchar(100) DEFAULT NULL,
   `id_game` int(100) DEFAULT NULL,
@@ -57,8 +72,7 @@ CREATE TABLE `generador` (
 --
 -- Estructura de tabla para la tabla `setting`
 --
-
-CREATE TABLE `setting` (
+CREATE TABLE IF NOT EXISTS `setting` (
   `id_setting` int(100) NOT NULL,
   `volume` int(100) DEFAULT NULL,
   `background` varchar(255) DEFAULT NULL,
@@ -66,13 +80,10 @@ CREATE TABLE `setting` (
   `username` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-
 --
 -- Estructura de tabla para la tabla `stat`
 --
-
-CREATE TABLE `stat` (
+CREATE TABLE IF NOT EXISTS `stat` (
   `id_stat` int(100) NOT NULL,
   `id_games` int(100) NOT NULL,
   `minute_mark` int(11) NOT NULL,
@@ -86,8 +97,7 @@ CREATE TABLE `stat` (
 --
 -- Estructura de tabla para la tabla `upgrade`
 --
-
-CREATE TABLE `upgrade` (
+CREATE TABLE IF NOT EXISTS `upgrade` (
   `id_upgrade` int(100) NOT NULL,
   `id_generator` int(100) DEFAULT NULL,
   `id_game` int(100) DEFAULT NULL,
@@ -95,130 +105,77 @@ CREATE TABLE `upgrade` (
   `price` int(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Estructura de tabla para la tabla `user`
---
+-- --------------------------------------------------------
+-- 3. ÍNDICES Y AUTONUMÉRICOS (ALTER TABLES)
+-- --------------------------------------------------------
+-- Nota: Si la tabla ya existía, lanzar los ALTER TABLE sobre 
+-- claves que ya existen generará un error en la base de datos.
+-- Por diseño, un volcado estándar de phpMyAdmin asume que la 
+-- base de datos está vacía al aplicar los ALTER. 
 
-CREATE TABLE `user` (
-  `username` varchar(50) NOT NULL,
-  `email` varchar(100) NOT NULL,
-  `password` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Índices para tablas volcadas
---
-
---
--- Indices de la tabla `game`
---
 ALTER TABLE `game`
   ADD PRIMARY KEY (`id_game`),
   ADD KEY `username` (`username`);
 
---
--- Indices de la tabla `generador`
---
 ALTER TABLE `generador`
   ADD PRIMARY KEY (`id_generator`),
   ADD KEY `id_game` (`id_game`);
 
---
--- Indices de la tabla `setting`
---
 ALTER TABLE `setting`
   ADD PRIMARY KEY (`id_setting`),
   ADD KEY `username` (`username`);
 
---
--- Indices de la tabla `stat`
---
 ALTER TABLE `stat`
   ADD PRIMARY KEY (`id_stat`),
   ADD KEY `id_games` (`id_games`);
 
---
--- Indices de la tabla `upgrade`
---
 ALTER TABLE `upgrade`
   ADD PRIMARY KEY (`id_upgrade`),
   ADD KEY `id_generator` (`id_generator`),
   ADD KEY `id_game` (`id_game`);
 
---
--- Indices de la tabla `user`
---
 ALTER TABLE `user`
   ADD PRIMARY KEY (`username`);
 
---
--- AUTO_INCREMENT de las tablas volcadas
---
+-- --------------------------------------------------------
+-- 4. AUTO INCREMENTS
+-- --------------------------------------------------------
 
---
--- AUTO_INCREMENT de la tabla `game`
---
 ALTER TABLE `game`
   MODIFY `id_game` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
---
--- AUTO_INCREMENT de la tabla `generador`
---
 ALTER TABLE `generador`
   MODIFY `id_generator` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
---
--- AUTO_INCREMENT de la tabla `setting`
---
 ALTER TABLE `setting`
   MODIFY `id_setting` int(100) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT de la tabla `stat`
---
 ALTER TABLE `stat`
   MODIFY `id_stat` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
---
--- AUTO_INCREMENT de la tabla `upgrade`
---
 ALTER TABLE `upgrade`
   MODIFY `id_upgrade` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
---
--- Restricciones para tablas volcadas
---
+-- --------------------------------------------------------
+-- 5. RESTRICCIONES DE CLAVES FORÁNEAS (FOREIGN KEYS)
+-- --------------------------------------------------------
 
---
--- Filtros para la tabla `game`
---
 ALTER TABLE `game`
   ADD CONSTRAINT `game_ibfk_1` FOREIGN KEY (`username`) REFERENCES `user` (`username`) ON DELETE CASCADE;
 
---
--- Filtros para la tabla `generador`
---
 ALTER TABLE `generador`
   ADD CONSTRAINT `generador_ibfk_1` FOREIGN KEY (`id_game`) REFERENCES `game` (`id_game`) ON DELETE CASCADE;
 
---
--- Filtros para la tabla `setting`
---
 ALTER TABLE `setting`
   ADD CONSTRAINT `setting_ibfk_1` FOREIGN KEY (`username`) REFERENCES `user` (`username`) ON DELETE CASCADE;
 
---
--- Filtros para la tabla `stat`
---
 ALTER TABLE `stat`
   ADD CONSTRAINT `stat_ibfk_1` FOREIGN KEY (`id_games`) REFERENCES `game` (`id_game`) ON DELETE CASCADE;
 
---
--- Filtros para la tabla `upgrade`
---
 ALTER TABLE `upgrade`
   ADD CONSTRAINT `upgrade_ibfk_1` FOREIGN KEY (`id_generator`) REFERENCES `generador` (`id_generator`) ON DELETE CASCADE,
   ADD CONSTRAINT `upgrade_ibfk_2` FOREIGN KEY (`id_game`) REFERENCES `game` (`id_game`) ON DELETE CASCADE;
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
