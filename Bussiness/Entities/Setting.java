@@ -8,16 +8,12 @@ public class Setting {
 	private String skin;
 	private String username;
 
-
-
 	public Setting(int idSetting, String username, int volume, String skin) {
 		this.idSetting = idSetting;
 		this.username = username;
 		this.volume = volume;
 		this.skin = skin;
 	}
-
-
 
 	public int getIdSetting() {
 		return idSetting;
@@ -38,8 +34,6 @@ public class Setting {
 	public String getUsername() {
 		return username;
 	}
-
-
 
 	public void setVolume(int volume) {
 		this.volume = volume;
