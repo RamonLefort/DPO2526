@@ -3,6 +3,11 @@ package Persistance.Configuration;
 import Bussiness.Entities.Configuration;
 import java.sql.*;
 
+/**
+ * Clase Singleton encargada de gestionar la conexión con la base de datos MySQL.
+ * Utiliza el patrón Singleton para garantizar que solo exista una instancia de
+ * conexión a la base de datos en toda la aplicación, reduciendo el consumo de recursos.
+ */
 public class MySQLDAO {
 	private static MySQLDAO instance;
 	private Connection connection;
@@ -12,9 +17,9 @@ public class MySQLDAO {
 	private String password;
 
 	/**
-	 * Clase Singleton encargada de gestionar la conexión con la base de datos MySQL.
-	 * Utiliza el patrón Singleton para garantizar que solo exista una instancia de
-	 * conexión a la base de datos en toda la aplicación, reduciendo el consumo de recursos.
+	 * Constructor de la conexión SQL
+	 *
+	 * @param config Configuración de la conexión
 	 */
 	private MySQLDAO(Configuration config) {
 		if (config != null) {

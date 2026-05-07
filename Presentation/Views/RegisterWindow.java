@@ -6,9 +6,19 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * Vista encargada de proporcionar la interfaz de registro de nuevos usuarios.
+ * Esta clase extiende {@link JPanel} y organiza los componentes necesarios para capturar
+ * el correo electrónico, nombre de usuario y contraseña (con confirmación).
+ * Implementa un diseño visual moderno basado en una tarjeta central con bordes redondeados,
+ * campos de texto con placeholders dinámicos y una animación de cabecera que refuerza
+ * el tema cafetalero del juego.
+ */
 public class RegisterWindow extends JPanel {
 
+    /** Comando de acción para registrar a un usuario e ir a la pantalla de Login. */
     public static final String BTN_REGISTER = "BTN_REGISTER";
+
     private final Color BACKGROUND_COLOR = new Color(248, 245, 240);
     private final Color CARD_COLOR = Color.WHITE;
     private final Color TEXT_DARK = new Color(51, 51, 51);
@@ -38,6 +48,12 @@ public class RegisterWindow extends JPanel {
     private final static String CUP11 = "assets/gif-taza/gif11.png";
     private final static String CUP12 = "assets/gif-taza/gif12.png";
 
+    /**
+     * Constructor de la ventana de registro.
+     * Configura el layout principal mediante {@link BoxLayout} vertical.
+     * Establece el fondo y añade de forma secuencial la cabecera animada y la tarjeta
+     * del formulario, utilizando pegamento vertical para el centrado.
+     */
     public RegisterWindow() {
         setBackground(BACKGROUND_COLOR);
 
@@ -58,6 +74,13 @@ public class RegisterWindow extends JPanel {
         add(Box.createVerticalGlue());
     }
 
+    /**
+     * Crea el panel de cabecera con la animación cíclica.
+     * Inicializa un {@link JImagePanel} y configura un {@link Timer} para iterar sobre
+     * la lista de frames de la imagen de la taza, además de añadir los títulos principales.
+     *
+     * @return El panel de cabecera configurado y animado.
+     */
     private JPanel createHeaderPanel() {
         JPanel headerPanel = new JPanel();
         headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.Y_AXIS));
@@ -103,6 +126,13 @@ public class RegisterWindow extends JPanel {
         return headerPanel;
     }
 
+    /**
+     * Construye la tarjeta central que contiene los campos del formulario.
+     * Incluye la instanciación de los campos de email, usuario, contraseña y confirmación,
+     * así como el botón de registro y el enlace de navegación hacia el login.
+     *
+     * @return Un {@link RoundedPanel} con todos los elementos interactivos del registro.
+     */
     private JPanel createCardPanel() {
         JPanel cardPanel = new RoundedPanel(100, CARD_COLOR);
         cardPanel.setLayout(new BoxLayout(cardPanel, BoxLayout.Y_AXIS));
@@ -199,6 +229,13 @@ public class RegisterWindow extends JPanel {
         return cardPanel;
     }
 
+    /**
+     * Crea grupos de inputs etiquetados.
+     *
+     * @param labelText Texto de la etiqueta.
+     * @param inputField Componente de entrada (texto o contraseña).
+     * @return Panel agrupador configurado.
+     */
     private JPanel createInputGroup(String labelText, JComponent inputField) {
         JPanel group = new JPanel();
         group.setLayout(new BoxLayout(group, BoxLayout.Y_AXIS));
@@ -224,6 +261,12 @@ public class RegisterWindow extends JPanel {
         return group;
     }
 
+    /**
+     * Crea un campo de texto con gestión de "placeholder".
+     *
+     * @param placeholder Texto de ayuda inicial.
+     * @return El campo de texto configurado.
+     */
     private JTextField createUsernameField(String placeholder) {
         JTextField textField = new JTextField();
         textField.setPreferredSize(new Dimension(Integer.MAX_VALUE, 35));
@@ -247,6 +290,12 @@ public class RegisterWindow extends JPanel {
         return textField;
     }
 
+    /**
+     * Crea un campo de contraseña con gestión de "placeholder".
+     *
+     * @param placeholder Texto de ayuda inicial.
+     * @return El campo de contraseña configurado.
+     */
     private JPasswordField createPasswordField(String placeholder) {
         JPasswordField passField = new JPasswordField();
         passField.setPreferredSize(new Dimension(Integer.MAX_VALUE, 35));
@@ -279,13 +328,46 @@ public class RegisterWindow extends JPanel {
         return passField;
     }
 
+    /**
+     * @return Referencia al campo de nombre de usuario.
+     */
     public JTextField getUserField(){ return userField;}
+
+    /**
+     * @return Referencia al campo de correo electrónico.
+     */
     public JTextField getMailField(){ return mailField;}
+
+    /**
+     * @return Referencia al campo de contraseña principal.
+     */
     public JPasswordField getPasswordField(){ return passwordField;}
+
+    /**
+     * @return Referencia al campo de confirmación de contraseña.
+     */
     public JPasswordField getConfirmField() { return confirmField;}
+
+    /**
+     * @return Referencia a la etiqueta de errores.
+     */
     public JLabel getErrorLabel(){ return errorLabel;}
+
+    /**
+     * @return Referencia a la etiqueta del pie de página.
+     */
     public JLabel getFooterLabel(){ return footerLabel;}
+
+    /**
+     * @return Referencia al botón principal de registro.
+     */
     public JButton getRegisterButton(){ return registerBtn;}
+
+    /**
+     * Actualiza y hace visible la etiqueta de error con un mensaje específico.
+     *
+     * @param message El mensaje de error a mostrar al usuario.
+     */
     public void showError(String message){
         errorLabel.setText(message);
         errorLabel.setVisible(true);

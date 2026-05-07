@@ -9,7 +9,16 @@ import Presentation.Controllers.ViewController;
 import Persistance.DAO.SettingDAO;
 import javax.swing.*;
 
+/**
+ * Clase principal que actúa como el motor de arranque de la aplicación.
+ */
 public class Main {
+
+    /**
+     * Función de entrada principal de la aplicación.
+     *
+     * @param args Argumentos de la línea de comandos (no utilizados en esta aplicación).
+     */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
 

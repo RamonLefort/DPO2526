@@ -1,6 +1,7 @@
 package Presentation.Views;
 
 import Bussiness.Entities.Stat;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
@@ -8,7 +9,15 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+/**
+ * Vista de tablero de estadísticas que muestra el rendimiento final de una partida.
+ * Esta clase hereda de {@link JPanel} y organiza la información en tres niveles visuales:
+ * indicadores rápidos, una representación gráfica de la evolución del capital
+ * y una tabla detallada con el historial de eventos por minuto.
+ */
 public class StatsView extends JPanel {
+
+    /** Comando de acción para cerrar la vista de estadísticas y volver al menú. */
     public static final String BTN_EXIT_STATS = "BTN_EXIT_STATS";
 
     private final Color BG_COLOR = new Color(248, 245, 240);
@@ -19,6 +28,12 @@ public class StatsView extends JPanel {
     private JButton btnExit;
     private StatGraphPanel graphPanel;
 
+    /**
+     * Constructor de la vista.
+     * Configura un {@link BoxLayout} vertical y orquesta la
+     * construcción de la interfaz mediante la adición secuencial de la cabecera,
+     * el panel de eficiencia, la tabla de historial con gráfico y el pie de página.
+     */
     public StatsView() {
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.setBackground(BG_COLOR);
@@ -40,6 +55,9 @@ public class StatsView extends JPanel {
         addFooter();
     }
 
+    /**
+     * Añade el título principal de la vista centrado en la parte superior.
+     */
     private void addHeader() {
         JLabel title = new JLabel("Game Performance Statistics");
         title.setFont(new Font("Segoe UI", Font.BOLD, 28));
@@ -48,6 +66,11 @@ public class StatsView extends JPanel {
         this.add(title);
     }
 
+    /**
+     * Crea y añade una fila horizontal que contiene las cartas de estadísticas rápidas.
+     * Gestiona la distribución proporcional de los indicadores de clics manuales,
+     * generación automática, producción pico e inversión total.
+     */
     private void addEfficiencyPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
@@ -65,11 +88,18 @@ public class StatsView extends JPanel {
         this.add(panel);
     }
 
+    /**
+     * Función para crear una tarjeta de estadística.
+     * Crea un panel redondeado con un título de métrica y un valor numérico destacado.
+     *
+     * @param container El panel horizontal donde se insertará la carta.
+     * @param title     El nombre de la métrica .
+     * @return La referencia al {@link JLabel} del valor para poder actualizarlo dinámicamente.
+     */
     private JLabel createStatCard(JPanel container, String title) {
-        JPanel card = new JPanel();
+        RoundedPanel card = new RoundedPanel(20, Color.WHITE);
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
-        card.setBackground(Color.WHITE);
-        card.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(230, 230, 230), 1), new EmptyBorder(15, 20, 15, 20)));
+        card.setBorder(new RoundedBorder(PRIMARY_COFFEE, 20, 1));
 
         JLabel lblTitle = new JLabel(title);
         lblTitle.setFont(new Font("Segoe UI", Font.PLAIN, 12));
@@ -88,6 +118,11 @@ public class StatsView extends JPanel {
         return lblValue;
     }
 
+    /**
+     * Construye la sección central de análisis de progresión.
+     * Integra el componente {@link StatGraphPanel} para la visualización de tendencias
+     * y un {@link JTable} para el desglose numérico exhaustivo por minuto.
+     */
     private void addHistoryTable() {
         JPanel container = new JPanel();
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
@@ -121,20 +156,31 @@ public class StatsView extends JPanel {
         this.add(container);
     }
 
+    /**
+     * Añade el botón de salida en la parte inferior de la vista.
+     */
     private void addFooter() {
         btnExit = new RoundedButton("Return to Menu", 20, PRIMARY_COFFEE, Color.WHITE, Color.WHITE, PRIMARY_COFFEE);
         btnExit.setActionCommand(BTN_EXIT_STATS);
+        btnExit.setBorder(new RoundedBorder(PRIMARY_COFFEE, 20, 1));
         btnExit.setMaximumSize(new Dimension(200, 40));
         btnExit.setAlignmentX(Component.CENTER_ALIGNMENT);
         this.add(btnExit);
     }
 
+    /**
+     * Vincula el controlador de eventos al botón de retorno al menú.
+     *
+     * @param l El {@link ActionListener} que procesará la acción de salida.
+     */
     public void setActionListener(ActionListener l) {
         btnExit.addActionListener(l);
     }
 
     /**
      * Carga los datos finales y la tabla de progresión
+     *
+     * @param stats Lista de estadísticas a mostrar en la tabla
      */
     public void displayStats(List<Stat> stats) {
         tableModel.setRowCount(0);

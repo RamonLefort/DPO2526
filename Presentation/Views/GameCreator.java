@@ -5,16 +5,27 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
+/**
+ * Vista encargada de proporcionar la interfaz para la creación de una nueva partida.
+ * Esta clase hereda de {@link JPanel} y organiza visualmente los componentes necesarios
+ * para capturar el nombre del nuevo "imperio cafetero". Utiliza un diseño basado en
+ * contenedores anidados y componentes personalizados para ofrecer una experiencia
+ * de usuario atractiva y coherente con el estilo visual del juego.
+ */
 public class GameCreator extends JPanel {
 
+    // Constantes de color para mantener la identidad visual
     private final Color BG_COLOR = new Color(248, 245, 240);
     private final Color PRIMARY_COFFEE = new Color(74, 44, 23);
     private final Color TEXT_SECONDARY = new Color(110, 110, 110);
     private final Color TEXT_DARK = new Color(51, 51, 51);
     private final Color TEXT_LIGHT = new Color(136, 136, 136);
 
+    /** Comando de acción para cerrar la vista de la creación del juego y volver al menú. */
     public static final String BTN_BACK = "BACK";
+    /** Comando de acción para cerrar la sesión del juego y volver al login. */
     public static final String BTN_LOGOUT = "LOGOUT";
+    /** Comando de acción para crear un juego nuevo. */
     public static final String BTN_CREATE = "CREATE";
 
     private JButton btnBack;
@@ -22,6 +33,11 @@ public class GameCreator extends JPanel {
     private JButton btnCreate;
     private JTextField nameField;
 
+    /**
+     * Constructor de la vista. Inicializa el layout de tipo {@link BoxLayout} en el eje Y,
+     * configura el color de fondo y el espaciado interno (padding) mediante un {@link EmptyBorder}.
+     * Organiza el contenido en una cabecera superior y un cuerpo central de formulario.
+     */
     public GameCreator() {
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.setBackground(BG_COLOR);
@@ -33,6 +49,13 @@ public class GameCreator extends JPanel {
         this.add(Box.createVerticalGlue());
     }
 
+    /**
+     * Crea el panel de la cabecera superior.
+     * Incluye el botón de retroceso, el título de la aplicación y el botón de logout,
+     * distribuidos horizontalmente.
+     *
+     * @return El panel de cabecera configurado.
+     */
     private JPanel createTopHeader() {
         JPanel header = new JPanel();
         header.setLayout(new BoxLayout(header, BoxLayout.X_AXIS));
@@ -68,6 +91,13 @@ public class GameCreator extends JPanel {
         return header;
     }
 
+    /**
+     * Crea el contenido central del formulario.
+     * Incluye textos de bienvenida y una tarjeta visual que contiene
+     * el campo de entrada para el nombre de la partida y el botón de acción principal.
+     *
+     * @return El panel con el contenido del formulario.
+     */
     private JPanel createFormContent() {
         JPanel formWrapper = new JPanel();
         formWrapper.setLayout(new BoxLayout(formWrapper, BoxLayout.Y_AXIS));
@@ -119,6 +149,13 @@ public class GameCreator extends JPanel {
         return formWrapper;
     }
 
+    /**
+     * Genera un grupo de entrada compuesto por una etiqueta y un campo de texto.
+     *
+     * @param labelText Texto descriptivo para el campo.
+     * @param inputField Componente de entrada asociado.
+     * @return Un panel que agrupa ambos componentes.
+     */
     private JPanel createInputGroup(String labelText, JComponent inputField) {
         JPanel group = new JPanel();
         group.setLayout(new BoxLayout(group, BoxLayout.Y_AXIS));
@@ -144,6 +181,12 @@ public class GameCreator extends JPanel {
         return group;
     }
 
+    /**
+     * Crea un campo de texto especializado con funcionalidad de "placeholder".
+     *
+     * @param placeholder Texto de ayuda a mostrar inicialmente.
+     * @return El campo de texto configurado.
+     */
     private JTextField createUsernameField(String placeholder) {
         JTextField textField = new JTextField();
         textField.setPreferredSize(new Dimension(Integer.MAX_VALUE, 35));
@@ -165,15 +208,32 @@ public class GameCreator extends JPanel {
         });
         return textField;
     }
+
+    /**
+     * Vincula el controlador de eventos a los botones principales de la vista.
+     *
+     * @param listener El {@link ActionListener} que procesará los clics.
+     */
     public void setActionListener(ActionListener listener) {
         btnBack.addActionListener(listener);
         btnLogout.addActionListener(listener);
         btnCreate.addActionListener(listener);
     }
 
+    /**
+     * Obtiene el nombre introducido por el usuario para la nueva partida.
+     *
+     * @return El nombre de la partida.
+     */
     public String getGameName() {
         return nameField.getText().trim();
     }
+
+    /**
+     * Muestra un diálogo emergente de error.
+     *
+     * @param message El mensaje descriptivo del error.
+     */
     public void showError(String message) {
         JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
     }

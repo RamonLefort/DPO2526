@@ -3,12 +3,22 @@ package Presentation.Views;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * Vista encargada de proporcionar la interfaz de inicio de sesión.
+ * Esta clase extiende {@link JPanel} y organiza los componentes necesarios para capturar
+ * las credenciales del usuario. Implementa un diseño basado en tarjetas
+ * con bordes redondeados y una animación cíclica de una taza de café en la cabecera
+ * para reforzar la identidad visual del proyecto.
+ */
 public class LoginWindow extends JPanel {
 
+    /** Comando de acción para iniciar la sesión de un usuario y dirigirse a la pantalla del menú. */
     public static final String BTN_LOGIN = "LOGIN_SUBMIT";
+
     private final Color BACKGROUND_COLOR = new Color(248, 245, 240);
     private final Color CARD_COLOR = Color.WHITE;
     private final Color TEXT_DARK = new Color(51, 51, 51);
@@ -35,6 +45,11 @@ public class LoginWindow extends JPanel {
     private final static String CUP11 = "assets/gif-taza/gif11.png";
     private final static String CUP12 = "assets/gif-taza/gif12.png";
 
+    /**
+     * Constructor de la ventana de login.
+     * Configura un {@link BoxLayout} vertical y distribuye los componentes principales:
+     * la cabecera con animación y el panel de tarjeta que contiene el formulario.
+     */
     public LoginWindow() {
         setBackground(BACKGROUND_COLOR);
 
@@ -55,6 +70,12 @@ public class LoginWindow extends JPanel {
         add(Box.createVerticalGlue());
     }
 
+    /**
+     * Crea el panel de cabecera que incluye la animación y el título.
+     * Implementa un {@link JImagePanel} animado mediante una lista de imágenes y un temporizador.
+     *
+     * @return Panel de cabecera configurado.
+     */
     private JPanel createHeaderPanel() {
         JPanel headerPanel = new JPanel();
         headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.Y_AXIS));
@@ -100,6 +121,12 @@ public class LoginWindow extends JPanel {
         return headerPanel;
     }
 
+    /**
+     * Crea el panel central en forma de tarjeta que contiene el formulario de acceso.
+     * Configura los campos de entrada, la gestión de errores y el botón de acción principal.
+     *
+     * @return Un {@link RoundedPanel} con el contenido del formulario.
+     */
     private JPanel createCardPanel() {
         JPanel cardPanel = new RoundedPanel(100, CARD_COLOR);
         cardPanel.setLayout(new BoxLayout(cardPanel, BoxLayout.Y_AXIS));
@@ -178,6 +205,13 @@ public class LoginWindow extends JPanel {
         return cardPanel;
     }
 
+    /**
+     * Genera un grupo de entrada para mantener la consistencia visual.
+     *
+     * @param labelText Texto descriptivo.
+     * @param inputField Componente de entrada.
+     * @return Panel agrupador.
+     */
     private JPanel createInputGroup(String labelText, JComponent inputField) {
         JPanel group = new JPanel();
         group.setLayout(new BoxLayout(group, BoxLayout.Y_AXIS));
@@ -203,6 +237,12 @@ public class LoginWindow extends JPanel {
         return group;
     }
 
+    /**
+     * Crea un campo de texto para el usuario con funcionalidad de placeholder.
+     *
+     * @param placeholder Texto de sugerencia.
+     * @return El campo de texto configurado.
+     */
     private JTextField createUsernameField(String placeholder) {
         JTextField textField = new JTextField();
         textField.setPreferredSize(new Dimension(Integer.MAX_VALUE, 35));
@@ -226,6 +266,14 @@ public class LoginWindow extends JPanel {
         return textField;
     }
 
+    /**
+     * Crea un campo de contraseña con gestión de placeholder.
+     * Maneja dinámicamente el carácter de ocultación (EchoChar) para que el placeholder
+     * sea legible mientras el campo no tiene el foco.
+     *
+     * @param placeholder Texto de sugerencia.
+     * @return El campo de contraseña configurado.
+     */
     private JPasswordField createPasswordField(String placeholder) {
         JPasswordField passField = new JPasswordField();
         passField.setPreferredSize(new Dimension(Integer.MAX_VALUE, 35));
@@ -258,16 +306,36 @@ public class LoginWindow extends JPanel {
         return passField;
     }
 
-    public JTextField     getUsernameField() { return userField;    }
-    public JPasswordField getPasswordField() { return passField;    }
-    public JLabel         getFooterLabel()   { return footerLabel;  }
+    /**
+     * Obtiene la referencia al campo de nombre de usuario.
+     * @return El {@link JTextField} de usuario.
+     */
+    public JTextField getUsernameField() { return userField; }
 
+    /**
+     * Obtiene la referencia al campo de contraseña.
+     * @return El {@link JPasswordField} de contraseña.
+     */
+    public JPasswordField getPasswordField() { return passField; }
 
+    /**
+     * Obtiene la etiqueta del pie de página (usada para navegar al registro).
+     * @return El {@link JLabel} del footer.
+     */
+    public JLabel getFooterLabel() { return footerLabel; }
 
-    public void setActionListener(java.awt.event.ActionListener listener) {
+    /**
+     * Vincula un escuchador de acciones al botón de inicio de sesión.
+     * @param listener El {@link ActionListener} encargado de procesar el clic.
+     */
+    public void setActionListener(ActionListener listener) {
         this.loginBtn.addActionListener(listener);
     }
 
+    /**
+     * Muestra un mensaje de error dentro de la tarjeta de login.
+     * @param message El texto descriptivo del error ocurrido.
+     */
     public void showError(String message) {
         errorLabel.setText(message);
         errorLabel.setVisible(true);

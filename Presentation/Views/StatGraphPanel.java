@@ -5,19 +5,34 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
+/**
+ * Panel especializado en la representación gráfica de series temporales de datos.
+ * Esta clase extiende {@link JPanel} y redefine la función de pintado para dibujar
+ * un gráfico de líneas que muestra la evolución de los recursos del jugador
+ * minuto a minuto.
+ */
 public class StatGraphPanel extends JPanel {
+
     private List<Stat> stats;
     private final Color LINE_COLOR = new Color(74, 44, 23);
     private final Color GRID_COLOR = new Color(220, 220, 220);
     private final Color TEXT_COLOR = new Color(100, 100, 100);
 
+    /**
+     * Actualiza la lista de datos a representar y solicita el redibujado del panel.
+     *
+     * @param stats Lista de objetos {@link Stat} que contienen la telemetría de la partida.
+     */
     public void setStats(List<Stat> stats) {
         this.stats = stats;
         repaint();
     }
 
     /**
-     * Convierte valores numéricos grandes en formatos legibles (K, M, B).
+     * Transforma valores numéricos crudos en notaciones abreviadas legibles (K para miles, M para millones).
+     *
+     * @param value El valor numérico a formatear.
+     * @return Una cadena de texto formateada.
      */
     private String formatValue(double value) {
         if (value < 100000) return String.format("%.1f", value);
@@ -25,6 +40,20 @@ public class StatGraphPanel extends JPanel {
         return String.format("%.1fM", value / 1000000.0);
     }
 
+    /**
+     * Realiza el renderizado completo del gráfico sobre el contexto gráfico del componente.
+     *
+     * El proceso de dibujo sigue este orden jerárquico:
+     * 1. Validación de existencia de datos.
+     * 2. Configuración de Antialiasing para trazados suaves.
+     * 3. Cálculo de márgenes (padding) y factores de escala basados en el valor máximo de café.
+     * 4. Dibujo de la cuadrícula horizontal y etiquetas del Eje Y.
+     * 5. Dibujo de las etiquetas temporales del Eje X.
+     * 6. Trazado de la línea de tendencia y puntos de datos.
+     * 7. Resaltado del valor final actual.
+     *
+     * @param g El contexto gráfico {@link Graphics} proporcionado por Swing.
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

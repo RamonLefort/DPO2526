@@ -9,19 +9,37 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+/**
+ * Vista principal del entorno de juego.
+ * Esta clase extiende de {@link JPanel} y representa el centro de interacción del usuario durante la partida.
+ * Organiza visualmente el contador de recursos, el área de clic manual, la tabla de producción
+ * y la tienda dividida en pestañas (Generadores y Mejoras) mediante un {@link CardLayout}.
+ */
 public class GameView extends JPanel {
 
+    /** Comando de acción para cerrar la vista del juego y volver al menú. */
     public static final String BTN_BACK   = "BTN_BACK";
+    /** Comando de acción para finalizar una partida y volver al menú. */
     public static final String BTN_FINISH = "BTN_FINISH";
+    /** Comando de acción para realizar un café. */
     public static final String BTN_COFFEE = "BTN_COFFEE";
+    /** Comando de acción para comprar un Barista. */
     public static final String BTN_BARISTA = "BTN_BARISTA";
+    /** Comando de acción para comprar una Maquina. */
     public static final String BTN_MACHINE = "BTN_MACHINE";
+    /** Comando de acción para comprar una Plantación. */
     public static final String BTN_PLANTATION = "BTN_PLANTATION";
+    /** Comando de acción para subir el nivel de los Baristas. */
     public static final String BTN_UP_BARISTA = "BTN_UP_BARISTA";
+    /** Comando de acción para subir el nivel de las Maquinas. */
     public static final String BTN_UP_MACHINE = "BTN_UP_MACHINE";
+    /** Comando de acción para subir el nivel de las Plantaciones. */
     public static final String BTN_UP_PLANTATION = "BTN_UP_PLANTATION";
+    /** Comando de acción para cambiar al menú de 'Generadores'. */
     public static final String BTN_GENERATORS = "BTN_GENERATORS";
+    /** Comando de acción para cambiar al menú de 'Upgrades'. */
     public static final String BTN_UPGRADES = "BTN_UPGRADES";
+
     private JButton btnBack;
     private JButton btnFinish;
     private JButton coffeeBtn;
@@ -34,7 +52,6 @@ public class GameView extends JPanel {
     private JButton btnUpBarista;
     private JButton btnUpMachine;
     private JButton btnUpPlantation;
-    private JPanel right;
     private DefaultTableModel tableModel;
     private RoundedButton navGeneratorsBtn;
     private RoundedButton navUpgradesBtn;
@@ -45,6 +62,11 @@ public class GameView extends JPanel {
     private final Color BG_COLOR = new Color(248, 245, 240);
     private final Color PRIMARY_COFFEE = new Color(74, 44, 23);
 
+    /**
+     * Constructor de la vista. Inicializa la estructura principal de la interfaz utilizando
+     * un {@link BorderLayout}. Divide la pantalla en una cabecera superior y un panel central
+     * compuesto por una columna de estadísticas fija y un panel lateral intercambiable para la tienda.
+     */
     public GameView() {
         this.setLayout(new BorderLayout());
         this.setBackground(BG_COLOR);
@@ -83,6 +105,13 @@ public class GameView extends JPanel {
         this.add(centerPanel, BorderLayout.CENTER);
     }
 
+    /**
+     * Crea el panel superior de navegación.
+     * Contiene el botón para regresar al menú, el título dinámico de la partida actual
+     * y el botón para finalizar el juego.
+     *
+     * @return Un {@link JPanel} configurado como cabecera.
+     */
     private JPanel createTopHeader() {
         JPanel header = new JPanel();
         header.setLayout(new BoxLayout(header, BoxLayout.X_AXIS));
@@ -123,6 +152,13 @@ public class GameView extends JPanel {
         return header;
     }
 
+    /**
+     * Crea la columna izquierda de la interfaz.
+     * Centraliza los elementos de estado: el contador principal de cafés, la tasa de producción global,
+     * el botón interactivo de generación manual y la tabla de desglose de generadores.
+     *
+     * @return Un {@link JPanel} con la información de estado y acción manual.
+     */
     private JPanel createLeftColumn() {
         JPanel left = new JPanel();
         left.setLayout(new BoxLayout(left, BoxLayout.Y_AXIS));
@@ -185,6 +221,13 @@ public class GameView extends JPanel {
         return left;
     }
 
+    /**
+     * Genera el panel de selección de categorías para la tienda lateral.
+     * Permite al usuario alternar entre la vista de "Generadores" y "Mejoras" actualizando
+     * visualmente el estado de los botones.
+     *
+     * @return Un {@link JPanel} con los botones de navegación de la tienda.
+     */
     private JPanel createSelectorPanel() {
         JPanel selector = new JPanel(new GridLayout(1, 2, 5, 0));
         selector.setOpaque(false);
@@ -204,6 +247,13 @@ public class GameView extends JPanel {
         return selector;
     }
 
+    /**
+     * Inicializa el contenido de la pestaña de generadores.
+     * Agrega los ítems de compra base (Barista, Máquina, Plantación) con sus descripciones
+     * y tasas de producción iniciales.
+     *
+     * @return Un {@link JPanel} con el listado de generadores disponibles para compra.
+     */
     private JPanel createGeneratorsContent() {
         JPanel content = new JPanel();
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
@@ -220,6 +270,12 @@ public class GameView extends JPanel {
         return content;
     }
 
+    /**
+     * Inicializa el contenido de la pestaña de mejoras (Upgrades).
+     * Agrega las opciones de mejora tecnológica que potencian la eficiencia de los generadores.
+     *
+     * @return Un {@link JPanel} con el listado de mejoras disponibles.
+     */
     private JPanel createUpgradesContent() {
         JPanel content = new JPanel();
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
@@ -235,6 +291,19 @@ public class GameView extends JPanel {
         return content;
     }
 
+    /**
+     * Crea los componentes de ítem en la tienda de forma genérica.
+     * Configura el diseño, texto, iconos y vincula los botones a las variables de clase
+     * correspondientes según su tipo.
+     *
+     * @param title Título del ítem.
+     * @param desc Descripción narrativa del ítem.
+     * @param rate Tasa de beneficio (ej: "0.20/s" o "x2").
+     * @param price Precio inicial mostrado en el botón.
+     * @param ActionCommand Comando de acción para el controlador.
+     * @param tab Identificador de pestaña (1 para Generadores, 2 para Upgrades).
+     * @return Un {@link JPanel} estilizado representando un artículo de la tienda.
+     */
     private JPanel createStoreItem(String title, String desc, String rate, String price, String ActionCommand, int tab) {
         RoundedPanel item = new RoundedPanel(15, Color.WHITE);
         item.setLayout(new BorderLayout(15, 5));
@@ -314,6 +383,12 @@ public class GameView extends JPanel {
         return item;
     }
 
+    /**
+     * Crea el panel que contiene la tabla de desglose de producción.
+     * Define el modelo de tabla no editable y personaliza el estilo visual de la cabecera y celdas.
+     *
+     * @return Un {@link JPanel} que contiene un {@link JScrollPane} con la tabla de generaciones.
+     */
     private JPanel createGenerationsTable() {
         RoundedPanel p = new RoundedPanel(20, Color.WHITE);
         p.setLayout(new BorderLayout());
@@ -349,6 +424,12 @@ public class GameView extends JPanel {
         return p;
     }
 
+    /**
+     * Vincula un escuchador de eventos a todos los botones interactivos de la vista.
+     * Esto incluye botones de navegación, el botón de clic manual y todos los botones de la tienda.
+     *
+     * @param listener El {@link ActionListener} que procesará las acciones.
+     */
     public void setActionListener(ActionListener listener) {
         btnBack.addActionListener(listener);
         btnFinish.addActionListener(listener);
@@ -365,30 +446,67 @@ public class GameView extends JPanel {
         btnUpPlantation.addActionListener(listener);
     }
 
+    /**
+     * Actualiza el texto del contador principal de cafés en la UI.
+     *
+     * @param count Cantidad actual de cafés.
+     */
     public void updateCoffeeCount(int count) {
         countNum.setText(String.valueOf(count));
     }
 
+    /**
+     * Actualiza el texto del botón de compra del Barista con su precio actual.
+     *
+     * @param price Precio actualizado en cafés.
+     */
     public void updateBaristaPrice(int price){
         btnBarista.setText("Buy for " + price + " coffees");
     }
 
+    /**
+     * Actualiza el texto del botón de compra de la Máquina con su precio actual.
+     *
+     * @param price Precio actualizado en cafés.
+     */
     public void updateMachinePrice(int price){
         btnMachine.setText("Buy for " + price + " coffees");
     }
 
+    /**
+     * Actualiza el texto del botón de compra de la Plantación con su precio actual.
+     *
+     * @param price Precio actualizado en cafés.
+     */
     public void updatePlantationPrice(int price){
         btnCoffee.setText("Buy for " + price + " coffees");
     }
 
+    /**
+     * Actualiza el título mostrado en la cabecera del juego.
+     *
+     * @param name Nombre de la partida.
+     */
     public void updateGameName(String name){
         gameName.setText(name);
     }
 
+    /**
+     * Actualiza la etiqueta que muestra la producción pasiva global por segundo.
+     *
+     * @param production Valor flotante de la producción actual por segundo.
+     */
     public void updateProductionXSec(float production){
         gameProduction.setText("+ " + String.format("%.2f/s", production) + " per second");
     }
 
+    /**
+     * Refresca los datos mostrados en la tabla de generaciones.
+     * Calcula dinámicamente el porcentaje de contribución de cada generador sobre el total
+     * y actualiza las filas con las cantidades y tasas de producción actuales.
+     *
+     * @param generators Lista de objetos {@link Generator} con los datos actualizados.
+     */
     public void updateGenerationsData(List<Generator> generators) {
         tableModel.setRowCount(0);
 
@@ -412,18 +530,31 @@ public class GameView extends JPanel {
         }
     }
 
+    /**
+     * Cambia el estado visual del botón de mejora del Barista a "Completado".
+     */
     public void updateUpgradeBaristaText(){
         btnUpBarista.setText("Upgraded");
     }
 
+    /**
+     * Cambia el estado visual del botón de mejora de la Máquina a "Completado".
+     */
     public void updateUpgradeMachineText(){
         btnUpMachine.setText("Upgraded");
     }
 
+    /**
+     * Cambia el estado visual del botón de mejora de la Plantación a "Completado".
+     */
     public void updateUpgradePlantationText(){
         btnUpPlantation.setText("Upgraded");
     }
 
+    /**
+     * Cambia la pestaña visible de la tienda a "Generadores" y actualiza los estilos
+     * de los botones de navegación para reflejar la selección activa.
+     */
     public void putGenerators() {
         cardLayout.show(cardsContainer, "GENERATORS");
         navGeneratorsBtn.resetButtonColors(PRIMARY_COFFEE, BG_COLOR, BG_COLOR, PRIMARY_COFFEE);
@@ -434,6 +565,10 @@ public class GameView extends JPanel {
         navUpgradesBtn.repaint();
     }
 
+    /**
+     * Cambia la pestaña visible de la tienda a "Upgrades" y actualiza los estilos
+     * de los botones de navegación para reflejar la selección activa.
+     */
     public void putUpgrades() {
         cardLayout.show(cardsContainer, "UPGRADES");
         navUpgradesBtn.resetButtonColors(PRIMARY_COFFEE, BG_COLOR, BG_COLOR, PRIMARY_COFFEE);

@@ -5,11 +5,23 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
+/**
+ * Vista que representa el menú principal de selección de partidas del usuario.
+ * Hereda de {@link JPanel} y actúa como un panel de control donde se listan las partidas
+ * actuales en curso y las partidas ya finalizadas. Proporciona acceso rápido a la
+ * creación de nuevos juegos, ajustes del sistema y estadísticas históricas.
+ */
 public class GameMenuView extends JPanel {
+
+    /** Comando de acción para cerrar la vista del menú y volver al login. */
     public static final String BTN_BACK = "BACK";
+    /** Comando de acción para cerrar la sesión del juego y volver al login. */
     public static final String BTN_LOGOUT = "LOGOUT";
+    /** Comando de acción para crear un nuevo juego. */
     public static final String BTN_NEW_GAME = "NEW_GAME";
+    /** Comando de acción para continuar un juego ya creado. */
     public static final String BTN_CONTINUE = "CONTINUE";
+    /** Comando de acción para visualizar las estadísticas de una partida ya finalizada. */
     public static final String BTN_STATS = "STATS";
 
     private final Color BG_COLOR = new Color(248, 245, 240);
@@ -24,6 +36,11 @@ public class GameMenuView extends JPanel {
     private JButton btnLogout;
     private ActionListener actionListener;
 
+    /**
+     * Constructor de la vista. Configura el layout principal de tipo {@link BoxLayout}
+     * en el eje vertical y organiza las tres secciones principales: navegación superior,
+     * rejilla de partidas actuales y rejilla de partidas finalizadas.
+     */
     public GameMenuView() {
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.setBackground(BG_COLOR);
@@ -55,7 +72,11 @@ public class GameMenuView extends JPanel {
     }
 
     /**
-     * Crea un panel que envuelve las cartas (wrapping) y las mantiene centradas.
+     * Crea un panel contenedor con {@link FlowLayout} centrado.
+     * Este componente permite que las tarjetas de juego se organicen de forma fluida
+     * según el ancho disponible en la ventana.
+     *
+     * @return Un panel configurado para albergar rejillas de tarjetas.
      */
     private JPanel createResponsiveCenteredGrid() {
         JPanel grid = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
@@ -65,6 +86,11 @@ public class GameMenuView extends JPanel {
         return grid;
     }
 
+    /**
+     * Crea el panel de navegación situado en el header de la vista
+     *
+     * @return Un panel de navegación.
+     */
     private JPanel createTopNavigationHeader() {
         JPanel header = new JPanel();
         header.setLayout(new BoxLayout(header, BoxLayout.X_AXIS));
@@ -104,6 +130,11 @@ public class GameMenuView extends JPanel {
         return header;
     }
 
+    /**
+     * Crea el panel del título con un botón
+     *
+     * @return Un panel de título con un texto.
+     */
     private JPanel createSectionHeader(String titleText, String btnText) {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
@@ -131,6 +162,24 @@ public class GameMenuView extends JPanel {
         return panel;
     }
 
+    /**
+     * Genera una tarjeta visual para representar una partida individual.
+     * La tarjeta incluye el nombre de la partida, el total de café recolectado,
+     * el tiempo de juego y un resumen de la infraestructura (Baristas, Máquinas y Plantaciones).
+     *
+     * @param radius         Radio de redondeo de la tarjeta.
+     * @param colorbg        Color de fondo de la tarjeta.
+     * @param btnText        Texto a mostrar en el botón de acción (Continuar o Estadísticas).
+     * @param name           Nombre de la partida.
+     * @param money          Cantidad de café recolectado.
+     * @param minutes        Minutos totales de juego.
+     * @param idGame         Identificador único de la partida.
+     * @param actionCommand  Comando base para el botón de acción.
+     * @param baristas       Cantidad de baristas contratados.
+     * @param machines       Cantidad de máquinas de espresso adquiridas.
+     * @param plantations    Cantidad de plantaciones en propiedad.
+     * @return Un {@link RoundedPanel} que representa visualmente la partida.
+     */
     private JPanel createGameCard(int radius, Color colorbg, String btnText, String name, String money, int minutes, int idGame, String actionCommand, int baristas, int machines, int plantations) {
         RoundedPanel card = new RoundedPanel(radius, colorbg);
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
@@ -198,6 +247,11 @@ public class GameMenuView extends JPanel {
         return card;
     }
 
+    /**
+     * Vincula el controlador de eventos a los botones de navegación estáticos.
+     *
+     * @param listener El {@link ActionListener} que procesará las interacciones.
+     */
     public void setActionListener(ActionListener listener) {
         this.actionListener = listener;
         btnBack.addActionListener(listener);
@@ -205,27 +259,61 @@ public class GameMenuView extends JPanel {
         btnNew.addActionListener(listener);
     }
 
+    /**
+     * Limpia todos los componentes de la rejilla de partidas en curso.
+     */
     public void clearCurrentGames() {
         currentGrid.removeAll();
     }
 
+    /**
+     * Añade una tarjeta de partida a la sección de juegos en curso.
+     *
+     * @param name         Nombre de la partida.
+     * @param money        Saldo de café.
+     * @param minutes      Tiempo transcurrido.
+     * @param idGame       ID de partida.
+     * @param baristas     Cantidad de baristas.
+     * @param machines     Cantidad de máquinas.
+     * @param plantations  Cantidad de plantaciones.
+     */
     public void addCurrentGameCard(String name, String money, int minutes, int idGame, int baristas, int machines, int plantations) {
         currentGrid.add(createGameCard(20, CARD_COLOR, "Continue →", name, money, minutes, idGame, BTN_CONTINUE, baristas, machines, plantations));
     }
 
+    /**
+     * Fuerza la actualización visual de la rejilla de partidas actuales.
+     */
     public void refreshCurrentGames() {
         currentGrid.revalidate();
         currentGrid.repaint();
     }
 
+    /**
+     * Limpia todos los componentes de la rejilla de partidas finalizadas.
+     */
     public void clearFinishedGames() {
         finishedGrid.removeAll();
     }
 
+    /**
+     * Añade una tarjeta de partida a la sección de juegos finalizados.
+     *
+     * @param name         Nombre de la partida.
+     * @param money        Saldo de café.
+     * @param minutes      Tiempo transcurrido.
+     * @param idGame       ID de partida.
+     * @param baristas     Cantidad de baristas.
+     * @param machines     Cantidad de máquinas.
+     * @param plantations  Cantidad de plantaciones.
+     */
     public void addFinishedGameCard(String name, String money, int minutes, int idGame, int baristas, int machines, int plantations) {
         finishedGrid.add(createGameCard(20, CARD_COLOR, "See statistics →", name, money, minutes, idGame, BTN_STATS, baristas, machines, plantations));
     }
 
+    /**
+     * Fuerza la actualización visual de la rejilla de partidas finalizadas.
+     */
     public void refreshFinishedGames() {
         finishedGrid.revalidate();
         finishedGrid.repaint();
