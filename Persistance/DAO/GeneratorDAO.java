@@ -8,16 +8,28 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Data Access Object para la entidad Generator.
+ * Se encarga de gestionar la persistencia de los generadores
+ * que el jugador compra para generar recursos de forma pasiva en el juego.
+ */
 public class GeneratorDAO {
 	private final MySQLDAO mySQLDAO;
 
+	/**
+	 * Constructor que guarda la dependencia de conexión.
+	 *
+	 * @param mySQLDAO Objeto que provee la conexión activa a la base de datos MySQL.
+	 */
 	public GeneratorDAO(MySQLDAO mySQLDAO) {
 		this.mySQLDAO = mySQLDAO;
 	}
 
 	/**
-	 * Lee todos los generadores asociados a una partida específica.
-	 * Hardcoding de valores iniciales si no existen en la DB.
+	 * Extrae de la base de datos todos los generadores asociados a una partida específica.
+	 *
+	 * @param idGame El identificador único de la partida.
+	 * @return Una lista de objetos {@link Generator} poblados con sus estadísticas actuales.
 	 */
 	public List<Generator> readByGame(int idGame) {
 		List<Generator> generators = new ArrayList<>();
@@ -45,6 +57,12 @@ public class GeneratorDAO {
 		return generators;
 	}
 
+	/**
+	 * Actualiza el estado de un generador en la base de datos tras una compra por parte del jugador.
+	 *
+	 * @param idGame    ID de la partida a la que pertenece el generador.
+	 * @param generator Objeto {@link Generator} con los nuevos valores de cantidad y precio.
+	 */
 	public void update(int idGame, Generator generator) {
 		String query = "UPDATE generador SET quantity = ?, price = ? WHERE id_generator = ? AND id_game = ?";
 		try (PreparedStatement ps = mySQLDAO.getConnection().prepareStatement(query)) {
@@ -60,11 +78,10 @@ public class GeneratorDAO {
 	}
 
 	/**
-	 * Crea el set inicial de generadores para una nueva partida.
-	 * Se definen valores base de coste y producción para equilibrar el 'early game'.
+	 * Crea el modelo base de los generadores al inicio de una nueva partida.
 	 *
 	 * @param idGame El identificador de la partida recién creada.
-	 * @return
+	 * @return La lista de generadores recién insertados.
 	 */
 	public List<Generator> createInitialGenerators(int idGame) {
 		String query = "INSERT INTO generador (name, id_game, quantity, price, period, earning) VALUES (?, ?, ?, ?, ?, ?)";

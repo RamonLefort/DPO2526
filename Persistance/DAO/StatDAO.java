@@ -9,19 +9,34 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * Data Access Object para la entidad Stat.
+ * Encargado de la persistencia de las métricas de progreso de las partidas.
+ * Permite registrar y consultar el histórico de generación de recursos
+ */
 public class StatDAO {
 
 	private MySQLDAO mySQLDAO;
 
-
+	/**
+	 * Constructor que guarda la dependencia de la conexión a la base de datos.
+	 *
+	 * @param mySQLDAO Objeto que gestiona la conexión con MySQL.
+	 */
 	public StatDAO(MySQLDAO mySQLDAO) {
 		this.mySQLDAO = mySQLDAO;
 	}
 
 	/**
 	 * Crea un nuevo registro de estadística en la tabla 'stat'.
-	 * Este método se usa tanto para el volcado minuto a minuto como para el resumen final.
+	 *
+	 * @param idGame   Identificador de la partida.
+	 * @param minute   Minuto exacto de la partida en el que se toma la muestra.
+	 * @param money    Dinero total acumulado hasta ese minuto.
+	 * @param clicks   Cantidad total de clicks manuales realizados.
+	 * @param autoGen  Cantidad total de recursos generados automáticamente.
+	 * @param maxProd  Tasa de producción máxima alcanzada en ese punto.
+	 * @param expenses Dinero total invertido en mejoras y generadores.
 	 */
 	public void create(int idGame, int minute, double money, int clicks, double autoGen, float maxProd, double expenses) {
 		String query = "INSERT INTO stat (id_games, minute_mark, money_at_minute, manual_clicks_total, " +
@@ -46,6 +61,14 @@ public class StatDAO {
 
 	/**
 	 * Inserta un registro de progreso (cada minuto) o el resumen final.
+	 *
+	 * @param idGame   Identificador de la partida.
+	 * @param minute   Minuto de la muestra.
+	 * @param money    Dinero en el minuto actual.
+	 * @param clicks   Clicks manuales totales.
+	 * @param autoGen  Generación automática total.
+	 * @param maxProd  Producción máxima.
+	 * @param expenses Gastos totales en mejoras.
 	 */
 	public void saveMinuteStat(int idGame, int minute, double money, int clicks, double autoGen, float maxProd, double expenses) {
 		String query = "INSERT INTO stat (id_games, minute_mark, money_at_minute, manual_clicks_total, " +
@@ -68,6 +91,7 @@ public class StatDAO {
 
 	/**
 	 * Recupera el historial completo de estadísticas de una partida.
+	 *
 	 * @param idGame ID de la partida a consultar.
 	 * @return Lista de objetos Stat ordenada por minuto.
 	 */
@@ -101,7 +125,7 @@ public class StatDAO {
 
 	/**
 	 * Obtiene el último registro estadístico guardado para una partida específica.
-	 * Útil para recuperar acumulados o verificar el último minuto registrado.
+	 *
 	 * @param idGame ID de la partida.
 	 * @return El objeto Stat más reciente o null si no hay registros.
 	 */
