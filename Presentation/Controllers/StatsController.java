@@ -7,12 +7,26 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+/**
+ * Controlador encargado de gestionar la visualización de estadísticas de las partidas.
+ * Implementa {@link ActionListener} para responder a las interacciones del usuario en la vista
+ * de estadísticas, coordinando la recuperación de datos históricos y la transición de regreso
+ * al menú principal.
+ */
 public class StatsController implements ActionListener {
 
 	private StatsView statsView;
 	private StatLogic statLogic;
 	private ViewController viewController;
 
+	/**
+	 * Constructor que inicializa el controlador con las dependencias necesarias de vista y lógica.
+	 * Configura este controlador como el escuchador de eventos para la vista de estadísticas.
+	 *
+	 * @param statsView      La vista encargada de representar gráficamente las estadísticas.
+	 * @param statLogic      La lógica de negocio para la recuperación de datos de telemetría.
+	 * @param viewController El gestor de navegación entre las diferentes ventanas de la aplicación.
+	 */
 	public StatsController(StatsView statsView, StatLogic statLogic, ViewController viewController) {
 		this.statsView = statsView;
 		this.statLogic = statLogic;
@@ -22,6 +36,7 @@ public class StatsController implements ActionListener {
 
 	/**
 	 * Carga y muestra las estadísticas de una partida específica.
+	 *
 	 * @param idGame El ID de la partida que acaba de terminar o que se ha seleccionado.
 	 */
 	public void loadStatsData(int idGame) {
@@ -33,6 +48,10 @@ public class StatsController implements ActionListener {
 		}
 	}
 
+	/**
+	 * Gestiona las acciones disparadas por los componentes interactivos de la vista de estadísticas.
+	 * @param e El evento de acción capturado desde la interfaz.
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		switch (e.getActionCommand()) {
@@ -42,6 +61,9 @@ public class StatsController implements ActionListener {
 		}
 	}
 
+	/**
+	 * Finaliza la visualización de estadísticas y devuelve al usuario al menú principal del juego.
+	 */
 	private void handleExit() {
 		viewController.showView("GAME MENU");
 	}

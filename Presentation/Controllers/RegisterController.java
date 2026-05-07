@@ -9,14 +9,25 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 
-
-
+/**
+ * Controlador encargado de gestionar el proceso de registro de nuevos usuarios en el sistema.
+ * Implementa {@link ActionListener} para procesar la creación de cuentas y utiliza adaptadores
+ * de ratón para facilitar la navegación de retorno hacia la pantalla de inicio de sesión.
+ */
 public class RegisterController implements ActionListener {
 
 	private final RegisterWindow view;
 	private final UserLogic userLogic;
 	private final ViewController viewController;
 
+	/**
+	 * Constructor que inicializa el controlador con las dependencias necesarias y
+	 * configura los escuchadores de eventos para los componentes de la vista de registro.
+	 *
+	 * @param view           Ventana que contiene el formulario de registro.
+	 * @param userLogic      Lógica de negocio para la validación y creación de usuarios.
+	 * @param viewController Gestor de navegación entre las diferentes vistas de la aplicación.
+	 */
 	public RegisterController(RegisterWindow view, UserLogic userLogic, ViewController viewController) {
 		this.view = view;
 		this.userLogic = userLogic;
@@ -32,6 +43,11 @@ public class RegisterController implements ActionListener {
 		});
 	}
 
+	/**
+	 * Captura y distribuye las acciones realizadas en la interfaz de usuario.
+	 *
+	 * @param e El evento de acción capturado desde la vista.
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		switch (e.getActionCommand()) {
@@ -43,6 +59,17 @@ public class RegisterController implements ActionListener {
 		}
 	}
 
+	/**
+	 * Gestiona el flujo de registro de un nuevo usuario.
+	 *
+	 * El método realiza las siguientes validaciones antes de proceder al registro:
+	 * 1. Verifica el formato del correo electrónico según las reglas de negocio.
+	 * 2. Comprueba la robustez de la contraseña.
+	 * 3. Asegura la coincidencia entre la contraseña y su confirmación.
+	 * 4. Valida la disponibilidad del nombre de usuario y del email en la base de datos.
+	 * * Si todas las validaciones son exitosas, solicita a {@link UserLogic} la creación de la cuenta
+	 * y redirige al usuario a la pantalla de Login. En caso contrario, muestra el error pertinente.
+	 */
 	private void handleRegister() {
 		String username = view.getUserField().getText().trim();
 		String email    = view.getMailField().getText().trim();
@@ -81,7 +108,9 @@ public class RegisterController implements ActionListener {
 		}
 	}
 
-
+	/**
+	 * Redirige el flujo de la aplicación hacia la vista de inicio de sesión.
+	 */
 	private void moveToLogin() {
 		viewController.showView("LOGIN");
 	}

@@ -9,12 +9,25 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-
+/**
+ * Controlador encargado de gestionar el proceso de inicio de sesión (Login).
+ * Implementa {@link ActionListener} para procesar el intento de acceso y utiliza
+ * adaptadores de ratón para gestionar la navegación hacia el registro de nuevos usuarios.
+ */
 public class LoginController implements ActionListener {
 	private final LoginWindow view;
 	private final UserLogic userLogic;
 	private final ViewController viewController;
 
+	/**
+	 * Constructor que inicializa el controlador con las dependencias necesarias y
+	 * configura los escuchadores de eventos de la vista.
+	 *
+	 * @param view           Ventana de inicio de sesión.
+	 * @param userLogic      Lógica de negocio para la validación de credenciales.
+	 * @param viewController Gestor de navegación entre ventanas.
+	 *
+	 */
 	public LoginController(LoginWindow view, UserLogic userLogic, ViewController viewController) {
 		this.view = view;
 		this.userLogic = userLogic;
@@ -30,6 +43,11 @@ public class LoginController implements ActionListener {
 		});
 	}
 
+	/**
+	 * Gestiona los eventos de acción disparados por la interfaz de usuario.
+	 *
+	 * @param e Evento de acción capturado.
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		switch (e.getActionCommand()) {
@@ -41,6 +59,12 @@ public class LoginController implements ActionListener {
 		}
 	}
 
+	/**
+	 * Procesa el intento de inicio de sesión del usuario.
+	 * Extrae las credenciales de la vista, solicita la verificación a la capa de lógica
+	 * y, en caso de éxito, redirige al usuario al menú principal del juego.
+	 * Si la autenticación falla, muestra un mensaje de error en la vista.
+	 */
 	private void handleLogin() {
 		String username = view.getUsernameField().getText().trim();
 		String password = new String(view.getPasswordField().getPassword());

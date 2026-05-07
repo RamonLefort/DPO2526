@@ -11,6 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 import Bussiness.Managers.StatLogic;
 
+/**
+ * Controlador encargado de gestionar el menú principal de selección de partidas.
+ * Implementa {@link ActionListener} para procesar la navegación hacia nuevas partidas,
+ * la reanudación de partidas existentes, la visualización de estadísticas y el cierre de sesión.
+ */
 public class GameMenuController implements ActionListener {
 
 	private final GameMenuView gameMenuView;
@@ -19,6 +24,15 @@ public class GameMenuController implements ActionListener {
 	private final ViewController viewController;
 	private final StatLogic statLogic;
 
+	/**
+	 * Constructor que inicializa el controlador con las dependencias de lógica y vista necesarias.
+	 *
+	 * @param gameMenuView   Vista que muestra el listado de partidas disponibles.
+	 * @param gameLogic      Lógica de gestión de datos de partida.
+	 * @param statLogic      Lógica de gestión de telemetría y partidas finalizadas.
+	 * @param userLogic      Lógica de gestión de usuarios para identificar la sesión activa.
+	 * @param viewController Gestor de navegación entre ventanas.
+	 */
 	public GameMenuController(GameMenuView gameMenuView, GameLogic gameLogic, StatLogic statLogic, UserLogic userLogic, ViewController viewController) {
 		this.gameMenuView = gameMenuView;
 		this.gameLogic = gameLogic;
@@ -28,6 +42,13 @@ public class GameMenuController implements ActionListener {
 		this.gameMenuView.setActionListener(this);
 	}
 
+	/**
+	 * Procesa los eventos de acción disparados desde el menú de partidas.
+	 * Gestiona comandos estáticos (atrás, logout, nueva partida) y comandos dinámicos
+	 * asociados a las tarjetas de partidas específicas (continuar, ver estadísticas).
+	 *
+	 * @param e El evento de acción capturado.
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		switch (e.getActionCommand()) {
@@ -46,27 +67,51 @@ public class GameMenuController implements ActionListener {
 		}
 	}
 
+	/**
+	 * Transiciona la aplicación hacia la vista activa de una partida guardada.
+	 *
+	 * @param idGame Identificador único de la partida a reanudar.
+	 */
 	public void handleResumeGame(int idGame) {
 		viewController.showGameView(idGame, userLogic.getCurrentUser().getUsername());
 	}
 
+	/**
+	 * Redirige a la vista de análisis estadístico de una partida específica.
+	 *
+	 * @param idGame ID de la partida a analizar.
+	 */
 	private void handleStats(int idGame) {
 		viewController.showStats(idGame);
 	}
 
+	/**
+	 * Regresa al usuario a la pantalla de configuración del sistema.
+	 */
 	private void handleBack() {
 		viewController.showView("SETTINGS");
 	}
 
+	/**
+	 * Cierra la sesión del usuario actual y regresa a la pantalla de inicio de sesión.
+	 */
 	private void handleLogout() {
 		userLogic.logout();
 		viewController.showView("LOGIN");
 	}
 
+	/**
+	 * Redirige a la pantalla de creación de una nueva partida.
+	 */
 	public void handleNewGame() {
 		viewController.showView("GAME CREATOR");
 	}
 
+	/**
+	 * Realiza la carga de datos para poblar el menú.
+	 * Filtra la lista total de partidas del usuario para separar aquellas que están
+	 * en curso de las que ya han sido finalizadas.
+	 */
 	public void loadGames() {
 		String username = userLogic.getCurrentUser().getUsername();
 		List<Game> allGames = gameLogic.getUserGames(username);
@@ -89,6 +134,13 @@ public class GameMenuController implements ActionListener {
 		loadFinishedGames(finishedGames);
 	}
 
+	/**
+	 * Llena la sección de partidas en curso de la vista.
+	 * Por cada partida, recupera la cantidad de generadores poseídos para mostrarlos
+	 * en la tarjeta de resumen.
+	 *
+	 * @param games Lista de partidas activas del usuario.
+	 */
 	public void loadCurrentGames(List<Game> games) {
 		gameMenuView.clearCurrentGames();
 		for (Game game : games) {
@@ -116,6 +168,10 @@ public class GameMenuController implements ActionListener {
 		gameMenuView.refreshCurrentGames();
 	}
 
+	/**
+	 * Llena la sección de partidas finalizadas de la vista.
+	 * @param games Lista de partidas completadas del usuario.
+	 */
 	public void loadFinishedGames(List<Game> games) {
 		gameMenuView.clearFinishedGames();
 		for (Game game : games) {
@@ -142,7 +198,4 @@ public class GameMenuController implements ActionListener {
 		}
 		gameMenuView.refreshFinishedGames();
 	}
-
-	public void handleDeleteGame() {}
-	public void handleCloneGame() {}
 }

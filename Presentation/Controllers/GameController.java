@@ -13,6 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.Timer;
 
+/**
+ * Controlador principal del flujo de juego.
+ * Implementa {@link ActionListener} para gestionar todas las acciones del usuario en la vista de juego,
+ * desde la generación de recursos por clic hasta la compra de infraestructuras y mejoras.
+ * Además, gestiona el hilo de tiempo del juego para el registro de estadísticas y autoguardado.
+ */
 public class GameController implements ActionListener {
 
 	private Game currentGame;
@@ -30,6 +36,17 @@ public class GameController implements ActionListener {
 	private double expenses = 0, autogen;
 	private List<Upgrade> upgrades;
 
+	/**
+	 * Constructor que inicializa el controlador con todas las dependencias de lógica y vista.
+	 *
+	 * @param gameView Vista interactiva del juego.
+	 * @param gameplayLogic Lógica de ejecución en tiempo real (hilos).
+	 * @param viewController Gestor de navegación entre vistas.
+	 * @param idGame ID de la partida actual.
+	 * @param username Nombre del usuario en sesión.
+	 * @param gameLogic Lógica de gestión de datos de partida.
+	 * @param statLogic Lógica de gestión de telemetría y estadísticas.
+	 */
 	public GameController(GameView gameView, GameplayLogic gameplayLogic, ViewController viewController, int idGame, String username, GameLogic gameLogic, StatLogic statLogic) {
 		this.gameView = gameView;
 		this.gameplayLogic = gameplayLogic;
@@ -41,6 +58,12 @@ public class GameController implements ActionListener {
 		this.gameView.setActionListener(this);
 	}
 
+	/**
+	 * Punto de entrada para los eventos generados en la interfaz gráfica.
+	 * Distribuye la lógica según el comando de acción recibido desde los botones de la vista.
+	 *
+	 * @param e El evento de acción capturado.
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		switch (e.getActionCommand()) {
@@ -58,6 +81,14 @@ public class GameController implements ActionListener {
 		}
 	}
 
+	/**
+	 * Configura el estado inicial de una partida cargando datos de persistencia.
+	 * Sincroniza los precios de los generadores, el estado de las mejoras y
+	 * restaura las métricas del último minuto registrado.
+	 *
+	 * @param idGame Identificador de la partida a cargar.
+	 * @param username Usuario propietario.
+	 */
 	public void loadGame(int idGame, String username) {
 		this.idGame = idGame;
 		this.username = username;
@@ -99,6 +130,11 @@ public class GameController implements ActionListener {
 		startTimer();
 	}
 
+	/**
+	 * Inicia el temporizador de juego.
+	 * Gestiona el paso de segundos, minutos y horas. Cada 60 segundos realiza
+	 * un volcado de estadísticas a la base de datos y cada 30 segundos ejecuta un autoguardado.
+	 */
 	public void startTimer() {
 		if (gameTimer != null && gameTimer.isRunning()) return;
 
@@ -128,10 +164,16 @@ public class GameController implements ActionListener {
 		gameTimer.start();
 	}
 
+	/**
+	 * Guarda el estado actual de la partida (dinero, tiempo y producción) de forma persistente.
+	 */
 	private void saveCurrentProgress() {
 		gameLogic.saveGame(username, idGame, currentGame.getMoney(), currentGame.getHours(), currentGame.getMinutes(), currentGame.getSeconds(), currentGame.getCoffeePerClick(), currentGame.getProduction_per_sec());
 	}
 
+	/**
+	 * Cambia la vista del juego a la página del menú
+	 */
 	private void handleBack() {
 		saveCurrentProgress();
 		gameplayLogic.stopAutoGenerators();
@@ -139,6 +181,9 @@ public class GameController implements ActionListener {
 		viewController.showView("GAME MENU");
 	}
 
+	/**
+	 * Cambia la vista del juego a la página del menú y finaliza el juego
+	 */
 	private void handleFinishGame() {
 		saveCurrentProgress();
 		gameLogic.finishGame(idGame);
@@ -148,6 +193,10 @@ public class GameController implements ActionListener {
 		viewController.showView("GAME MENU");
 	}
 
+	/**
+	 * Gestiona la acción de clic manual sobre el recurso principal.
+	 * Incrementa los contadores de clics para estadísticas y el saldo de dinero.
+	 */
 	private void handleClickGenerate() {
 		this.clicks++;
 		this.clicks_per_min++;
@@ -155,6 +204,10 @@ public class GameController implements ActionListener {
 		gameView.updateCoffeeCount((int) currentGame.getMoney());
 	}
 
+	/**
+	 * Procesa la compra de un Barista. Valída fondos, actualiza la producción por segundo
+	 * y recalcula el precio inflado para la siguiente unidad.
+	 */
 	public void handleBarista() {
 		Generator barista = null;
 		for (Generator g : generators) {
@@ -188,6 +241,10 @@ public class GameController implements ActionListener {
 		}
 	}
 
+	/**
+	 * Procesa la compra de una Maquina. Valída fondos, actualiza la producción por segundo
+	 * y recalcula el precio inflado para la siguiente unidad.
+	 */
 	public void handleMachine() {
 		Generator machine = null;
 		for (Generator g : generators) {
@@ -222,6 +279,10 @@ public class GameController implements ActionListener {
 		}
 	}
 
+	/**
+	 * Procesa la compra de un Plantación. Valída fondos, actualiza la producción por segundo
+	 * y recalcula el precio inflado para la siguiente unidad.
+	 */
 	public void handlePlantation() {
 		Generator plantation = null;
 		for (Generator g : generators) {
@@ -255,6 +316,10 @@ public class GameController implements ActionListener {
 		}
 	}
 
+	/**
+	 * Procesa la compra de la mejora para el Barista.
+	 * Duplica la eficiencia del generador y actualiza la tasa de producción global.
+	 */
 	public void handleUpgradeBarista() {
 		Generator barista = null;
 		for (Generator g : generators) {
@@ -295,6 +360,10 @@ public class GameController implements ActionListener {
 		}
 	}
 
+	/**
+	 * Procesa la compra de la mejora para la Maquina.
+	 * Duplica la eficiencia del generador y actualiza la tasa de producción global.
+	 */
 	public void handleUpgradeMachine() {
 		Generator machine = null;
 		for (Generator g : generators) {
@@ -335,6 +404,10 @@ public class GameController implements ActionListener {
 		}
 	}
 
+	/**
+	 * Procesa la compra de la mejora para la Plantación.
+	 * Duplica la eficiencia del generador y actualiza la tasa de producción global.
+	 */
 	public void handleUpgradePlantation() {
 		Generator plantation = null;
 		for (Generator g : generators) {
@@ -375,14 +448,25 @@ public class GameController implements ActionListener {
 		}
 	}
 
+	/**
+	 * Cambia la vista del menú izquierdo a los Generadores.
+	 */
 	public void handleGenerators() {
 		gameView.putGenerators();
 	}
 
+	/**
+	 * Cambia la vista del menú izquierdo a las Mejoras.
+	 */
 	public void handleUpgrades() {
 		gameView.putUpgrades();
 	}
 
+	/**
+	 * Registra la producción generada automáticamente por los hilos secundarios.
+	 *
+	 * @param quantity Cantidad de recursos producidos en un ciclo de hilo.
+	 */
 	public void addAutogen(double quantity){
 		autogen += quantity;
 	}
