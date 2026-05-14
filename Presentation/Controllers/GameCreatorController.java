@@ -73,7 +73,7 @@ public class GameCreatorController implements ActionListener {
                 handleCreateGame();
                 break;
             default:
-                System.err.println("Unknown action command: " + e.getActionCommand());
+                System.err.println("Comando desconocido: " + e.getActionCommand());
         }
     }
 
