@@ -55,7 +55,7 @@ public class LoginController implements ActionListener {
 				handleLogin();
 				break;
 			default:
-				System.err.println("Unknown action command: " + e.getActionCommand());
+				System.err.println("Comando desconocido: " + e.getActionCommand());
 		}
 	}
 
