@@ -31,7 +31,7 @@ public class SettingController implements ActionListener {
 				handleDeleteAccount();
 				break;
 			default:
-				System.err.println("Unknown action command: " + e.getActionCommand());
+				System.err.println("Comando desconocido: " + e.getActionCommand());
 		}
 	}
 
