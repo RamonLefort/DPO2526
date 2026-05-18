@@ -1,8 +1,11 @@
 package Presentation.Controllers;
 
-import Bussiness.Managers.SettingLogic;
+import Bussiness.Exceptions.DAOException;
 import Bussiness.Managers.UserLogic;
+import Presentation.Exceptions.CustomUIException;
 import Presentation.Views.SettingView;
+
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -28,15 +31,11 @@ public class SettingController implements ActionListener {
 				handleLogout();
 				break;
 			case SettingView.BTN_DELETE_ACCOUNT:
-				handleDeleteAccount();
-				break;
+                handleDeleteAccount();
+                break;
 			default:
 				System.err.println("Comando desconocido: " + e.getActionCommand());
 		}
-	}
-
-	public void handleSaveSettings() {
-
 	}
 
 	public void handleLogout() {
@@ -46,11 +45,12 @@ public class SettingController implements ActionListener {
 
 	public void handleDeleteAccount() {
 		String username = userLogic.getCurrentUser().getUsername();
-		userLogic.deleteAccount(username);
-		viewController.showView("LOGIN");
-	}
-
-	public void loadSettings(String username) {
-
+        try {
+            userLogic.deleteAccount(username);
+        } catch (DAOException e) {
+			CustomUIException uiException = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
+			uiException.showDialog(null);
+        }
+        viewController.showView("LOGIN");
 	}
 }

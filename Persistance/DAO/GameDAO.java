@@ -36,7 +36,7 @@ public class GameDAO {
 	 * @param username Nombre del usuario al que pertenece la partida.
 	 * @return El ID numérico autogenerado por la base de datos para la nueva partida, o 0 si falla.
 	 */
-	public int createGame(String nameGame, String username) {
+	public int createGame(String nameGame, String username) throws SQLException {
 		String query = "INSERT INTO game (name_game, username, money, minutes, seconds, coffee_per_click) VALUES (?, ?, 0, 0, 0, 1)";
 		try (PreparedStatement ps = mySQLDAO.getConnection().prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 			ps.setString(1, nameGame);
@@ -47,7 +47,7 @@ public class GameDAO {
 				return rs.getInt(1);
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new SQLException(e);
 		}
 		return 0;
 	}
@@ -59,7 +59,7 @@ public class GameDAO {
 	 * @return Una lista de objetos {@link Game} ordenados por la base de datos.
 	 * Devuelve una lista vacía si el usuario no tiene partidas registradas.
 	 */
-	public List<Game> getGamesByUser(String username) {
+	public List<Game> getGamesByUser(String username) throws SQLException {
 		List<Game> games = new ArrayList<>();
 		String query = "SELECT * FROM game WHERE username = ?";
 		try (PreparedStatement ps = mySQLDAO.getConnection().prepareStatement(query)) {
@@ -80,7 +80,7 @@ public class GameDAO {
 				));
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new SQLException(e);
 		}
 		return games;
 	}
@@ -90,7 +90,7 @@ public class GameDAO {
 	 *
 	 * @param idGame El identificador único de la partida a destruir.
 	 */
-	public void deleteGame(int idGame) {
+	public void deleteGame(int idGame) throws SQLException {
 		mySQLDAO.deleteObject("game", "id_game", String.valueOf(idGame));
 	}
 
@@ -99,7 +99,7 @@ public class GameDAO {
 	 *
 	 * @param idGame El identificador único de la partida que se da por concluida.
 	 */
-	public void finishGame(int idGame){
+	public void finishGame(int idGame) throws SQLException {
 		String query = "UPDATE game SET finished = ? WHERE id_game = ?";
 
 		try (PreparedStatement ps = mySQLDAO.getConnection().prepareStatement(query)) {
@@ -107,7 +107,7 @@ public class GameDAO {
 			ps.setInt(2, idGame);
 			ps.executeUpdate();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new SQLException(e);
 		}
 	}
 
@@ -117,14 +117,13 @@ public class GameDAO {
 	 * @param nameGame Nombre a verificar.
 	 * @return {@code true} si ya existe una partida con ese nombre, {@code false} en caso contrario.
 	 */
-	public boolean existsByName(String nameGame) {
+	public boolean existsByName(String nameGame) throws SQLException {
 		ResultSet rs = mySQLDAO.readSpecific("game", "name_game", nameGame);
 		try {
 			return rs != null && rs.next();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new SQLException(e);
 		}
-		return false;
 	}
 
 	/**
@@ -139,7 +138,7 @@ public class GameDAO {
 	 * @param coffeexclicks         Nivel actual de producción por cada click manual.
 	 * @param production_per_second Tasa actual de generación automática.
 	 */
-	public void updateGame(String username, int idGame, double money, int hours, int minutes, int seconds, int coffeexclicks, float production_per_second) {
+	public void updateGame(String username, int idGame, double money, int hours, int minutes, int seconds, int coffeexclicks, float production_per_second) throws SQLException {
 		String query = "UPDATE game SET money = ?, minutes = ?, seconds = ?, hours = ?, coffee_per_click = ?, production_per_second = ? WHERE id_game = ?";
 
 		try (PreparedStatement ps = mySQLDAO.getConnection().prepareStatement(query)) {
@@ -152,7 +151,7 @@ public class GameDAO {
 			ps.setInt(7, idGame);
 			ps.executeUpdate();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new SQLException(e);
 		}
 	}
 
@@ -163,7 +162,7 @@ public class GameDAO {
 	 * @param username El nombre de usuario dueño de las partidas.
 	 * @return Una lista de objetos {@link Game} cuyo campo {@code finished} es verdadero.
 	 */
-	public List<Game> readFinishedGames(String username) {
+	public List<Game> readFinishedGames(String username) throws SQLException {
 		List<Game> games = new ArrayList<>();
 		String query = "SELECT * FROM game WHERE username = ? AND finished = true";
 		try (PreparedStatement ps = mySQLDAO.getConnection().prepareStatement(query)) {
@@ -184,7 +183,7 @@ public class GameDAO {
 				));
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new SQLException(e);
 		}
 		return games;
 	}

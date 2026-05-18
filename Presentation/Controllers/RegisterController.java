@@ -1,13 +1,18 @@
 package Presentation.Controllers;
 
+import Bussiness.Exceptions.DAOException;
 import Bussiness.Managers.UserLogic;
+import Presentation.Exceptions.CustomUIException;
 import Presentation.Views.RegisterWindow;
+
+import javax.swing.*;
 import java.awt.event.MouseEvent;
 
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
+import java.sql.SQLException;
 
 /**
  * Controlador encargado de gestionar el proceso de registro de nuevos usuarios en el sistema.
@@ -59,54 +64,48 @@ public class RegisterController implements ActionListener {
 		}
 	}
 
-	/**
-	 * Gestiona el flujo de registro de un nuevo usuario.
-	 *
-	 * El método realiza las siguientes validaciones antes de proceder al registro:
-	 * 1. Verifica el formato del correo electrónico según las reglas de negocio.
-	 * 2. Comprueba la robustez de la contraseña.
-	 * 3. Asegura la coincidencia entre la contraseña y su confirmación.
-	 * 4. Valida la disponibilidad del nombre de usuario y del email en la base de datos.
-	 * * Si todas las validaciones son exitosas, solicita a {@link UserLogic} la creación de la cuenta
-	 * y redirige al usuario a la pantalla de Login. En caso contrario, muestra el error pertinente.
-	 */
 	private void handleRegister() {
-		String username = view.getUserField().getText().trim();
-		String email    = view.getMailField().getText().trim();
-		String password = new String(view.getPasswordField().getPassword()).trim();
-		String confirm  = new String(view.getConfirmField().getPassword()).trim();
+		try {
+			String username = view.getUserField().getText().trim();
+			String email    = view.getMailField().getText().trim();
+			String password = new String(view.getPasswordField().getPassword()).trim();
+			String confirm  = new String(view.getConfirmField().getPassword()).trim();
 
-		if (!userLogic.validateEmail(email)) {
-			view.showError("El email no tiene un formato válido (@gmail.com).");
-			return;
-		}
+			if (!userLogic.validateEmail(email)) {
+				throw new CustomUIException("El email no tiene un formato válido (@gmail.com).", "Formato Inválido", JOptionPane.WARNING_MESSAGE);
+			}
 
-		if (!userLogic.validatePassword(password)) {
-			view.showError("La contraseña debe tener letras, números y una mayúscula.");
-			return;
-		}
+			if (!userLogic.validatePassword(password)) {
+				throw new CustomUIException("La contraseña debe tener letras, números y al menos una mayúscula.", "Contraseña Débil", JOptionPane.WARNING_MESSAGE);
+			}
 
-		if (!password.equals(confirm)) {
-			view.showError("Las contraseñas no coinciden.");
-			return;
-		}
+			if (!password.equals(confirm)) {
+				throw new CustomUIException("Las contraseñas introducidas no coinciden.", "Error de Coincidencia", JOptionPane.WARNING_MESSAGE);
+			}
 
-		if (userLogic.usernameExists(username)) {
-			view.showError("El nombre de usuario ya está en uso.");
-			return;
-		}
+			try {
+				if (userLogic.usernameExists(username)) {
+					throw new CustomUIException("El nombre de usuario ya está en uso por otra cuenta.", "Usuario Duplicado", JOptionPane.ERROR_MESSAGE);
+				}
 
-		if (userLogic.emailExists(email)) {
-			view.showError("El email ya está registrado.");
-			return;
-		}
+				if (userLogic.emailExists(email)) {
+					throw new CustomUIException("El email ya está registrado en el sistema.", "Email Duplicado", JOptionPane.ERROR_MESSAGE);
+				}
 
-		if (userLogic.register(username, email, password, confirm)) {
-			viewController.showView("LOGIN");
-		} else {
-			view.showError("Error al registrar. Inténtalo de nuevo.");
+				if (!userLogic.register(username, email, password, confirm)) {
+					throw new CustomUIException("No se ha podido procesar el alta del usuario. Verifica los campos.", "Error de Negocio", JOptionPane.ERROR_MESSAGE);
+				}
+
+				viewController.showView("LOGIN");
+
+			} catch (DAOException daoEx) {
+				throw new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
+			}
+
+		} catch (CustomUIException uiEx) {
+			uiEx.showDialog(view);
 		}
-	}
+    }
 
 	/**
 	 * Redirige el flujo de la aplicación hacia la vista de inicio de sesión.

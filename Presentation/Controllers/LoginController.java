@@ -1,9 +1,12 @@
 package Presentation.Controllers;
 
 import Bussiness.Entities.User;
+import Bussiness.Exceptions.DAOException;
 import Bussiness.Managers.UserLogic;
+import Presentation.Exceptions.CustomUIException;
 import Presentation.Views.LoginWindow;
 
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -53,7 +56,7 @@ public class LoginController implements ActionListener {
 		switch (e.getActionCommand()) {
 			case LoginWindow.BTN_LOGIN:
 				handleLogin();
-				break;
+                break;
 			default:
 				System.err.println("Comando desconocido: " + e.getActionCommand());
 		}
@@ -68,13 +71,18 @@ public class LoginController implements ActionListener {
 	private void handleLogin() {
 		String username = view.getUsernameField().getText().trim();
 		String password = new String(view.getPasswordField().getPassword());
+        User user = null;
+        try {
+            user = userLogic.login(username, password);
+        } catch (DAOException e) {
+			CustomUIException uiException = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
+			uiException.showDialog(null);
+        }
 
-		User user = userLogic.login(username, password);
-
-		if (user != null) {
+        if (user != null) {
 			viewController.showView("GAME MENU");
-		} else {
-			view.showError("Usuario o contraseña incorrectos.");
+		}else{
+			view.showError("Usuario o contraseña incorrecto");
 		}
 	}
 }

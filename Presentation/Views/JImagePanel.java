@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
@@ -27,12 +28,12 @@ public class JImagePanel extends JPanel {
      * @param path the path
      */
 // Constructor with parameters
-    public JImagePanel(String path) {
+    public JImagePanel(String path) throws IOException {
         try {
             image = ImageIO.read(new File(path));
         } catch (IOException e) {
             // Not properly managed, sorry!
-            e.printStackTrace();
+            throw new IOException(e);
         }
     }
 
@@ -92,12 +93,12 @@ public class JImagePanel extends JPanel {
      *
      * @param path the path
      */
-    public void setImage(String path) {
+    public void setImage(String path) throws IOException {
         try {
             this.image = ImageIO.read(new File(path));
             repaint();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IOException(e);
         }
     }
 
@@ -108,7 +109,7 @@ public class JImagePanel extends JPanel {
      * @param framesList the frames list
      * @return the timer
      */
-    public Timer configureAnimation(int frameTimer, ArrayList<String> framesList) {
+    public Timer configureAnimation(int frameTimer, ArrayList<String> framesList) throws IOException {
         if (animationTimer != null && animationTimer.isRunning()) {
             animationTimer.stop();
         }
@@ -121,7 +122,7 @@ public class JImagePanel extends JPanel {
             try {
                 loadedFrames.add(ImageIO.read(new File(path)));
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new IOException(e);
             }
         }
 

@@ -1,8 +1,12 @@
 package Presentation.Controllers;
 
 import Bussiness.Entities.Stat;
+import Bussiness.Exceptions.DAOException;
 import Bussiness.Managers.StatLogic;
+import Presentation.Exceptions.CustomUIException;
 import Presentation.Views.StatsView;
+
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -40,8 +44,14 @@ public class StatsController implements ActionListener {
 	 * @param idGame El ID de la partida que acaba de terminar o que se ha seleccionado.
 	 */
 	public void loadStatsData(int idGame) {
-		List<Stat> gameHistory = statLogic.getAllStats(idGame);
-		if (gameHistory != null && !gameHistory.isEmpty()) {
+        List<Stat> gameHistory = null;
+        try {
+            gameHistory = statLogic.getAllStats(idGame);
+        } catch (DAOException e) {
+			CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
+			uiEx.showDialog(null);
+        }
+        if (gameHistory != null && !gameHistory.isEmpty()) {
 			statsView.displayStats(gameHistory);
 		} else {
 			System.err.println("No se encontraron estadísticas para la partida: " + idGame);

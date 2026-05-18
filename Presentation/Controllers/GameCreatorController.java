@@ -1,12 +1,16 @@
 package Presentation.Controllers;
 
+import Bussiness.Exceptions.DAOException;
 import Bussiness.Managers.GameLogic;
 import Bussiness.Managers.StatLogic;
+import Presentation.Exceptions.CustomUIException;
 import Presentation.Views.GameCreator;
 import Bussiness.Managers.UserLogic;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import Bussiness.Entities.User;
+
+import javax.swing.*;
 
 /**
  * Controlador encargado de gestionar la vista de creación de nuevas partidas.
@@ -114,19 +118,40 @@ public class GameCreatorController implements ActionListener {
         User currentUser = userLogic.getCurrentUser();
         String currentUsername = currentUser.getUsername();
 
-        int idGame = gameLogic.createGame(gameName, currentUsername);
+        int idGame = 0;
+        try {
+            idGame = gameLogic.createGame(gameName, currentUsername);
+        } catch (DAOException e) {
+            CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
+            uiEx.showDialog(null);
+        }
         if (idGame == 0) {
-            view.showError("No se pudo crear la partida. Inténtalo de nuevo.");
-            return;
+            CustomUIException uiEx = new CustomUIException("No se pudo crear la partida. Inténtalo de nuevo.", "Partida incorrecta", JOptionPane.ERROR_MESSAGE);
+            uiEx.showDialog(null);
         }
         if (idGame == -1) {
-            view.showError("Ya tienes una partida con ese nombre.");
-            return;
+            CustomUIException uiEx =  new CustomUIException("Ya tienes una partida con ese nombre.", "Nombre Repetido", JOptionPane.ERROR_MESSAGE);
+            uiEx.showDialog(null);
         }
         if (idGame != 0) {
-            gameLogic.createGenerators(idGame);
-            gameLogic.createUpgrades(idGame, gameLogic.getGenerators(idGame));
-            statLogic.createStat(idGame);
+            try {
+                gameLogic.createGenerators(idGame);
+            } catch (DAOException e) {
+                CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
+                uiEx.showDialog(null);
+            }
+            try {
+                gameLogic.createUpgrades(idGame, gameLogic.getGenerators(idGame));
+            } catch (DAOException e) {
+                CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
+                uiEx.showDialog(null);
+            }
+            try {
+                statLogic.createStat(idGame);
+            } catch (DAOException e) {
+                CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
+                uiEx.showDialog(null);
+            }
             viewController.showGameView(idGame, currentUsername);
         }
     }

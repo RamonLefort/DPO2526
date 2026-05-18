@@ -38,7 +38,7 @@ public class StatDAO {
 	 * @param maxProd  Tasa de producción máxima alcanzada en ese punto.
 	 * @param expenses Dinero total invertido en mejoras y generadores.
 	 */
-	public void create(int idGame, int minute, double money, int clicks, double autoGen, float maxProd, double expenses) {
+	public void create(int idGame, int minute, double money, int clicks, double autoGen, float maxProd, double expenses) throws SQLException {
 		String query = "INSERT INTO stat (id_games, minute_mark, money_at_minute, manual_clicks_total, " +
 				"auto_generated_total, max_production_rate, upgrades_expenses) " +
 				"VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -54,8 +54,7 @@ public class StatDAO {
 
 			ps.executeUpdate();
 		} catch (SQLException e) {
-			System.err.println("Error al insertar estadísticas: " + e.getMessage());
-			e.printStackTrace();
+			throw new SQLException(e);
 		}
 	}
 
@@ -70,7 +69,7 @@ public class StatDAO {
 	 * @param maxProd  Producción máxima.
 	 * @param expenses Gastos totales en mejoras.
 	 */
-	public void saveMinuteStat(int idGame, int minute, double money, int clicks, double autoGen, float maxProd, double expenses) {
+	public void saveMinuteStat(int idGame, int minute, double money, int clicks, double autoGen, float maxProd, double expenses) throws SQLException {
 		String query = "INSERT INTO stat (id_games, minute_mark, money_at_minute, manual_clicks_total, " +
 				"auto_generated_total, max_production_rate, upgrades_expenses) " +
 				"VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -85,7 +84,7 @@ public class StatDAO {
 			ps.setDouble(7, expenses);
 			ps.executeUpdate();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new SQLException(e);
 		}
 	}
 
@@ -95,7 +94,7 @@ public class StatDAO {
 	 * @param idGame ID de la partida a consultar.
 	 * @return Lista de objetos Stat ordenada por minuto.
 	 */
-	public List<Stat> readByGame(int idGame) {
+	public List<Stat> readByGame(int idGame) throws SQLException {
 		List<Stat> stats = new ArrayList<>();
 		String query = "SELECT * FROM stat WHERE id_games = ? ORDER BY minute_mark ASC";
 
@@ -117,8 +116,7 @@ public class StatDAO {
 				}
 			}
 		} catch (SQLException e) {
-			System.err.println("Error al leer estadísticas: " + e.getMessage());
-			e.printStackTrace();
+			throw new SQLException(e);
 		}
 		return stats;
 	}
@@ -129,7 +127,7 @@ public class StatDAO {
 	 * @param idGame ID de la partida.
 	 * @return El objeto Stat más reciente o null si no hay registros.
 	 */
-	public Stat getLastMinuteStat(int idGame) {
+	public Stat getLastMinuteStat(int idGame) throws SQLException {
 		Stat lastStat = null;
 		// Buscamos el minuto máximo usando ORDER BY y LIMIT 1 para optimizar la consulta.
 		String query = "SELECT * FROM stat WHERE id_games = ? ORDER BY minute_mark DESC LIMIT 1";
@@ -152,8 +150,7 @@ public class StatDAO {
 				}
 			}
 		} catch (SQLException e) {
-			System.err.println("Error al obtener la última estadística: " + e.getMessage());
-			e.printStackTrace();
+			throw new SQLException(e);
 		}
 		return lastStat;
 	}

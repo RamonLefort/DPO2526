@@ -30,7 +30,7 @@ public class UpgradeDAO {
 	 *
 	 * @param upgrade Objeto {@link Upgrade} que contiene la información de la mejora a persistir.
 	 */
-	public void create(Upgrade upgrade) {
+	public void create(Upgrade upgrade) throws SQLException {
 		String query = "INSERT INTO upgrade (id_generator, id_game, active, price) VALUES (?, ?, ?, ?)";
 		try (PreparedStatement ps = mySQLDAO.getConnection().prepareStatement(query)) {
 			ps.setInt(1, upgrade.getIdGenerator());
@@ -39,7 +39,7 @@ public class UpgradeDAO {
 			ps.setDouble(4, upgrade.getPrice());
 			ps.executeUpdate();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new SQLException(e);
 		}
 	}
 
@@ -51,7 +51,7 @@ public class UpgradeDAO {
 	 * @param idMachine    ID del generador 'Espresso Machine' en esta partida.
 	 * @param idPlantation ID del generador 'Coffee Plantation' en esta partida.
 	 */
-	public void createInitialUpgrades(int idGame, int idBarista, int idMachine, int idPlantation) {
+	public void createInitialUpgrades(int idGame, int idBarista, int idMachine, int idPlantation) throws SQLException {
 		String query = "INSERT INTO upgrade (id_generator, id_game, active, price) VALUES (?, ?, ?, ?)";
 
 		try (PreparedStatement ps = mySQLDAO.getConnection().prepareStatement(query)) {
@@ -78,8 +78,7 @@ public class UpgradeDAO {
 
 			ps.executeBatch();
 		} catch (SQLException e) {
-			System.err.println("Error al inicializar generadores: " + e.getMessage());
-			e.printStackTrace();
+			throw new SQLException(e);
 		}
 	}
 
@@ -89,7 +88,7 @@ public class UpgradeDAO {
 	 * @param idGame ID de la partida a consultar.
 	 * @return Lista de objetos {@link Upgrade} vinculados a la partida.
 	 */
-	public List<Upgrade> readByGame(int idGame) {
+	public List<Upgrade> readByGame(int idGame) throws SQLException {
 		List<Upgrade> upgrades = new ArrayList<>();
 		String query = "SELECT * FROM upgrade WHERE id_game = ?";
 		try (PreparedStatement ps = mySQLDAO.getConnection().prepareStatement(query)) {
@@ -106,7 +105,7 @@ public class UpgradeDAO {
 				}
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new SQLException(e);
 		}
 		return upgrades;
 	}
@@ -117,7 +116,7 @@ public class UpgradeDAO {
 	 * @param idGenerator ID único del generador.
 	 * @return Lista de mejoras aplicables a dicho generador.
 	 */
-	public List<Upgrade> readByGenerator(int idGenerator) {
+	public List<Upgrade> readByGenerator(int idGenerator) throws SQLException {
 		List<Upgrade> upgrades = new ArrayList<>();
 		String query = "SELECT * FROM upgrade WHERE id_generator = ?";
 		try (PreparedStatement ps = mySQLDAO.getConnection().prepareStatement(query)) {
@@ -134,7 +133,7 @@ public class UpgradeDAO {
 				}
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new SQLException(e);
 		}
 		return upgrades;
 	}
@@ -146,7 +145,7 @@ public class UpgradeDAO {
 	 * @param idGenerator ID del generador al que pertenece la mejora.
 	 * @param active      Nuevo estado de activación (true/false).
 	 */
-	public void update(int idGame, int idGenerator, boolean active) {
+	public void update(int idGame, int idGenerator, boolean active) throws SQLException {
 		String query = "UPDATE upgrade SET active = ? WHERE id_game = ? AND id_generator = ?";
 		try (PreparedStatement ps = mySQLDAO.getConnection().prepareStatement(query)) {
 			ps.setBoolean(1, active);
@@ -154,7 +153,7 @@ public class UpgradeDAO {
 			ps.setInt(3, idGenerator);
 			ps.executeUpdate();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new SQLException(e);
 		}
 	}
 
@@ -163,13 +162,13 @@ public class UpgradeDAO {
 	 *
 	 * @param idUpgrade Identificador único de la mejora a eliminar.
 	 */
-	public void delete(int idUpgrade) {
+	public void delete(int idUpgrade) throws SQLException {
 		String query = "DELETE FROM upgrade WHERE id_upgrade = ?";
 		try (PreparedStatement ps = mySQLDAO.getConnection().prepareStatement(query)) {
 			ps.setInt(1, idUpgrade);
 			ps.executeUpdate();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new SQLException(e);
 		}
 	}
 }

@@ -1,9 +1,11 @@
 package Bussiness.Managers;
 
 import Bussiness.Entities.User;
+import Bussiness.Exceptions.DAOException;
 import Persistance.DAO.UserDAO;
-import Persistance.DAO.SettingDAO;
 import org.mindrot.jbcrypt.BCrypt;
+
+import java.sql.SQLException;
 
 /**
  * Clase de lógica de negocio encargada de la gestión de cuentas de usuario y seguridad.
@@ -11,18 +13,15 @@ import org.mindrot.jbcrypt.BCrypt;
 public class UserLogic {
 
 	private UserDAO userDAO;
-	private SettingDAO settingDAO;
 	private User currentUser;
 
 	/**
 	 * Constructor que inicializa los servicios de persistencia necesarios para la gestión de usuarios.
 	 *
-	 * 	@param userDAO Acceso a datos de la entidad de usuario.
-	 * @param settingDAO Acceso a datos de las configuraciones personales.
+	 * @param userDAO Acceso a datos de la entidad de usuario.
 	 */
-	public UserLogic(UserDAO userDAO, SettingDAO settingDAO) {
+	public UserLogic(UserDAO userDAO) {
 		this.userDAO = userDAO;
-		this.settingDAO = settingDAO;
 	}
 
 	/**
@@ -34,16 +33,28 @@ public class UserLogic {
 	 * @param confirm Repetición de la contraseña para validación de coincidencia.
 	 * @return true si el registro fue exitoso tras aplicar el hashing de BCrypt; false en caso contrario.
 	 */
-	public boolean register(String username, String email, String password, String confirm) {
+	public boolean register(String username, String email, String password, String confirm) throws DAOException {
 		if (!password.equals(confirm) || !validateEmail(email) || !validatePassword(password)) {
 			return false;
 		}
-		if (userDAO.usernameExists(username)) return false;
-		if (userDAO.emailExists(email)) return false;
+        try {
+            if (userDAO.usernameExists(username)) return false;
+        } catch (SQLException e) {
+            throw new DAOException(e);
+        }
+        try {
+            if (userDAO.emailExists(email)) return false;
+        } catch (SQLException e) {
+            throw new DAOException(e);
+        }
 
-		String hashed = BCrypt.hashpw(password, BCrypt.gensalt());
-		return userDAO.create(new User(username, email, hashed));
-	}
+        String hashed = BCrypt.hashpw(password, BCrypt.gensalt());
+        try {
+            return userDAO.create(new User(username, email, hashed));
+        } catch (SQLException e) {
+            throw new DAOException(e);
+        }
+    }
 
 	/**
 	 * Gestiona el proceso de inicio de sesión mediante la comparación de hashes.
@@ -52,9 +63,14 @@ public class UserLogic {
 	 * @param pass Contraseña en texto plano a verificar.
 	 * @return El objeto {@link User} autenticado si las credenciales coinciden; null en caso de error.
 	 */
-	public User login(String usernameOrEmail, String pass) {
-		User user = userDAO.loginCheck(usernameOrEmail);
-		if (user != null && BCrypt.checkpw(pass, user.getPassword())) {
+	public User login(String usernameOrEmail, String pass) throws DAOException {
+        User user = null;
+        try {
+            user = userDAO.loginCheck(usernameOrEmail);
+        } catch (SQLException e) {
+            throw new DAOException(e);
+        }
+        if (user != null && BCrypt.checkpw(pass, user.getPassword())) {
 			this.currentUser = user;
 			return user;
 		}
@@ -67,9 +83,13 @@ public class UserLogic {
 	 * @param username Nombre a verificar.
 	 * @return true si ya existe en la base de datos; false en caso contrario.
 	 */
-	public boolean usernameExists(String username) {
-		return userDAO.usernameExists(username);
-	}
+	public boolean usernameExists(String username) throws DAOException {
+        try {
+            return userDAO.usernameExists(username);
+        } catch (SQLException e) {
+            throw new DAOException(e);
+        }
+    }
 
 	/**
 	 * Comprueba si una dirección de correo ya está vinculada a una cuenta.
@@ -77,9 +97,13 @@ public class UserLogic {
 	 * @param email Correo a verificar.
 	 * @return true si el correo ya está en uso.
 	 */
-	public boolean emailExists(String email) {
-		return userDAO.emailExists(email);
-	}
+	public boolean emailExists(String email) throws DAOException {
+        try {
+            return userDAO.emailExists(email);
+        } catch (SQLException e) {
+            throw new DAOException(e);
+        }
+    }
 
 	/**
 	 * Finaliza la sesión del usuario actual eliminando su referencia en memoria.
@@ -94,10 +118,13 @@ public class UserLogic {
 	 *
 	 * @param username Nombre del usuario cuya cuenta se desea eliminar.
 	 */
-	public void deleteAccount(String username) {
-		settingDAO.delete(username);
-		userDAO.delete(username);
-		if (currentUser != null && currentUser.getUsername().equals(username)) {
+	public void deleteAccount(String username) throws DAOException {
+        try {
+            userDAO.delete(username);
+        } catch (SQLException e) {
+            throw new DAOException(e.getCause());
+        }
+        if (currentUser != null && currentUser.getUsername().equals(username)) {
 			logout();
 		}
 	}

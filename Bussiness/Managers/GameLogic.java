@@ -3,10 +3,12 @@ package Bussiness.Managers;
 import Bussiness.Entities.Game;
 import Bussiness.Entities.Generator;
 import Bussiness.Entities.Upgrade;
+import Bussiness.Exceptions.DAOException;
 import Persistance.DAO.GameDAO;
 import Persistance.DAO.GeneratorDAO;
 import Persistance.DAO.UpgradeDAO;
 
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -41,15 +43,24 @@ public class GameLogic {
 	 * @param username Usuario que crea la partida.
 	 * @return El ID de la partida creada, o -1 si ya existe una partida con ese nombre.
 	 */
-	public int createGame(String nameGame, String username) {
-		List<Game> userGames = gameDAO.getGamesByUser(username);
-		for (int i = 0; i < userGames.size(); i++) {
+	public int createGame(String nameGame, String username) throws DAOException {
+        List<Game> userGames = null;
+        try {
+            userGames = gameDAO.getGamesByUser(username);
+        } catch (SQLException e) {
+            throw new DAOException(e);
+        }
+        for (int i = 0; i < userGames.size(); i++) {
 			if (userGames.get(i).getNameGame().equalsIgnoreCase(nameGame)) {
 				return -1;
 			}
 		}
-		return gameDAO.createGame(nameGame, username);
-	}
+        try {
+            return gameDAO.createGame(nameGame, username);
+        } catch (SQLException e) {
+            throw new DAOException(e);
+        }
+    }
 
 	/**
 	 * Guarda el progreso actual de la partida en la base de datos.
@@ -63,16 +74,20 @@ public class GameLogic {
 	 * @param coffeexclick Cafés obtenidos por click manual.
 	 * @param prodxsec Tasa de producción automática por segundo.
 	 */
-	public void saveGame(String username, int idGame, double money, int hours, int minutes, int seconds, int coffeexclick, float prodxsec) {
-		gameDAO.updateGame(username, idGame, money, hours, minutes, seconds, coffeexclick, prodxsec);
-	}
+	public void saveGame(String username, int idGame, double money, int hours, int minutes, int seconds, int coffeexclick, float prodxsec) throws DAOException {
+        try {
+            gameDAO.updateGame(username, idGame, money, hours, minutes, seconds, coffeexclick, prodxsec);
+        } catch (SQLException e) {
+            throw new DAOException(e);
+        }
+    }
 
 	/**
 	 * Elimina una partida específica del sistema.
 	 *
 	 * @param idGame ID de la partida a borrar.
 	 */
-	public void deleteGame(int idGame) {
+	public void deleteGame(int idGame) throws SQLException {
 		gameDAO.deleteGame(idGame);
 	}
 
@@ -81,7 +96,13 @@ public class GameLogic {
 	 *
 	 * @param idGame ID de la partida a terminar.
 	 */
-	public void finishGame(int idGame){gameDAO.finishGame(idGame);}
+	public void finishGame(int idGame) throws DAOException {
+        try {
+            gameDAO.finishGame(idGame);
+        } catch (SQLException e) {
+            throw new DAOException(e);
+        }
+    }
 
 	/**
 	 * Carga una partida específica buscando entre las partidas del usuario.
@@ -91,8 +112,13 @@ public class GameLogic {
 	 * @return El objeto {@link Game} correspondiente.
 	 * @throws IllegalArgumentException si no se encuentra la partida.
 	 */
-    public Game loadGame(String username, int idGame) {
-        List<Game> games = gameDAO.getGamesByUser(username);
+    public Game loadGame(String username, int idGame) throws DAOException {
+        List<Game> games = null;
+        try {
+            games = gameDAO.getGamesByUser(username);
+        } catch (SQLException e) {
+            throw new DAOException(e);
+        }
         for (int i = 0; i < games.size(); i++) {
             if (games.get(i).getIdGame() == idGame) {
                 return games.get(i);
@@ -107,9 +133,13 @@ public class GameLogic {
 	 * @param username Nombre del usuario.
 	 * @return Lista de partidas {@link Game}.
 	 */
-	public List<Game> getUserGames(String username) {
-		return gameDAO.getGamesByUser(username);
-	}
+	public List<Game> getUserGames(String username) throws DAOException {
+        try {
+            return gameDAO.getGamesByUser(username);
+        } catch (SQLException e) {
+            throw new DAOException(e);
+        }
+    }
 
 	/**
 	 * Verifica globalmente si un nombre de partida ya existe.
@@ -117,9 +147,13 @@ public class GameLogic {
 	 * @param nameGame Nombre a verificar.
 	 * @return true si el nombre ya está registrado.
 	 */
-	public boolean gameNameExists(String nameGame) {
-		return gameDAO.existsByName(nameGame);
-	}
+	public boolean gameNameExists(String nameGame) throws DAOException {
+        try {
+            return gameDAO.existsByName(nameGame);
+        } catch (SQLException e) {
+            throw new DAOException(e);
+        }
+    }
 
 	/**
 	 * Obtiene los generadores configurados para una partida.
@@ -127,9 +161,13 @@ public class GameLogic {
 	 * @param idGame ID de la partida.
 	 * @return Lista de generadores {@link Generator}.
 	 */
-	public List<Generator> getGenerators(int idGame){
-		return generatorDAO.readByGame(idGame);
-	}
+	public List<Generator> getGenerators(int idGame) throws DAOException {
+        try {
+            return generatorDAO.readByGame(idGame);
+        } catch (SQLException e) {
+            throw new DAOException(e);
+        }
+    }
 
 	/**
 	 * Inicializa los generadores base para una nueva partida.
@@ -137,9 +175,13 @@ public class GameLogic {
 	 * @param idGame ID de la partida recién creada.
 	 * @return Lista de los generadores creados.
 	 */
-	public List<Generator> createGenerators(int idGame){
-		return generatorDAO.createInitialGenerators(idGame);
-	}
+	public List<Generator> createGenerators(int idGame) throws DAOException {
+        try {
+            return generatorDAO.createInitialGenerators(idGame);
+        } catch (SQLException e) {
+            throw new DAOException(e);
+        }
+    }
 
 	/**
 	 * Actualiza el estado de un generador tras una compra o cambio de nivel.
@@ -147,9 +189,13 @@ public class GameLogic {
 	 * @param idGame ID de la partida.
 	 * @param generator Objeto generador con los datos actualizados.
 	 */
-	public void updateGenerators(int idGame, Generator generator){
-		generatorDAO.update(idGame, generator);
-	}
+	public void updateGenerators(int idGame, Generator generator) throws DAOException {
+        try {
+            generatorDAO.update(idGame, generator);
+        } catch (SQLException e) {
+            throw new DAOException(e);
+        }
+    }
 
 	/**
 	 * Crea las mejoras iniciales vinculándolas correctamente con los IDs de los
@@ -158,7 +204,7 @@ public class GameLogic {
 	 * @param idGame ID de la partida.
 	 * @param generators Lista de generadores de los cuales se extraerán los IDs.
 	 */
-	public void createUpgrades(int idGame, List<Generator> generators){
+	public void createUpgrades(int idGame, List<Generator> generators) throws DAOException {
 		int idBarista = 0, idMachine = 0, idPlantation = 0;
 		for(Generator g: generators){
 			if(g.getName().equals("Barista")){
@@ -169,8 +215,12 @@ public class GameLogic {
 				idPlantation = g.getIdGenerator();
 			}
 		}
-		upgradeDAO.createInitialUpgrades(idGame, idBarista, idMachine, idPlantation);
-	}
+        try {
+            upgradeDAO.createInitialUpgrades(idGame, idBarista, idMachine, idPlantation);
+        } catch (SQLException e) {
+            throw new DAOException(e);
+        }
+    }
 
 	/**
 	 * Activa una mejora específica para un generador.
@@ -178,9 +228,13 @@ public class GameLogic {
 	 * @param idGame ID de la partida.
 	 * @param idGenerator ID del generador cuya mejora se activa.
 	 */
-	public void updateUpgrades(int idGame, int idGenerator){
-		upgradeDAO.update(idGame, idGenerator, true);
-	}
+	public void updateUpgrades(int idGame, int idGenerator) throws DAOException {
+        try {
+            upgradeDAO.update(idGame, idGenerator, true);
+        } catch (SQLException e) {
+            throw new DAOException(e);
+        }
+    }
 
 	/**
 	 * Obtiene el listado de mejoras de una partida.
@@ -188,7 +242,11 @@ public class GameLogic {
 	 * @param idGame ID de la partida.
 	 * @return Lista de mejoras {@link Upgrade}.
 	 */
-	public List<Upgrade> getUpgrades(int idGame){
-		return upgradeDAO.readByGame(idGame);
-	}
+	public List<Upgrade> getUpgrades(int idGame) throws DAOException {
+        try {
+            return upgradeDAO.readByGame(idGame);
+        } catch (SQLException e) {
+            throw new DAOException(e);
+        }
+    }
 }

@@ -1,8 +1,11 @@
 package Presentation.Views;
 
+import Presentation.Exceptions.CustomUIException;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -88,7 +91,13 @@ public class RegisterWindow extends JPanel {
         headerPanel.add(Box.createVerticalStrut(10));
 
         //Gif Taza
-        JImagePanel cupGif = new JImagePanel(CUP1);
+        JImagePanel cupGif = null;
+        try {
+            cupGif = new JImagePanel(CUP1);
+        } catch (IOException e) {
+            CustomUIException uiEx = new CustomUIException("No se pudo cargar la imagen. Intentalo de nuevo.", "Error en la imagen", JOptionPane.ERROR_MESSAGE);
+            uiEx.showDialog(null);
+        }
         ArrayList<String> cupGifList = new ArrayList<>(Arrays.asList(
                 CUP1, CUP2, CUP3, CUP4, CUP5, CUP6, CUP7, CUP8, CUP9, CUP10, CUP11, CUP12
         ));
@@ -98,7 +107,12 @@ public class RegisterWindow extends JPanel {
             animationTimer = null;
         }
 
-        animationTimer = cupGif.configureAnimation(200, cupGifList);
+        try {
+            animationTimer = cupGif.configureAnimation(200, cupGifList);
+        } catch (IOException e) {
+            CustomUIException uiEx = new CustomUIException("No se pudo cargar la imagen. Intentalo de nuevo.", "Error en la imagen", JOptionPane.ERROR_MESSAGE);
+            uiEx.showDialog(null);
+        }
         cupGif.setMinimumSize(new Dimension(50, 50));
         cupGif.setPreferredSize(new Dimension(50, 50));
         cupGif.setOpaque(false);

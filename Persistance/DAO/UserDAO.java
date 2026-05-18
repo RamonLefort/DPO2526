@@ -36,7 +36,7 @@ public class UserDAO {
 	 * @return {@code true} si la inserción fue exitosa; {@code false} si ocurrió un error
 	 * de SQL (como violación de restricción de unicidad).
 	 */
-	public boolean create(User user) {
+	public boolean create(User user) throws SQLException {
 		String query = "INSERT INTO user (username, email, password) VALUES (?, ?, ?)";
 		try (PreparedStatement ps = mySQLDAO.getConnection().prepareStatement(query)) {
 			ps.setString(1, user.getUsername());
@@ -44,8 +44,7 @@ public class UserDAO {
 			ps.setString(3, user.getPassword());
 			return ps.executeUpdate() > 0;
 		} catch (SQLException e) {
-			e.printStackTrace();
-			return false;
+			throw new SQLException(e);
 		}
 	}
 
@@ -56,7 +55,7 @@ public class UserDAO {
 	 * @return Una instancia de {@link User} con los datos de la base de datos,
 	 * o {@code null} si no se encuentra ninguna coincidencia.
 	 */
-	public User read(String username) {
+	public User read(String username) throws SQLException {
 		ResultSet rs = mySQLDAO.readSpecific("user", "username", username);
 		try {
 			if (rs != null && rs.next()) {
@@ -67,7 +66,7 @@ public class UserDAO {
 				);
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new SQLException(e);
 		}
 		return null;
 	}
@@ -77,7 +76,7 @@ public class UserDAO {
 	 *
 	 * @return Una lista de objetos {@link User}.
 	 */
-	public List<User> readAllUsers() {
+	public List<User> readAllUsers() throws SQLException {
 		List<User> users = new ArrayList<>();
 		String query = "SELECT * FROM user";
 		try (Statement st = mySQLDAO.getConnection().createStatement();
@@ -90,7 +89,7 @@ public class UserDAO {
 				));
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new SQLException(e);
 		}
 		return users;
 	}
@@ -100,7 +99,7 @@ public class UserDAO {
 	 *
 	 * @param username El identificador del usuario a eliminar.
 	 */
-	public void delete(String username) {
+	public void delete(String username) throws SQLException {
 		mySQLDAO.deleteObject("user", "username", username);
 	}
 
@@ -110,9 +109,13 @@ public class UserDAO {
 	 * @param username Nombre de usuario a comprobar.
 	 * @return {@code true} si el nombre ya existe; {@code false} en caso contrario.
 	 */
-	public boolean usernameExists(String username) {
-		return read(username) != null;
-	}
+	public boolean usernameExists(String username) throws SQLException {
+        try {
+            return read(username) != null;
+        } catch (SQLException e) {
+			throw new SQLException(e);
+        }
+    }
 
 	/**
 	 * Verifica si una dirección de correo electrónico ya está registrada.
@@ -120,12 +123,12 @@ public class UserDAO {
 	 * @param email Correo electrónico a comprobar.
 	 * @return {@code true} si el email ya existe en el sistema; {@code false} si está disponible.
 	 */
-	public boolean emailExists(String email) {
+	public boolean emailExists(String email) throws SQLException {
 		ResultSet rs = mySQLDAO.readSpecific("user", "email", email);
 		try {
 			return rs != null && rs.next();
 		} catch (SQLException e) {
-			return false;
+			throw new SQLException(e);
 		}
 	}
 
@@ -135,9 +138,8 @@ public class UserDAO {
 	 *
 	 * @param usernameOrEmail Cadena que representa el nombre de usuario o el email introducido.
 	 * @return El objeto {@link User} si las credenciales coinciden con algún registro,
-	 * o {@code null} si no hay coincidencias.
 	 */
-	public User loginCheck(String usernameOrEmail) {
+	public User loginCheck(String usernameOrEmail) throws SQLException {
 		String query = "SELECT * FROM user WHERE username = ? OR email = ?";
 		try (PreparedStatement ps = mySQLDAO.getConnection().prepareStatement(query)) {
 			ps.setString(1, usernameOrEmail);
@@ -151,7 +153,7 @@ public class UserDAO {
 				);
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new SQLException(e);
 		}
 		return null;
 	}

@@ -31,7 +31,7 @@ public class GeneratorDAO {
 	 * @param idGame El identificador único de la partida.
 	 * @return Una lista de objetos {@link Generator} poblados con sus estadísticas actuales.
 	 */
-	public List<Generator> readByGame(int idGame) {
+	public List<Generator> readByGame(int idGame) throws SQLException {
 		List<Generator> generators = new ArrayList<>();
 		String query = "SELECT * FROM generador WHERE id_game = ?";
 
@@ -52,7 +52,7 @@ public class GeneratorDAO {
 				generators.add(gen);
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new SQLException(e);
 		}
 		return generators;
 	}
@@ -63,7 +63,7 @@ public class GeneratorDAO {
 	 * @param idGame    ID de la partida a la que pertenece el generador.
 	 * @param generator Objeto {@link Generator} con los nuevos valores de cantidad y precio.
 	 */
-	public void update(int idGame, Generator generator) {
+	public void update(int idGame, Generator generator) throws SQLException {
 		String query = "UPDATE generador SET quantity = ?, price = ? WHERE id_generator = ? AND id_game = ?";
 		try (PreparedStatement ps = mySQLDAO.getConnection().prepareStatement(query)) {
 			ps.setInt(1, generator.getQuantity());
@@ -72,8 +72,7 @@ public class GeneratorDAO {
 			ps.setInt(4, idGame);
 			ps.executeUpdate();
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println(e.getMessage());
+			throw new SQLException(e);
 		}
 	}
 
@@ -83,7 +82,7 @@ public class GeneratorDAO {
 	 * @param idGame El identificador de la partida recién creada.
 	 * @return La lista de generadores recién insertados.
 	 */
-	public List<Generator> createInitialGenerators(int idGame) {
+	public List<Generator> createInitialGenerators(int idGame) throws SQLException {
 		String query = "INSERT INTO generador (name, id_game, quantity, price, period, earning) VALUES (?, ?, ?, ?, ?, ?)";
 
 		try (PreparedStatement ps = mySQLDAO.getConnection().prepareStatement(query)) {
@@ -116,8 +115,7 @@ public class GeneratorDAO {
 
 			ps.executeBatch(); // Ejecución eficiente de las tres inserciones
 		} catch (SQLException e) {
-			System.err.println("Error al inicializar generadores: " + e.getMessage());
-			e.printStackTrace();
+			throw new SQLException(e);
 		}
 		return readByGame(idGame);
 	}

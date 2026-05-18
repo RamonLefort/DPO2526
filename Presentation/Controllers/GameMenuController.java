@@ -2,14 +2,18 @@ package Presentation.Controllers;
 
 import Bussiness.Entities.Game;
 import Bussiness.Entities.Generator;
+import Bussiness.Exceptions.DAOException;
 import Bussiness.Managers.GameLogic;
 import Bussiness.Managers.UserLogic;
+import Presentation.Exceptions.CustomUIException;
 import Presentation.Views.GameMenuView;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import Bussiness.Managers.StatLogic;
+
+import javax.swing.*;
 
 /**
  * Controlador encargado de gestionar el menú principal de selección de partidas.
@@ -114,10 +118,22 @@ public class GameMenuController implements ActionListener {
 	 */
 	public void loadGames() {
 		String username = userLogic.getCurrentUser().getUsername();
-		List<Game> allGames = gameLogic.getUserGames(username);
-		List<Game> finishedGames = statLogic.getFinishedGames(username);
+        List<Game> allGames = null;
+        try {
+            allGames = gameLogic.getUserGames(username);
+        } catch (DAOException e) {
+			CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
+			uiEx.showDialog(null);
+        }
+        List<Game> finishedGames = null;
+        try {
+            finishedGames = statLogic.getFinishedGames(username);
+        } catch (DAOException e) {
+			CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
+			uiEx.showDialog(null);
+        }
 
-		List<Game> currentGames = new ArrayList<>();
+        List<Game> currentGames = new ArrayList<>();
 		for (Game game : allGames) {
 			boolean isFinished = false;
 			for (Game g : finishedGames) {
@@ -144,8 +160,14 @@ public class GameMenuController implements ActionListener {
 	public void loadCurrentGames(List<Game> games) {
 		gameMenuView.clearCurrentGames();
 		for (Game game : games) {
-			List<Generator> gens = gameLogic.getGenerators(game.getIdGame());
-			int baristas = 0, machines = 0, plantations = 0;
+            List<Generator> gens = null;
+            try {
+                gens = gameLogic.getGenerators(game.getIdGame());
+            } catch (DAOException e) {
+				CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
+				uiEx.showDialog(null);
+            }
+            int baristas = 0, machines = 0, plantations = 0;
 			for(Generator gen : gens) {
 				if(gen.getName().equals("Barista")){
 					baristas = gen.getQuantity();
@@ -175,8 +197,14 @@ public class GameMenuController implements ActionListener {
 	public void loadFinishedGames(List<Game> games) {
 		gameMenuView.clearFinishedGames();
 		for (Game game : games) {
-			List<Generator> gens = gameLogic.getGenerators(game.getIdGame());
-			int baristas = 0, machines = 0, plantations = 0;
+            List<Generator> gens = null;
+            try {
+                gens = gameLogic.getGenerators(game.getIdGame());
+            } catch (DAOException e) {
+				CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
+				uiEx.showDialog(null);
+            }
+            int baristas = 0, machines = 0, plantations = 0;
 			for(Generator gen : gens) {
 				if(gen.getName().equals("Barista")){
 					baristas = gen.getQuantity();
