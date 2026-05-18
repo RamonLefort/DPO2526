@@ -19,6 +19,8 @@ public class GameView extends JPanel {
 
     /** Comando de acción para cerrar la vista del juego y volver al menú. */
     public static final String BTN_BACK   = "BTN_BACK";
+    /** Comando de acción para ir a la página de ajustes. */
+    public static final String BTN_SETTINGS = "BTN_SETTINGS";
     /** Comando de acción para finalizar una partida y volver al menú. */
     public static final String BTN_FINISH = "BTN_FINISH";
     /** Comando de acción para realizar un café. */
@@ -42,6 +44,7 @@ public class GameView extends JPanel {
 
     private JButton btnBack;
     private JButton btnFinish;
+    private JButton btnSettings;
     private JButton coffeeBtn;
     private JLabel countNum;
     private JLabel gameName;
@@ -87,11 +90,9 @@ public class GameView extends JPanel {
         rightPanel.setOpaque(false);
         rightPanel.setMaximumSize(new Dimension(300, Integer.MAX_VALUE));
 
-        // 1. SELECTOR ÚNICO (Solo se crea una vez aquí)
         rightPanel.add(createSelectorPanel());
         rightPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
-        // 2. CONTENEDOR DE TARJETAS
         cardLayout = new CardLayout();
         cardsContainer = new JPanel(cardLayout);
         cardsContainer.setOpaque(false);
@@ -134,6 +135,15 @@ public class GameView extends JPanel {
         gameName.setFont(new Font("Segoe UI", Font.BOLD, 24));
         gameName.setForeground(PRIMARY_COFFEE);
 
+        // Botón de ajustes
+        btnSettings = new RoundedButton("Ajustes", 20, PRIMARY_COFFEE, BG_COLOR, BG_COLOR, PRIMARY_COFFEE);
+        btnSettings.setActionCommand(BTN_SETTINGS);
+        btnSettings.setBorder(new RoundedBorder(PRIMARY_COFFEE, 20, 1));
+        Dimension backDim = new Dimension(85, 35);
+        btnSettings.setPreferredSize(backDim);
+        btnSettings.setMinimumSize(backDim);
+        btnSettings.setMaximumSize(backDim);
+
         // Botón Finish Game
         btnFinish = new RoundedButton("Finish Game", 20, PRIMARY_COFFEE, BG_COLOR, BG_COLOR, PRIMARY_COFFEE);
         btnFinish.setActionCommand(BTN_FINISH);
@@ -148,6 +158,8 @@ public class GameView extends JPanel {
         header.add(Box.createRigidArea(new Dimension(20, 0)));
         header.add(gameName);
         header.add(Box.createHorizontalGlue());
+        header.add(btnSettings);
+        header.add(Box.createRigidArea(new Dimension(10, 0)));
         header.add(btnFinish);
         return header;
     }
@@ -432,6 +444,7 @@ public class GameView extends JPanel {
      */
     public void setActionListener(ActionListener listener) {
         btnBack.addActionListener(listener);
+        btnSettings.addActionListener(listener);
         btnFinish.addActionListener(listener);
         coffeeBtn.addActionListener(listener);
         navGeneratorsBtn.addActionListener(listener);

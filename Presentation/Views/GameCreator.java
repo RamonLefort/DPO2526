@@ -23,13 +23,13 @@ public class GameCreator extends JPanel {
 
     /** Comando de acción para cerrar la vista de la creación del juego y volver al menú. */
     public static final String BTN_BACK = "BACK";
-    /** Comando de acción para cerrar la sesión del juego y volver al login. */
-    public static final String BTN_LOGOUT = "LOGOUT";
+    /** Comando de acción para ir a la pantalla de settings. */
+    public static final String BTN_SETTINGS = "SETTINGS";
     /** Comando de acción para crear un juego nuevo. */
     public static final String BTN_CREATE = "CREATE";
 
     private JButton btnBack;
-    private JButton btnLogout;
+    private JButton btnSettings;
     private JButton btnCreate;
     private JTextField nameField;
 
@@ -75,18 +75,20 @@ public class GameCreator extends JPanel {
         title.setFont(new Font("Segoe UI", Font.BOLD, 28));
         title.setForeground(PRIMARY_COFFEE);
 
-        // Botón Logout
-        btnLogout = new RoundedButton("Logout", 20, PRIMARY_COFFEE, BG_COLOR, BG_COLOR, PRIMARY_COFFEE);
-        btnLogout.setActionCommand(BTN_LOGOUT);
-        btnLogout.setBorder(new RoundedBorder(PRIMARY_COFFEE, 20, 1));
-        btnLogout.setPreferredSize(new Dimension(100, 35));
-        btnLogout.setMaximumSize(new Dimension(100, 35));
+        // Botón de ajustes
+        btnSettings = new RoundedButton("Ajustes", 20, PRIMARY_COFFEE, BG_COLOR, BG_COLOR, PRIMARY_COFFEE);
+        btnSettings.setActionCommand(BTN_SETTINGS);
+        btnSettings.setBorder(new RoundedBorder(PRIMARY_COFFEE, 20, 1));
+        Dimension backDim = new Dimension(85, 35);
+        btnSettings.setPreferredSize(backDim);
+        btnSettings.setMinimumSize(backDim);
+        btnSettings.setMaximumSize(backDim);
 
         header.add(btnBack);
         header.add(Box.createHorizontalGlue());
         header.add(title);
         header.add(Box.createHorizontalGlue());
-        header.add(btnLogout);
+        header.add(btnSettings);
 
         return header;
     }
@@ -216,7 +218,7 @@ public class GameCreator extends JPanel {
      */
     public void setActionListener(ActionListener listener) {
         btnBack.addActionListener(listener);
-        btnLogout.addActionListener(listener);
+        btnSettings.addActionListener(listener);
         btnCreate.addActionListener(listener);
     }
 

@@ -72,6 +72,7 @@ public class GameController implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		switch (e.getActionCommand()) {
 			case GameView.BTN_BACK   -> handleBack();
+			case GameView.BTN_SETTINGS -> handleSettings();
 			case GameView.BTN_FINISH -> handleFinishGame();
 			case GameView.BTN_COFFEE -> handleClickGenerate();
 			case GameView.BTN_BARISTA -> handleBarista();
@@ -238,6 +239,13 @@ public class GameController implements ActionListener {
 		gameTimer.stop();
 		gameMenuController.loadGames();
 		viewController.showView("GAME MENU");
+	}
+
+	/**
+	 * Regresa al usuario a la pantalla de configuración del sistema.
+	 */
+	private void handleSettings() {
+		viewController.showView("SETTINGS");
 	}
 
 	/**

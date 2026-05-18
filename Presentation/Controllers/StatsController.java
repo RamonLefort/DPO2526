@@ -70,6 +70,9 @@ public class StatsController implements ActionListener {
 			case StatsView.BTN_EXIT_STATS:
 				handleExit();
 				break;
+			case StatsView.BTN_SETTINGS:
+				handleSettings();
+				break;
 		}
 	}
 
@@ -79,5 +82,12 @@ public class StatsController implements ActionListener {
 	private void handleExit() {
 		gameMenuController.loadGames();
 		viewController.showView("GAME MENU");
+	}
+
+	/**
+	 * Regresa al usuario a la pantalla de configuración del sistema.
+	 */
+	private void handleSettings() {
+		viewController.showView("SETTINGS");
 	}
 }

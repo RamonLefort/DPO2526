@@ -67,7 +67,7 @@ public class ViewController {
         StatsView statsView = new StatsView();
         GameCreator gameCreator = new GameCreator();
 
-        gameMenuController = new GameMenuController(gameMenuView, gameLogic, statLogic, userLogic, this, statsController);
+        gameMenuController = new GameMenuController(gameMenuView, gameLogic, statLogic, userLogic, this);
         gameController = new GameController(gameView, gameplayLogic, this, 0, "", gameLogic, statLogic, gameMenuController);
         gameMenuController.setGameController(gameController);
         gameCreatorController = new GameCreatorController(gameCreator, gameLogic, userLogic, statLogic,this, gameController, gameMenuController, "");
@@ -76,6 +76,7 @@ public class ViewController {
         new RegisterController(registerView, userLogic, this, gameMenuController);
         new SettingController(settingView, userLogic, this);
         statsController = new StatsController(statsView, statLogic, this, gameMenuController);
+        gameMenuController.setStatsController(statsController);
 
 
         rootPanel.add(statsView, "STATS");

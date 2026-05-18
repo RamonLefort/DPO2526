@@ -19,6 +19,8 @@ public class StatsView extends JPanel {
 
     /** Comando de acción para cerrar la vista de estadísticas y volver al menú. */
     public static final String BTN_EXIT_STATS = "BTN_EXIT_STATS";
+    /** Comando de acción para ir a la pantalla de settings. */
+    public static final String BTN_SETTINGS = "SETTINGS";
 
     private final Color BG_COLOR = new Color(248, 245, 240);
     private final Color PRIMARY_COFFEE = new Color(74, 44, 23);
@@ -26,6 +28,7 @@ public class StatsView extends JPanel {
     private DefaultTableModel tableModel;
     private JLabel lblTotalManual, lblTotalAuto, lblMaxProd, lblTotalSpent;
     private JButton btnExit;
+    private JButton btnSettings;
     private StatGraphPanel graphPanel;
 
     /**
@@ -59,11 +62,32 @@ public class StatsView extends JPanel {
      * Añade el título principal de la vista centrado en la parte superior.
      */
     private void addHeader() {
+        JPanel headerContainer = new JPanel();
+        headerContainer.setLayout(new BoxLayout(headerContainer, BoxLayout.X_AXIS));
+        headerContainer.setOpaque(false);
+        headerContainer.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+
         JLabel title = new JLabel("Game Performance Statistics");
         title.setFont(new Font("Segoe UI", Font.BOLD, 28));
         title.setForeground(PRIMARY_COFFEE);
-        title.setAlignmentX(Component.CENTER_ALIGNMENT);
-        this.add(title);
+        title.setAlignmentY(Component.CENTER_ALIGNMENT);
+
+        btnSettings = new RoundedButton("Ajustes", 20, PRIMARY_COFFEE, BG_COLOR, BG_COLOR, PRIMARY_COFFEE);
+        btnSettings.setActionCommand(BTN_SETTINGS);
+        btnSettings.setBorder(new RoundedBorder(PRIMARY_COFFEE, 20, 1));
+        btnSettings.setAlignmentY(Component.CENTER_ALIGNMENT);
+
+        Dimension backDim = new Dimension(85, 35);
+        btnSettings.setPreferredSize(backDim);
+        btnSettings.setMinimumSize(backDim);
+        btnSettings.setMaximumSize(backDim);
+
+        headerContainer.add(title);
+        headerContainer.add(Box.createHorizontalGlue());
+        headerContainer.add(btnSettings);
+
+        headerContainer.setAlignmentX(Component.CENTER_ALIGNMENT);
+        this.add(headerContainer);
     }
 
     /**
@@ -175,6 +199,7 @@ public class StatsView extends JPanel {
      */
     public void setActionListener(ActionListener l) {
         btnExit.addActionListener(l);
+        btnSettings.addActionListener(l);
     }
 
     /**

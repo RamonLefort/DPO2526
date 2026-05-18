@@ -98,7 +98,7 @@ public class GameMenuView extends JPanel {
         header.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
         header.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        // Botón de back
+        // Botón de ajustes
         btnBack = new RoundedButton("Ajustes", 20, PRIMARY_COFFEE, BG_COLOR, BG_COLOR, PRIMARY_COFFEE);
         btnBack.setActionCommand(BTN_BACK);
         btnBack.setBorder(new RoundedBorder(PRIMARY_COFFEE, 20, 1));
@@ -121,11 +121,11 @@ public class GameMenuView extends JPanel {
         btnLogout.setMaximumSize(logoutDim);
         btnLogout.setMinimumSize(logoutDim);
 
-        header.add(btnBack);
+        header.add(btnLogout);
         header.add(Box.createHorizontalGlue());
         header.add(title);
         header.add(Box.createHorizontalGlue());
-        header.add(btnLogout);
+        header.add(btnBack);
 
         return header;
     }

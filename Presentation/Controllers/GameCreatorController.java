@@ -74,8 +74,8 @@ public class GameCreatorController implements ActionListener {
             case GameCreator.BTN_BACK:
                 handleBack();
                 break;
-            case GameCreator.BTN_LOGOUT:
-                handleLogout();
+            case GameCreator.BTN_SETTINGS:
+                handleSettings();
                 break;
             case GameCreator.BTN_CREATE:
                 handleCreateGame();
@@ -94,11 +94,10 @@ public class GameCreatorController implements ActionListener {
     }
 
     /**
-     * Finaliza la sesión del usuario actual y redirige a la ventana de inicio de sesión.
+     * Regresa al usuario a la pantalla de configuración del sistema.
      */
-    private void handleLogout() {
-        userLogic.logout();
-        viewController.showView("LOGIN");
+    private void handleSettings() {
+        viewController.showView("SETTINGS");
     }
 
     /**
