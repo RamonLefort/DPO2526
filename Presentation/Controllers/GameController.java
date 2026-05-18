@@ -27,6 +27,7 @@ public class GameController implements ActionListener {
 	private final GameView gameView;
 	private final GameplayLogic gameplayLogic;
 	private final ViewController viewController;
+	private final GameMenuController gameMenuController;
 	private final GameLogic gameLogic;
 	private int idGame, clicks = 0, clicks_per_min = 0;
 	private int coffeeCount = 0;
@@ -49,10 +50,11 @@ public class GameController implements ActionListener {
 	 * @param gameLogic Lógica de gestión de datos de partida.
 	 * @param statLogic Lógica de gestión de telemetría y estadísticas.
 	 */
-	public GameController(GameView gameView, GameplayLogic gameplayLogic, ViewController viewController, int idGame, String username, GameLogic gameLogic, StatLogic statLogic) {
+	public GameController(GameView gameView, GameplayLogic gameplayLogic, ViewController viewController, int idGame, String username, GameLogic gameLogic, StatLogic statLogic, GameMenuController gameMenuController) {
 		this.gameView = gameView;
 		this.gameplayLogic = gameplayLogic;
 		this.viewController = viewController;
+		this.gameMenuController = gameMenuController;
 		this.idGame = idGame;
 		this.username = username;
 		this.gameLogic = gameLogic;
@@ -211,6 +213,7 @@ public class GameController implements ActionListener {
 		saveCurrentProgress();
 		gameplayLogic.stopAutoGenerators();
 		gameTimer.stop();
+		gameMenuController.loadGames();
 		viewController.showView("GAME MENU");
 	}
 
@@ -233,6 +236,7 @@ public class GameController implements ActionListener {
         }
         gameplayLogic.stopAutoGenerators();
 		gameTimer.stop();
+		gameMenuController.loadGames();
 		viewController.showView("GAME MENU");
 	}
 

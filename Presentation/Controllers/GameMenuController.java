@@ -26,6 +26,8 @@ public class GameMenuController implements ActionListener {
 	private final GameLogic gameLogic;
 	private final UserLogic userLogic;
 	private final ViewController viewController;
+	private GameController gameController;
+	private final StatsController statsController;
 	private final StatLogic statLogic;
 
 	/**
@@ -37,13 +39,18 @@ public class GameMenuController implements ActionListener {
 	 * @param userLogic      Lógica de gestión de usuarios para identificar la sesión activa.
 	 * @param viewController Gestor de navegación entre ventanas.
 	 */
-	public GameMenuController(GameMenuView gameMenuView, GameLogic gameLogic, StatLogic statLogic, UserLogic userLogic, ViewController viewController) {
+	public GameMenuController(GameMenuView gameMenuView, GameLogic gameLogic, StatLogic statLogic, UserLogic userLogic, ViewController viewController, StatsController statsController) {
 		this.gameMenuView = gameMenuView;
 		this.gameLogic = gameLogic;
 		this.statLogic = statLogic;
 		this.userLogic = userLogic;
 		this.viewController = viewController;
+		this.statsController = statsController;
 		this.gameMenuView.setActionListener(this);
+	}
+
+	public void setGameController(GameController gameController){
+		this.gameController = gameController;
 	}
 
 	/**
@@ -77,7 +84,8 @@ public class GameMenuController implements ActionListener {
 	 * @param idGame Identificador único de la partida a reanudar.
 	 */
 	public void handleResumeGame(int idGame) {
-		viewController.showGameView(idGame, userLogic.getCurrentUser().getUsername());
+		gameController.loadGame(idGame, userLogic.getCurrentUser().getUsername());
+		viewController.showView("GAME");
 	}
 
 	/**
@@ -86,7 +94,8 @@ public class GameMenuController implements ActionListener {
 	 * @param idGame ID de la partida a analizar.
 	 */
 	private void handleStats(int idGame) {
-		viewController.showStats(idGame);
+		statsController.loadStatsData(idGame);
+		viewController.showView("STATS");
 	}
 
 	/**

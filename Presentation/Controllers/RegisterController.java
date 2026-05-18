@@ -76,7 +76,7 @@ public class RegisterController implements ActionListener {
 			}
 
 			if (!userLogic.validatePassword(password)) {
-				throw new CustomUIException("La contraseña debe tener letras, números y al menos una mayúscula.", "Contraseña Débil", JOptionPane.WARNING_MESSAGE);
+				throw new CustomUIException("La contraseña debe tener 8 caracteres con, al menos, una letra, un número número y una mayúscula.", "Contraseña Débil", JOptionPane.WARNING_MESSAGE);
 			}
 
 			if (!password.equals(confirm)) {

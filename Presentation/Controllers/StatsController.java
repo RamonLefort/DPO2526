@@ -22,6 +22,7 @@ public class StatsController implements ActionListener {
 	private StatsView statsView;
 	private StatLogic statLogic;
 	private ViewController viewController;
+	private GameMenuController gameMenuController;
 
 	/**
 	 * Constructor que inicializa el controlador con las dependencias necesarias de vista y lógica.
@@ -31,10 +32,11 @@ public class StatsController implements ActionListener {
 	 * @param statLogic      La lógica de negocio para la recuperación de datos de telemetría.
 	 * @param viewController El gestor de navegación entre las diferentes ventanas de la aplicación.
 	 */
-	public StatsController(StatsView statsView, StatLogic statLogic, ViewController viewController) {
+	public StatsController(StatsView statsView, StatLogic statLogic, ViewController viewController, GameMenuController gameMenuController) {
 		this.statsView = statsView;
 		this.statLogic = statLogic;
 		this.viewController = viewController;
+		this.gameMenuController = gameMenuController;
 		this.statsView.setActionListener(this);
 	}
 
@@ -75,6 +77,7 @@ public class StatsController implements ActionListener {
 	 * Finaliza la visualización de estadísticas y devuelve al usuario al menú principal del juego.
 	 */
 	private void handleExit() {
+		gameMenuController.loadGames();
 		viewController.showView("GAME MENU");
 	}
 }

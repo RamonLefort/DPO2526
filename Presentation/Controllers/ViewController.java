@@ -23,7 +23,6 @@ public class ViewController {
     private final UserLogic userLogic;
     private final GameLogic gameLogic;
     private final GameplayLogic gameplayLogic;
-    private GameCreator gameCreator;
     private GameCreatorController gameCreatorController;
     private GameController gameController;
     private StatsController statsController;
@@ -66,16 +65,17 @@ public class ViewController {
         SettingView settingView = new SettingView();
         GameMenuView gameMenuView = new GameMenuView();
         StatsView statsView = new StatsView();
-        gameCreator = new GameCreator();
+        GameCreator gameCreator = new GameCreator();
 
-        gameCreatorController = new GameCreatorController(gameCreator, gameLogic, userLogic, statLogic,this, "");
-        gameController = new GameController(gameView, gameplayLogic, this, 0, "", gameLogic, statLogic);
+        gameMenuController = new GameMenuController(gameMenuView, gameLogic, statLogic, userLogic, this, statsController);
+        gameController = new GameController(gameView, gameplayLogic, this, 0, "", gameLogic, statLogic, gameMenuController);
+        gameMenuController.setGameController(gameController);
+        gameCreatorController = new GameCreatorController(gameCreator, gameLogic, userLogic, statLogic,this, gameController, gameMenuController, "");
 
-        new LoginController(loginView, userLogic, this);
+        new LoginController(loginView, userLogic, this, gameMenuController);
         new RegisterController(registerView, userLogic, this);
         new SettingController(settingView, userLogic, this);
-        gameMenuController = new GameMenuController(gameMenuView, gameLogic, statLogic, userLogic, this);
-        statsController = new StatsController(statsView, statLogic, this);
+        statsController = new StatsController(statsView, statLogic, this, gameMenuController);
 
 
         rootPanel.add(statsView, "STATS");
@@ -94,22 +94,7 @@ public class ViewController {
      * @param viewName Nombre identificador de la vista a mostrar.
      */
     public void showView(String viewName) {
-        if (viewName.equals("GAME MENU")) {
-            gameMenuController.loadGames();
-        }
         cardLayout.show(rootPanel, viewName);
-    }
-
-    /**
-     * Prepara y muestra la interfaz activa de juego para una partida concreta.
-     * Delega en el {@link GameController} la carga de los datos de la partida antes del cambio visual.
-     *
-     * @param idGame   Identificador de la partida a cargar.
-     * @param username Nombre del usuario en sesión.
-     */
-    public void showGameView(int idGame, String username) {
-        gameController.loadGame(idGame, username);
-        cardLayout.show(rootPanel, "GAME");
     }
 
     /**
@@ -121,17 +106,6 @@ public class ViewController {
         frame.setSize(1100, 700);
         frame.setLocationRelativeTo(null);
         frame.setContentPane(rootPanel);
-    }
-
-    /**
-     * Cambia la interfaz hacia la vista de estadísticas de una partida.
-     * Coordina la carga de datos históricos a través del {@link StatsController}.
-     *
-     * @param idGame Identificador de la partida a analizar.
-     */
-    public void showStats(int idGame) {
-        cardLayout.show(rootPanel, "STATS");
-        statsController.loadStatsData(idGame);
     }
 
     /**

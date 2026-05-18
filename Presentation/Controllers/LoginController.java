@@ -21,6 +21,7 @@ public class LoginController implements ActionListener {
 	private final LoginWindow view;
 	private final UserLogic userLogic;
 	private final ViewController viewController;
+	private final GameMenuController gameMenuController;
 
 	/**
 	 * Constructor que inicializa el controlador con las dependencias necesarias y
@@ -31,10 +32,11 @@ public class LoginController implements ActionListener {
 	 * @param viewController Gestor de navegación entre ventanas.
 	 *
 	 */
-	public LoginController(LoginWindow view, UserLogic userLogic, ViewController viewController) {
+	public LoginController(LoginWindow view, UserLogic userLogic, ViewController viewController, GameMenuController gameMenuController) {
 		this.view = view;
 		this.userLogic = userLogic;
 		this.viewController = viewController;
+		this.gameMenuController = gameMenuController;
 
 		this.view.setActionListener(this);
 
@@ -80,6 +82,7 @@ public class LoginController implements ActionListener {
         }
 
         if (user != null) {
+			gameMenuController.loadGames();
 			viewController.showView("GAME MENU");
 		}else{
 			view.showError("Usuario o contraseña incorrecto");

@@ -25,6 +25,8 @@ public class GameCreatorController implements ActionListener {
     private final UserLogic userLogic;
     private final StatLogic statLogic;
     private final ViewController viewController;
+    private final GameController gameController;
+    private final GameMenuController gameMenuController;
     private String username;
 
     /**
@@ -38,12 +40,14 @@ public class GameCreatorController implements ActionListener {
      * @param viewController Gestor de navegación entre ventanas.
      * @param username       Nombre del usuario que está realizando la operación.
      */
-    public GameCreatorController(GameCreator view, GameLogic gameLogic, UserLogic userLogic, StatLogic statLogic, ViewController viewController, String username) {
+    public GameCreatorController(GameCreator view, GameLogic gameLogic, UserLogic userLogic, StatLogic statLogic, ViewController viewController,GameController gameController, GameMenuController gameMenuController, String username) {
         this.view = view;
         this.gameLogic = gameLogic;
         this.userLogic = userLogic;
         this.statLogic = statLogic;
         this.viewController = viewController;
+        this.gameController = gameController;
+        this.gameMenuController = gameMenuController;
         this.username = username;
         this.view.setActionListener(this);
     }
@@ -85,6 +89,7 @@ public class GameCreatorController implements ActionListener {
      * Cancela la operación actual y regresa al usuario al menú principal de partidas.
      */
     private void handleBack() {
+        gameMenuController.loadGames();
         viewController.showView("GAME MENU");
     }
 
@@ -152,7 +157,8 @@ public class GameCreatorController implements ActionListener {
                 CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
                 uiEx.showDialog(null);
             }
-            viewController.showGameView(idGame, currentUsername);
+            gameController.loadGame(idGame, username);
+            viewController.showView("GAME");
         }
     }
 }
