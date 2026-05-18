@@ -1,6 +1,8 @@
 package Persistance.Configuration;
 
 import Bussiness.Entities.Configuration;
+
+import java.io.IOException;
 import java.sql.*;
 
 /**
@@ -37,7 +39,7 @@ public class MySQLDAO {
 	 * @param jsonDAO Objeto de acceso a datos para leer la configuración inicial.
 	 * @return La instancia única de MySQLDAO.
 	 */
-	public static MySQLDAO getInstance(JsonConfigurationDAO jsonDAO) {
+	public static MySQLDAO getInstance(JsonConfigurationDAO jsonDAO) throws IOException {
 		if (instance == null) {
 			Configuration config = jsonDAO.readJson();
 			instance = new MySQLDAO(config);

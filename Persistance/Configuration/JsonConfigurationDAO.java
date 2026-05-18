@@ -30,12 +30,11 @@ public class JsonConfigurationDAO {
 	 * @return Un objeto {@link Configuration} con los datos del archivo si la lectura es exitosa,
 	 * o {@code null} si el archivo no existe, no hay permisos de lectura, o ocurre un error de I/O.
 	 */
-	public Configuration readJson() {
+	public Configuration readJson() throws IOException {
 		try (FileReader reader = new FileReader(path)) {
 			return gson.fromJson(reader, Configuration.class);
 		} catch (IOException e) {
-			System.err.println("Error al leer la configuración: " + e.getMessage());
-			return null;
+			throw new IOException(e);
 		}
 	}
 }

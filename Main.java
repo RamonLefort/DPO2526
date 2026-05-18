@@ -9,6 +9,7 @@ import Presentation.Controllers.ViewController;
 import Presentation.Exceptions.CustomUIException;
 
 import javax.swing.*;
+import java.io.IOException;
 import java.sql.SQLException;
 
 /**
@@ -25,7 +26,13 @@ public class Main {
         SwingUtilities.invokeLater(() -> {
 
             JsonConfigurationDAO jsonDAO = new JsonConfigurationDAO();
-            MySQLDAO mySQLDAO = MySQLDAO.getInstance(jsonDAO);
+            MySQLDAO mySQLDAO = null;
+            try {
+                mySQLDAO = MySQLDAO.getInstance(jsonDAO);
+            } catch (IOException e) {
+                CustomUIException uiException = new CustomUIException("No se ha podido realizar la lectura del archivo de configuración del sistema", "Error de Configuración", JOptionPane.ERROR_MESSAGE);
+                uiException.showDialog(null);
+            }
             try {
                 mySQLDAO.connect();
             } catch (SQLException e) {

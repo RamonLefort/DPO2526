@@ -287,9 +287,9 @@ public class GameController implements ActionListener {
                 }
                 gameView.updateCoffeeCount((int) currentGame.getMoney());
 				gameView.updateGenerationsData(generators);
-				System.out.println("Barista lanzado y produciendo");
 			} else {
-				System.out.println("No hay suficiente dinero para el Barista");
+				CustomUIException uiException = new CustomUIException("No tienes suficiente dinero para comprar el generador", "Falta de Fondos", JOptionPane.ERROR_MESSAGE);
+				uiException.showDialog(null);
 			}
 		}
 	}
@@ -335,9 +335,9 @@ public class GameController implements ActionListener {
 
                 gameView.updateCoffeeCount((int) currentGame.getMoney());
 				gameView.updateGenerationsData(generators);
-				System.out.println("Espresso Machine lanzado y produciendo");
 			} else {
-				System.out.println("No hay suficiente dinero para el Espresso Machine");
+				CustomUIException uiException = new CustomUIException("No tienes suficiente dinero para comprar el generador", "Falta de Fondos", JOptionPane.ERROR_MESSAGE);
+				uiException.showDialog(null);
 			}
 		}
 	}
@@ -382,9 +382,9 @@ public class GameController implements ActionListener {
 
                 gameView.updateCoffeeCount((int) currentGame.getMoney());
 				gameView.updateGenerationsData(generators);
-				System.out.println("Plantación lanzado y produciendo");
 			} else {
-				System.out.println("No hay suficiente dinero para el Plantación");
+				CustomUIException uiException = new CustomUIException("No tienes suficiente dinero para comprar el generador", "Falta de Fondos", JOptionPane.ERROR_MESSAGE);
+				uiException.showDialog(null);
 			}
 		}
 	}
@@ -437,9 +437,9 @@ public class GameController implements ActionListener {
 			gameView.updateCoffeeCount((int) currentGame.getMoney());
 			gameView.updateProductionXSec(currentGame.getProduction_per_sec());
 			gameView.updateUpgradeBaristaText();
-			System.out.println("Barista mejorado y guardado");
 		}else{
-			System.out.println("Dinero no suficiente para la mejora del Barista");
+			CustomUIException uiException = new CustomUIException("No tienes suficiente dinero para comprar la mejora", "Falta de Fondos", JOptionPane.ERROR_MESSAGE);
+			uiException.showDialog(null);
 		}
 	}
 
@@ -491,9 +491,9 @@ public class GameController implements ActionListener {
 			gameView.updateCoffeeCount((int) currentGame.getMoney());
 			gameView.updateProductionXSec(currentGame.getProduction_per_sec());
 			gameView.updateUpgradeMachineText();
-			System.out.println("Machine mejorado y guardado");
 		}else{
-			System.out.println("Dinero no suficiente para la mejora de la Espresso Machine");
+			CustomUIException uiException = new CustomUIException("No tienes suficiente dinero para comprar la mejora", "Falta de Fondos", JOptionPane.ERROR_MESSAGE);
+			uiException.showDialog(null);
 		}
 	}
 
@@ -545,9 +545,9 @@ public class GameController implements ActionListener {
 			gameView.updateCoffeeCount((int) currentGame.getMoney());
 			gameView.updateProductionXSec(currentGame.getProduction_per_sec());
 			gameView.updateUpgradePlantationText();
-			System.out.println("Coffee Plantation mejorada y guardada");
 		}else{
-			System.out.println("Dinero no suficiente para la mejora de la Coffee Plantation");
+			CustomUIException uiException = new CustomUIException("No tienes suficiente dinero para comprar la mejora", "Falta de Fondos", JOptionPane.ERROR_MESSAGE);
+			uiException.showDialog(null);
 		}
 	}
 
