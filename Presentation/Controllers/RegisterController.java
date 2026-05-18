@@ -1,5 +1,6 @@
 package Presentation.Controllers;
 
+import Bussiness.Entities.User;
 import Bussiness.Exceptions.DAOException;
 import Bussiness.Managers.UserLogic;
 import Presentation.Exceptions.CustomUIException;
@@ -24,6 +25,7 @@ public class RegisterController implements ActionListener {
 	private final RegisterWindow view;
 	private final UserLogic userLogic;
 	private final ViewController viewController;
+	private GameMenuController gameMenuController;
 
 	/**
 	 * Constructor que inicializa el controlador con las dependencias necesarias y
@@ -33,10 +35,11 @@ public class RegisterController implements ActionListener {
 	 * @param userLogic      Lógica de negocio para la validación y creación de usuarios.
 	 * @param viewController Gestor de navegación entre las diferentes vistas de la aplicación.
 	 */
-	public RegisterController(RegisterWindow view, UserLogic userLogic, ViewController viewController) {
+	public RegisterController(RegisterWindow view, UserLogic userLogic, ViewController viewController, GameMenuController gameMenuController) {
 		this.view = view;
 		this.userLogic = userLogic;
 		this.viewController = viewController;
+		this.gameMenuController = gameMenuController;
 
 		this.view.getRegisterButton().addActionListener(this);
 
@@ -96,7 +99,15 @@ public class RegisterController implements ActionListener {
 					throw new CustomUIException("No se ha podido procesar el alta del usuario. Verifica los campos.", "Error de Negocio", JOptionPane.ERROR_MESSAGE);
 				}
 
-				viewController.showView("LOGIN");
+				try {
+					userLogic.login(username, password);
+					gameMenuController.loadGames();
+					viewController.showView("GAME MENU");
+				} catch (DAOException e) {
+					CustomUIException uiException = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
+					uiException.showDialog(null);
+				}
+
 
 			} catch (DAOException daoEx) {
 				throw new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);

@@ -73,7 +73,7 @@ public class ViewController {
         gameCreatorController = new GameCreatorController(gameCreator, gameLogic, userLogic, statLogic,this, gameController, gameMenuController, "");
 
         new LoginController(loginView, userLogic, this, gameMenuController);
-        new RegisterController(registerView, userLogic, this);
+        new RegisterController(registerView, userLogic, this, gameMenuController);
         new SettingController(settingView, userLogic, this);
         statsController = new StatsController(statsView, statLogic, this, gameMenuController);
 
