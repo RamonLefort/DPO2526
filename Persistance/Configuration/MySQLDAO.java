@@ -23,12 +23,191 @@ public class MySQLDAO {
 	 *
 	 * @param config Configuración de la conexión
 	 */
-	private MySQLDAO(Configuration config) {
+	private MySQLDAO(Configuration config) throws SQLException {
 		if (config != null) {
 			this.url = "jdbc:mysql://" + config.getDatabaseHost() + ":" +
 					config.getDatabasePort() + "/" + config.getDatabaseName();
 			this.username = config.getDatabaseUsername();
 			this.password = config.getDatabasePassword();
+
+			createDatabaseIfNotExists(config);
+		}
+	}
+
+	private void createDatabaseIfNotExists(Configuration config) throws SQLException {
+
+		String serverUrl = "jdbc:mysql://" + config.getDatabaseHost() + ":" + config.getDatabasePort();
+
+		try (
+				Connection tempConnection =
+						DriverManager.getConnection(serverUrl, username, password);
+
+				Statement statement = tempConnection.createStatement()
+		) {
+
+			String query = "CREATE DATABASE IF NOT EXISTS `" + config.getDatabaseName() + "` " +
+					"DEFAULT CHARACTER SET utf8mb4 " +
+					"COLLATE utf8mb4_general_ci";
+
+			statement.executeUpdate(query);
+
+			System.out.println("Base de datos verificada/creada correctamente.");
+		}
+	}
+
+	/**
+	 * Crea todas las tablas necesarias si no existen.
+	 * Debe ejecutarse después de connect().
+	 */
+	public void createTablesIfNotExists() throws SQLException {
+
+		try (Statement statement = connection.createStatement()) {
+
+			statement.executeUpdate("""
+            CREATE TABLE IF NOT EXISTS `user` (
+                `username` VARCHAR(50) NOT NULL,
+                `email` VARCHAR(100) NOT NULL,
+                `password` VARCHAR(255) NOT NULL,
+                PRIMARY KEY (`username`)
+            ) ENGINE=InnoDB
+            DEFAULT CHARSET=utf8mb4
+            COLLATE=utf8mb4_general_ci
+        """);
+
+			statement.executeUpdate("""
+            CREATE TABLE IF NOT EXISTS `game` (
+                `id_game` INT NOT NULL AUTO_INCREMENT,
+                `name_game` VARCHAR(100) DEFAULT NULL,
+                `money` DOUBLE(100,2) DEFAULT 0.00,
+                `hours` INT NOT NULL DEFAULT 0,
+                `minutes` INT DEFAULT 0,
+                `seconds` INT DEFAULT 0,
+                `coffee_per_click` INT DEFAULT 1,
+                `production_per_second` FLOAT NOT NULL DEFAULT 0,
+                `username` VARCHAR(50) DEFAULT NULL,
+                `finished` TINYINT(1) NOT NULL DEFAULT 0,
+
+                PRIMARY KEY (`id_game`),
+
+                KEY `username` (`username`),
+
+                CONSTRAINT `game_ibfk_1`
+                    FOREIGN KEY (`username`)
+                    REFERENCES `user` (`username`)
+                    ON DELETE CASCADE
+
+            ) ENGINE=InnoDB
+            DEFAULT CHARSET=utf8mb4
+            COLLATE=utf8mb4_general_ci
+        """);
+
+			statement.executeUpdate("""
+            CREATE TABLE IF NOT EXISTS `generador` (
+                `id_generator` INT NOT NULL AUTO_INCREMENT,
+                `name` VARCHAR(100) DEFAULT NULL,
+                `id_game` INT DEFAULT NULL,
+                `quantity` INT DEFAULT 0,
+                `price` INT DEFAULT NULL,
+                `period` DOUBLE(100,1) DEFAULT NULL,
+                `earning` DOUBLE(100,1) DEFAULT NULL,
+
+                PRIMARY KEY (`id_generator`),
+
+                KEY `id_game` (`id_game`),
+
+                CONSTRAINT `generador_ibfk_1`
+                    FOREIGN KEY (`id_game`)
+                    REFERENCES `game` (`id_game`)
+                    ON DELETE CASCADE
+
+            ) ENGINE=InnoDB
+            DEFAULT CHARSET=utf8mb4
+            COLLATE=utf8mb4_general_ci
+        """);
+
+			statement.executeUpdate("""
+            CREATE TABLE IF NOT EXISTS `setting` (
+                `id_setting` INT NOT NULL AUTO_INCREMENT,
+                `volume` INT DEFAULT NULL,
+                `background` VARCHAR(255) DEFAULT NULL,
+                `skin` VARCHAR(255) DEFAULT NULL,
+                `username` VARCHAR(50) DEFAULT NULL,
+
+                PRIMARY KEY (`id_setting`),
+
+                KEY `username` (`username`),
+
+                CONSTRAINT `setting_ibfk_1`
+                    FOREIGN KEY (`username`)
+                    REFERENCES `user` (`username`)
+                    ON DELETE CASCADE
+
+            ) ENGINE=InnoDB
+            DEFAULT CHARSET=utf8mb4
+            COLLATE=utf8mb4_general_ci
+        """);
+
+			statement.executeUpdate("""
+            CREATE TABLE IF NOT EXISTS `stat` (
+                `id_stat` INT NOT NULL AUTO_INCREMENT,
+                `id_games` INT NOT NULL,
+                `minute_mark` INT NOT NULL,
+                `money_at_minute` DOUBLE(100,2) NOT NULL,
+                `manual_clicks_total` INT DEFAULT 0,
+                `auto_generated_total` DOUBLE(100,2) DEFAULT 0.00,
+                `max_production_rate` FLOAT DEFAULT 0,
+                `upgrades_expenses` DOUBLE(100,2) DEFAULT 0.00,
+
+                PRIMARY KEY (`id_stat`),
+
+                KEY `id_games` (`id_games`),
+
+                CONSTRAINT `stat_ibfk_1`
+                    FOREIGN KEY (`id_games`)
+                    REFERENCES `game` (`id_game`)
+                    ON DELETE CASCADE
+
+            ) ENGINE=InnoDB
+            DEFAULT CHARSET=utf8mb4
+            COLLATE=utf8mb4_general_ci
+        """);
+
+			statement.executeUpdate("""
+            CREATE TABLE IF NOT EXISTS `upgrade` (
+                `id_upgrade` INT NOT NULL AUTO_INCREMENT,
+                `id_generator` INT DEFAULT NULL,
+                `id_game` INT DEFAULT NULL,
+                `active` TINYINT(1) NOT NULL DEFAULT 0,
+                `price` INT DEFAULT NULL,
+
+                PRIMARY KEY (`id_upgrade`),
+
+                KEY `id_generator` (`id_generator`),
+                KEY `id_game` (`id_game`),
+
+                CONSTRAINT `upgrade_ibfk_1`
+                    FOREIGN KEY (`id_generator`)
+                    REFERENCES `generador` (`id_generator`)
+                    ON DELETE CASCADE,
+
+                CONSTRAINT `upgrade_ibfk_2`
+                    FOREIGN KEY (`id_game`)
+                    REFERENCES `game` (`id_game`)
+                    ON DELETE CASCADE
+
+            ) ENGINE=InnoDB
+            DEFAULT CHARSET=utf8mb4
+            COLLATE=utf8mb4_general_ci
+        """);
+
+			System.out.println("Tablas verificadas/creadas correctamente.");
+
+		} catch (SQLException e) {
+
+			throw new SQLException(
+					"Error al crear las tablas: " + e.getMessage(),
+					e
+			);
 		}
 	}
 
@@ -42,8 +221,12 @@ public class MySQLDAO {
 	public static MySQLDAO getInstance(JsonConfigurationDAO jsonDAO) throws IOException {
 		if (instance == null) {
 			Configuration config = jsonDAO.readJson();
-			instance = new MySQLDAO(config);
-		}
+            try {
+                instance = new MySQLDAO(config);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
 		return instance;
 	}
 
@@ -55,6 +238,10 @@ public class MySQLDAO {
 		try {
 			if (connection == null || connection.isClosed()) {
 				connection = DriverManager.getConnection(url, username, password);
+				createTablesIfNotExists();
+
+				System.out.println("Conexión exitosa a XAMPP");
+
 			}
 		} catch (SQLException e) {
 			throw new SQLException(e);
