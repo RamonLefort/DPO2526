@@ -9,61 +9,56 @@ import Presentation.Views.StatsView;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Controlador encargado de gestionar la visualización de estadísticas de las partidas.
- * Implementa {@link ActionListener} para responder a las interacciones del usuario en la vista
- * de estadísticas, coordinando la recuperación de datos históricos y la transición de regreso
- * al menú principal.
- */
 public class StatsController implements ActionListener {
 
-	private StatsView statsView;
-	private StatLogic statLogic;
-	private ViewController viewController;
-	private GameMenuController gameMenuController;
+	private final StatsView statsView;
+	private final StatLogic statLogic;
+	private final ViewController viewController;
+	private final GameMenuController gameMenuController;
 
-	/**
-	 * Constructor que inicializa el controlador con las dependencias necesarias de vista y lógica.
-	 * Configura este controlador como el escuchador de eventos para la vista de estadísticas.
-	 *
-	 * @param statsView      La vista encargada de representar gráficamente las estadísticas.
-	 * @param statLogic      La lógica de negocio para la recuperación de datos de telemetría.
-	 * @param viewController El gestor de navegación entre las diferentes ventanas de la aplicación.
-	 */
+	// Lista auxiliar en memoria RAM para mapear el índice del ComboBox con los ID físicos reales de BD
+	private List<Integer> currentFilteredGameIds;
+
 	public StatsController(StatsView statsView, StatLogic statLogic, ViewController viewController, GameMenuController gameMenuController) {
 		this.statsView = statsView;
 		this.statLogic = statLogic;
 		this.viewController = viewController;
 		this.gameMenuController = gameMenuController;
+		this.currentFilteredGameIds = new ArrayList<>();
 		this.statsView.setActionListener(this);
 	}
 
 	/**
-	 * Carga y muestra las estadísticas de una partida específica.
-	 *
-	 * @param idGame El ID de la partida que acaba de terminar o que se ha seleccionado.
+	 * Carga inicial del panel de estadísticas. Carga la jerarquía completa de controles.
 	 */
 	public void loadStatsData(int idGame) {
-        List<Stat> gameHistory = null;
-        try {
-            gameHistory = statLogic.getAllStats(idGame);
-        } catch (DAOException e) {
-			CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-			uiEx.showDialog(null);
-        }
-        if (gameHistory != null && !gameHistory.isEmpty()) {
-			statsView.displayStats(gameHistory);
-		} else {
-			System.err.println("No se encontraron estadísticas para la partida: " + idGame);
+		try {
+			// 1. Obtener todos los usuarios de la base de datos para rellenar el primer filtro
+			List<String> usernames = statLogic.getAllUsernames();
+			statsView.populateUsers(usernames);
+
+			// 2. Encontrar a qué usuario pertenece la partida actual que se quiere examinar
+			String ownerUsername = statLogic.getGameOwner(idGame);
+			statsView.setSelectedUser(ownerUsername);
+
+			// 3. Cargar las partidas correspondientes a dicho usuario activo
+			updateGameComboBox(ownerUsername);
+
+			// 4. Seleccionar visualmente la partida y pintar las estadísticas correspondientes
+			int indexInList = currentFilteredGameIds.indexOf(idGame);
+			if (indexInList != -1) {
+				// Forzar refresco gráfico
+				refreshStatsVisuals(idGame);
+			}
+
+		} catch (DAOException e) {
+			showDatabaseError();
 		}
 	}
 
-	/**
-	 * Gestiona las acciones disparadas por los componentes interactivos de la vista de estadísticas.
-	 * @param e El evento de acción capturado desde la interfaz.
-	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		switch (e.getActionCommand()) {
@@ -73,21 +68,93 @@ public class StatsController implements ActionListener {
 			case StatsView.BTN_SETTINGS:
 				handleSettings();
 				break;
+			case StatsView.COMBO_USER_CHANGED:
+				handleUserFilterChanged();
+				break;
+			case StatsView.COMBO_GAME_CHANGED:
+				handleGameFilterChanged();
+				break;
 		}
 	}
 
 	/**
-	 * Finaliza la visualización de estadísticas y devuelve al usuario al menú principal del juego.
+	 * Cuando cambia el usuario del JComboBox, recalculamos sus partidas y refrescamos.
 	 */
+	private void handleUserFilterChanged() {
+		String selectedUser = statsView.getSelectedUser();
+		if (selectedUser != null) {
+			try {
+				updateGameComboBox(selectedUser);
+				// Al cambiar el usuario, cargamos automáticamente los datos de su primera partida de la lista
+				if (!currentFilteredGameIds.isEmpty()) {
+					refreshStatsVisuals(currentFilteredGameIds.get(0));
+				} else {
+					// Si el usuario no tiene partidas, pasamos una lista vacía para limpiar las gráficas
+					statsView.displayStats(new ArrayList<>());
+				}
+			} catch (DAOException e) {
+				showDatabaseError();
+			}
+		}
+	}
+
+	/**
+	 * Cuando cambia la partida elegida, simplemente recargamos el historial en los componentes Swing.
+	 */
+	private void handleGameFilterChanged() {
+		String selectedUser = statsView.getSelectedUser();
+		String selectedGame = statsView.getSelectedGame();
+
+		if (selectedUser != null && selectedGame != null) {
+			try {
+				// Recuperamos el ID real buscando la correspondencia en base al nombre y al dueño
+				int idGame = statLogic.getGameIdByNameAndUser(selectedGame, selectedUser);
+				refreshStatsVisuals(idGame);
+			} catch (DAOException e) {
+				showDatabaseError();
+			}
+		}
+	}
+
+	/**
+	 * Actualiza el combo secundario de partidas basándose en el nombre de usuario.
+	 */
+	private void updateGameComboBox(String username) throws DAOException {
+		// Obtenemos los nombres legibles de las partidas para la interfaz
+		List<String> gameNames = statLogic.getGameNamesByUser(username);
+		statsView.populateGames(gameNames);
+
+		// Almacenamos sincrónicamente sus IDs correspondientes en RAM para búsquedas rápidas locales
+		this.currentFilteredGameIds = statLogic.getGameIdsByUser(username);
+	}
+
+	/**
+	 * Pide a las entidades de negocio los indicadores y los inyecta en el JTable y el Canvas.
+	 */
+	private void refreshStatsVisuals(int idGame) {
+		try {
+			List<Stat> gameHistory = statLogic.getAllStats(idGame);
+			statsView.displayStats(gameHistory);
+		} catch (DAOException e) {
+			showDatabaseError();
+		}
+	}
+
 	private void handleExit() {
 		gameMenuController.loadGames();
 		viewController.showView("GAME MENU");
 	}
 
-	/**
-	 * Regresa al usuario a la pantalla de configuración del sistema.
-	 */
 	private void handleSettings() {
 		viewController.showView("SETTINGS");
+	}
+
+	private void showDatabaseError() {
+		CustomUIException uiEx = new CustomUIException(
+				"No se ha podido establecer comunicación con el servidor para filtrar estadísticas.",
+				"Error de Conexión",
+				JOptionPane.ERROR_MESSAGE
+		);
+		uiEx.showDialog(null);
 	}
 }

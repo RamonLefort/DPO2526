@@ -22,6 +22,9 @@ public class StatsView extends JPanel {
     /** Comando de acción para ir a la pantalla de settings. */
     public static final String BTN_SETTINGS = "SETTINGS";
 
+    public static final String COMBO_USER_CHANGED = "COMBO_USER_CHANGED";
+    public static final String COMBO_GAME_CHANGED = "COMBO_GAME_CHANGED";
+
     private final Color BG_COLOR = new Color(248, 245, 240);
     private final Color PRIMARY_COFFEE = new Color(74, 44, 23);
 
@@ -30,6 +33,9 @@ public class StatsView extends JPanel {
     private JButton btnExit;
     private JButton btnSettings;
     private StatGraphPanel graphPanel;
+
+    private JComboBox<String> cbUsers;
+    private JComboBox<String> cbGames;
 
     /**
      * Constructor de la vista.
@@ -71,6 +77,36 @@ public class StatsView extends JPanel {
         title.setFont(new Font("Segoe UI", Font.BOLD, 28));
         title.setForeground(PRIMARY_COFFEE);
         title.setAlignmentY(Component.CENTER_ALIGNMENT);
+
+        // Selector de Usuarios
+        JLabel lblUser = new JLabel("User: ");
+        lblUser.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        lblUser.setForeground(PRIMARY_COFFEE);
+        lblUser.setAlignmentY(Component.CENTER_ALIGNMENT);
+        headerContainer.add(lblUser);
+
+        cbUsers = new JComboBox<>();
+        cbUsers.setActionCommand(COMBO_USER_CHANGED);
+        cbUsers.setMaximumSize(new Dimension(140, 30));
+        cbUsers.setAlignmentY(Component.CENTER_ALIGNMENT);
+        headerContainer.add(cbUsers);
+
+        headerContainer.add(Box.createRigidArea(new Dimension(15, 0)));
+
+        // Selector de Partidas
+        JLabel lblGame = new JLabel("Game: ");
+        lblGame.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        lblGame.setForeground(PRIMARY_COFFEE);
+        lblGame.setAlignmentY(Component.CENTER_ALIGNMENT);
+        headerContainer.add(lblGame);
+
+        cbGames = new JComboBox<>();
+        cbGames.setActionCommand(COMBO_GAME_CHANGED);
+        cbGames.setMaximumSize(new Dimension(160, 30));
+        cbGames.setAlignmentY(Component.CENTER_ALIGNMENT);
+        headerContainer.add(cbGames);
+
+        headerContainer.add(Box.createHorizontalGlue());
 
         btnSettings = new RoundedButton("Ajustes", 20, PRIMARY_COFFEE, BG_COLOR, BG_COLOR, PRIMARY_COFFEE);
         btnSettings.setActionCommand(BTN_SETTINGS);
@@ -200,6 +236,46 @@ public class StatsView extends JPanel {
     public void setActionListener(ActionListener l) {
         btnExit.addActionListener(l);
         btnSettings.addActionListener(l);
+    }
+
+    public void populateUsers(List<String> usernames) {
+        ActionListener[] listeners = cbUsers.getActionListeners();
+        for (ActionListener l : listeners) cbUsers.removeActionListener(l);
+
+        cbUsers.removeAllItems();
+        if (usernames != null) {
+            for (String user : usernames) {
+                cbUsers.addItem(user);
+            }
+        }
+
+        for (ActionListener l : listeners) cbUsers.addActionListener(l);
+    }
+
+    public void populateGames(List<String> gameNames) {
+        ActionListener[] listeners = cbGames.getActionListeners();
+        for (ActionListener l : listeners) cbGames.removeActionListener(l);
+
+        cbGames.removeAllItems();
+        if (gameNames != null) {
+            for (String game : gameNames) {
+                cbGames.addItem(game);
+            }
+        }
+
+        for (ActionListener l : listeners) cbGames.addActionListener(l);
+    }
+
+    public String getSelectedUser() {
+        return (String) cbUsers.getSelectedItem();
+    }
+
+    public String getSelectedGame() {
+        return (String) cbGames.getSelectedItem();
+    }
+
+    public void setSelectedUser(String username) {
+        cbUsers.setSelectedItem(username);
     }
 
     /**

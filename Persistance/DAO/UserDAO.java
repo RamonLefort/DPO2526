@@ -3,10 +3,7 @@ package Persistance.DAO;
 import Bussiness.Entities.User;
 import Persistance.Configuration.MySQLDAO;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,6 +89,30 @@ public class UserDAO {
 			throw new SQLException(e);
 		}
 		return users;
+	}
+
+	/**
+	 * Extrae todos los nombres de usuario (username) únicos registrados en el sistema.
+	 * Al propagar SQLException, permitimos que la lógica capture fallos físicos de red.
+	 *
+	 * @return Lista de Strings con los nombres de usuario.
+	 * @throws SQLException Si el servidor de base de datos está caído o la consulta falla.
+	 */
+	public List<String> getAllUsernames() throws SQLException {
+		List<String> usernames = new ArrayList<>();
+		String query = "SELECT username FROM User ORDER BY username ASC";
+
+		// Abrimos el canal de conexión a través de tu clase gestora de base de datos
+		Connection connection = mySQLDAO.getConnection();
+
+		try (PreparedStatement statement = connection.prepareStatement(query);
+			 ResultSet resultSet = statement.executeQuery()) {
+
+			while (resultSet.next()) {
+				usernames.add(resultSet.getString("username"));
+			}
+		}
+		return usernames;
 	}
 
 	/**

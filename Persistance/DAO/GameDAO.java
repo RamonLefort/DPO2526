@@ -3,10 +3,7 @@ package Persistance.DAO;
 import Bussiness.Entities.Game;
 import Persistance.Configuration.MySQLDAO;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,18 +35,19 @@ public class GameDAO {
 	 */
 	public int createGame(String nameGame, String username) throws SQLException {
 		String query = "INSERT INTO game (name_game, username, money, minutes, seconds, coffee_per_click) VALUES (?, ?, 0, 0, 0, 1)";
+		int gameId = -1;
 		try (PreparedStatement ps = mySQLDAO.getConnection().prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 			ps.setString(1, nameGame);
 			ps.setString(2, username);
 			ps.executeUpdate();
 			ResultSet rs = ps.getGeneratedKeys();
 			if (rs.next()) {
-				return rs.getInt(1);
+				gameId = rs.getInt(1);
 			}
+			return gameId;
 		} catch (SQLException e) {
 			throw new SQLException(e);
 		}
-		return 0;
 	}
 
 	/**
@@ -153,6 +151,54 @@ public class GameDAO {
 		} catch (SQLException e) {
 			throw new SQLException(e);
 		}
+	}
+
+	/**
+	 * Recupera una partida completa de la base de datos buscando por su clave primaria (idGame).
+	 *
+	 * @param idGame Identificador único de la partida.
+	 * @return Un objeto Game mapeado, o null si no se encuentra correspondencia.
+	 * @throws SQLException Si ocurre un fallo en el socket de conexión.
+	 */
+	public Game getGameById(int idGame) throws SQLException {
+		String query = "SELECT id_game, name_game, username, money, hours, minutes, seconds, coffeexclick, prodxsec, finished " +
+				"FROM Game WHERE id_game = ?";
+
+		Connection connection = mySQLDAO.getConnection();
+
+		try (PreparedStatement statement = connection.prepareStatement(query)) {
+			statement.setInt(1, idGame);
+
+			try (ResultSet resultSet = statement.executeQuery()) {
+				if (resultSet.next()) {
+					Game game = new Game(resultSet.getInt("id_game"), resultSet.getString("name_game"), resultSet.getDouble("money"), resultSet.getInt("hours") , resultSet.getInt("minutes"), resultSet.getInt("seconds"), resultSet.getInt("coffeexclick"), resultSet.getFloat("prodxsec"), resultSet.getString("username"), resultSet.getBoolean("finished"));
+					return game;
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Devuelve una lista ordenada con las claves primarias (IDs) de las partidas de un usuario.
+	 * Es crucial para que el controlador pueda sincronizar el índice del JComboBox con el ID real.
+	 */
+	public List<Integer> getGameIdsByUser(String username) throws SQLException {
+		List<Integer> ids = new ArrayList<>();
+		String query = "SELECT id_game FROM Game WHERE username = ? ORDER BY id_game ASC";
+
+		Connection connection = mySQLDAO.getConnection();
+
+		try (PreparedStatement statement = connection.prepareStatement(query)) {
+			statement.setString(1, username);
+
+			try (ResultSet resultSet = statement.executeQuery()) {
+				while (resultSet.next()) {
+					ids.add(resultSet.getInt("id_game"));
+				}
+			}
+		}
+		return ids;
 	}
 
 	/**

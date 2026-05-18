@@ -9,6 +9,7 @@ import Persistance.DAO.StatDAO;
 import Persistance.DAO.UserDAO;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,6 +32,104 @@ public class StatLogic {
 		this.statDAO = statDAO;
 		this.gameDAO = gameDAO;
 		this.userDAO = userDAO;
+	}
+
+	/**
+	 * Recupera todos los nombres de usuario registrados en el sistema.
+	 * Útil para rellenar el JComboBox primario de filtrado.
+	 *
+	 * @return Lista de cadenas con los nombres de usuario.
+	 * @throws DAOException Si falla la comunicación con la base de datos.
+	 */
+	public List<String> getAllUsernames() throws DAOException {
+		try {
+			// Nota: Asumimos que tu userDAO expone un método para listar usuarios o cadenas
+			return userDAO.getAllUsernames();
+		} catch (SQLException e) {
+			throw new DAOException(e);
+		}
+	}
+
+	/**
+	 * Obtiene el nombre del usuario propietario de una partida concreta.
+	 * Permite auto-seleccionar al usuario activo al abrir la vista.
+	 *
+	 * @param idGame Identificador de la partida.
+	 * @return El nombre de usuario del propietario.
+	 * @throws DAOException Si ocurre un error en la consulta física.
+	 */
+	public String getGameOwner(int idGame) throws DAOException {
+		try {
+			// Buscamos la partida directamente en el DAO
+			Game game = gameDAO.getGameById(idGame);
+			return game.getUsername(); // Retorna el dueño asignado de la partida
+		} catch (SQLException e) {
+			throw new DAOException(e);
+		}
+	}
+
+	/**
+	 * Recupera exclusivamente los nombres legibles de las partidas de un usuario.
+	 * Diseñado para rellenar el JComboBox secundario de la vista.
+	 *
+	 * @param username Nombre del usuario a filtrar.
+	 * @return Lista de Strings con los nombres de sus partidas.
+	 * @throws DAOException Si falla la persistencia.
+	 */
+	public List<String> getGameNamesByUser(String username) throws DAOException {
+		try {
+			List<Game> games = gameDAO.getGamesByUser(username);
+			List<String> names = new ArrayList<>();
+			for (Game g : games) {
+				names.add(g.getNameGame());
+			}
+			return names;
+		} catch (SQLException e) {
+			throw new DAOException(e);
+		}
+	}
+
+	/**
+	 * Recupera los identificadores (IDs) numéricos de las partidas de un usuario.
+	 * Sincroniza la posición del índice visual con el ID real de la base de datos.
+	 *
+	 * @param username Nombre del usuario.
+	 * @return Lista de enteros con los IDs de las partidas.
+	 * @throws DAOException Si falla la consulta SQL.
+	 */
+	public List<Integer> getGameIdsByUser(String username) throws DAOException {
+		try {
+			List<Game> games = gameDAO.getGamesByUser(username);
+			List<Integer> ids = new ArrayList<>();
+			for (Game g : games) {
+				ids.add(g.getIdGame());
+			}
+			return ids;
+		} catch (SQLException e) {
+			throw new DAOException(e);
+		}
+	}
+
+	/**
+	 * Resuelve el ID único de una partida cruzando su nombre y el de su propietario.
+	 *
+	 * @param gameName Nombre de la partida seleccionado en el combo.
+	 * @param username Dueño de la partida seleccionado en el combo.
+	 * @return El ID numérico de la partida.
+	 * @throws DAOException Si no se encuentra correspondencia o falla el canal.
+	 */
+	public int getGameIdByNameAndUser(String gameName, String username) throws DAOException {
+		try {
+			List<Game> userGames = gameDAO.getGamesByUser(username);
+			for (Game g : userGames) {
+				if (g.getNameGame().equalsIgnoreCase(gameName)) {
+					return g.getIdGame();
+				}
+			}
+		} catch (SQLException e) {
+			throw new DAOException(e);
+		}
+		return 0;
 	}
 
 	/**
