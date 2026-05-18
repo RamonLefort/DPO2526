@@ -55,7 +55,6 @@ public class MySQLDAO {
 		try {
 			if (connection == null || connection.isClosed()) {
 				connection = DriverManager.getConnection(url, username, password);
-				System.out.println("Conexión exitosa a XAMPP");
 			}
 		} catch (SQLException e) {
 			throw new SQLException(e);

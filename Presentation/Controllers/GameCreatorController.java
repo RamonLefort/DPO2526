@@ -80,8 +80,6 @@ public class GameCreatorController implements ActionListener {
             case GameCreator.BTN_CREATE:
                 handleCreateGame();
                 break;
-            default:
-                System.err.println("Comando desconocido: " + e.getActionCommand());
         }
     }
 
@@ -119,45 +117,44 @@ public class GameCreatorController implements ActionListener {
             view.showError("Por favor, introduce un nombre para la partida.");
             return;
         }
+
         User currentUser = userLogic.getCurrentUser();
+        if (currentUser == null) {
+            CustomUIException uiEx = new CustomUIException("Sesión inválida. Por favor, vuelve a iniciar sesión.", "Sesión Expirada", JOptionPane.ERROR_MESSAGE);
+            uiEx.showDialog(view);
+            return;
+        }
         String currentUsername = currentUser.getUsername();
 
-        int idGame = 0;
         try {
-            idGame = gameLogic.createGame(gameName, currentUsername);
-        } catch (DAOException e) {
-            CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-            uiEx.showDialog(null);
-        }
-        if (idGame == 0) {
-            CustomUIException uiEx = new CustomUIException("No se pudo crear la partida. Inténtalo de nuevo.", "Partida incorrecta", JOptionPane.ERROR_MESSAGE);
-            uiEx.showDialog(null);
-        }
-        if (idGame == -1) {
-            CustomUIException uiEx =  new CustomUIException("Ya tienes una partida con ese nombre.", "Nombre Repetido", JOptionPane.ERROR_MESSAGE);
-            uiEx.showDialog(null);
-        }
-        if (idGame != 0) {
-            try {
-                gameLogic.createGenerators(idGame);
-            } catch (DAOException e) {
-                CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-                uiEx.showDialog(null);
+            int idGame = gameLogic.createGame(gameName, currentUsername);
+
+            if (idGame == -1) {
+                CustomUIException uiEx = new CustomUIException("Ya tienes una partida con ese nombre.", "Nombre Repetido", JOptionPane.WARNING_MESSAGE);
+                uiEx.showDialog(view);
+                return;
             }
-            try {
-                gameLogic.createUpgrades(idGame, gameLogic.getGenerators(idGame));
-            } catch (DAOException e) {
-                CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-                uiEx.showDialog(null);
+
+            if (idGame == 0) {
+                CustomUIException uiEx = new CustomUIException("No se pudo crear la partida de forma interna. Inténtalo de nuevo.", "Partida Incorrecta", JOptionPane.ERROR_MESSAGE);
+                uiEx.showDialog(view);
+                return;
             }
-            try {
-                statLogic.createStat(idGame);
-            } catch (DAOException e) {
-                CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-                uiEx.showDialog(null);
-            }
-            gameController.loadGame(idGame, username);
+
+            gameLogic.createGenerators(idGame);
+            gameLogic.createUpgrades(idGame, gameLogic.getGenerators(idGame));
+            statLogic.createStat(idGame);
+
+            gameController.loadGame(idGame, currentUsername);
             viewController.showView("GAME");
+
+        } catch (DAOException e) {
+            CustomUIException uiEx = new CustomUIException(
+                    "No se ha podido establecer comunicación con el servidor de base de datos durante la creación.",
+                    "Error de Conexión",
+                    JOptionPane.ERROR_MESSAGE
+            );
+            uiEx.showDialog(view);
         }
     }
 }
