@@ -2,6 +2,7 @@ package Presentation.Views;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
 /**
  * Vista encargada de mostrar el panel de ajustes y configuración del usuario.
@@ -52,18 +53,16 @@ public class SettingView extends JPanel {
 
     /**
      * Da formato a los botones de la vista.
-     * Define el comando de acción, la alineación, la fuente y los límites de tamaño
-     * para asegurar que todos los botones de la vista tengan dimensiones idénticas.
+     *
      * @param btn     El botón al que aplicar el formato.
      * @param bc      El color del borde asociado a la acción.
      * @param command El String que identifica la acción para el controlador.
      */
     private void formatButton(JButton btn, Color bc, String command) {
-        btn.setActionCommand(command); 
+        btn.setActionCommand(command);
         btn.setAlignmentX(Component.CENTER_ALIGNMENT);
         btn.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btn.setFocusPainted(false);
-
         btn.setBorder(new RoundedBorder(bc, 20, 1f));
 
         Dimension buttonSize = new Dimension(200, 40);
@@ -73,16 +72,12 @@ public class SettingView extends JPanel {
     }
 
     /**
-     * Obtiene la referencia al botón de logout.
+     * Vincula el controlador de eventos a los botones de la vista de ajustes.
      *
-     * @return El {@link JButton} de cierre de sesión.
+     * @param e El {@link ActionListener} que procesará las acciones.
      */
-    public JButton getLogoutBtn() { return logoutBtn; }
-
-    /**
-     * Obtiene la referencia al botón de eliminación de cuenta.
-     *
-     * @return El {@link JButton} de borrado de cuenta.
-     */
-    public JButton getDeleteAccountBtn() { return deleteAccountBtn; }
+    public void setActionListener(ActionListener e) {
+        logoutBtn.addActionListener(e);
+        deleteAccountBtn.addActionListener(e);
+    }
 }
