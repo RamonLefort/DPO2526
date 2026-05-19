@@ -5,6 +5,7 @@ import Presentation.Exceptions.CustomUIException;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,19 +35,18 @@ public class RegisterWindow extends JPanel {
     private JTextField mailField;
     private JPasswordField passwordField;
     private JPasswordField confirmField;
-    private JLabel errorLabel;
     private JLabel footerLabel;
     private JButton registerBtn;
 
-    private final static String CUP1 = "assets/gif-taza/gif1.png";
-    private final static String CUP2 = "assets/gif-taza/gif2.png";
-    private final static String CUP3 = "assets/gif-taza/gif3.png";
-    private final static String CUP4 = "assets/gif-taza/gif4.png";
-    private final static String CUP5 = "assets/gif-taza/gif5.png";
-    private final static String CUP6 = "assets/gif-taza/gif6.png";
-    private final static String CUP7 = "assets/gif-taza/gif7.png";
-    private final static String CUP8 = "assets/gif-taza/gif8.png";
-    private final static String CUP9 = "assets/gif-taza/gif9.png";
+    private final static String CUP1  = "assets/gif-taza/gif1.png";
+    private final static String CUP2  = "assets/gif-taza/gif2.png";
+    private final static String CUP3  = "assets/gif-taza/gif3.png";
+    private final static String CUP4  = "assets/gif-taza/gif4.png";
+    private final static String CUP5  = "assets/gif-taza/gif5.png";
+    private final static String CUP6  = "assets/gif-taza/gif6.png";
+    private final static String CUP7  = "assets/gif-taza/gif7.png";
+    private final static String CUP8  = "assets/gif-taza/gif8.png";
+    private final static String CUP9  = "assets/gif-taza/gif9.png";
     private final static String CUP10 = "assets/gif-taza/gif10.png";
     private final static String CUP11 = "assets/gif-taza/gif11.png";
     private final static String CUP12 = "assets/gif-taza/gif12.png";
@@ -59,7 +59,6 @@ public class RegisterWindow extends JPanel {
      */
     public RegisterWindow() {
         setBackground(BACKGROUND_COLOR);
-
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         add(Box.createVerticalGlue());
@@ -79,8 +78,6 @@ public class RegisterWindow extends JPanel {
 
     /**
      * Crea el panel de cabecera con la animación cíclica.
-     * Inicializa un {@link JImagePanel} y configura un {@link Timer} para iterar sobre
-     * la lista de frames de la imagen de la taza, además de añadir los títulos principales.
      *
      * @return El panel de cabecera configurado y animado.
      */
@@ -90,7 +87,6 @@ public class RegisterWindow extends JPanel {
         headerPanel.setOpaque(false);
         headerPanel.add(Box.createVerticalStrut(10));
 
-        //Gif Taza
         JImagePanel cupGif = null;
         try {
             cupGif = new JImagePanel(CUP1);
@@ -98,11 +94,12 @@ public class RegisterWindow extends JPanel {
             CustomUIException uiEx = new CustomUIException("No se pudo cargar la imagen. Intentalo de nuevo.", "Error en la imagen", JOptionPane.ERROR_MESSAGE);
             uiEx.showDialog(null);
         }
+
         ArrayList<String> cupGifList = new ArrayList<>(Arrays.asList(
                 CUP1, CUP2, CUP3, CUP4, CUP5, CUP6, CUP7, CUP8, CUP9, CUP10, CUP11, CUP12
         ));
 
-        if(animationTimer != null){
+        if (animationTimer != null) {
             animationTimer.stop();
             animationTimer = null;
         }
@@ -113,24 +110,21 @@ public class RegisterWindow extends JPanel {
             CustomUIException uiEx = new CustomUIException("No se pudo cargar la imagen. Intentalo de nuevo.", "Error en la imagen", JOptionPane.ERROR_MESSAGE);
             uiEx.showDialog(null);
         }
+
         cupGif.setMinimumSize(new Dimension(50, 50));
         cupGif.setPreferredSize(new Dimension(50, 50));
         cupGif.setOpaque(false);
         cupGif.setAlignmentX(Component.CENTER_ALIGNMENT);
         headerPanel.add(cupGif);
-
         headerPanel.add(Box.createVerticalStrut(10));
 
-        // Título
         JLabel titleLabel = new JLabel("Coffee Clicker");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 28));
         titleLabel.setForeground(TEXT_DARK);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         headerPanel.add(titleLabel);
-
         headerPanel.add(Box.createVerticalStrut(5));
 
-        // Subtítulo
         JLabel subtitleLabel = new JLabel("Brew your way to coffee empire");
         subtitleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         subtitleLabel.setForeground(TEXT_LIGHT);
@@ -142,21 +136,18 @@ public class RegisterWindow extends JPanel {
 
     /**
      * Construye la tarjeta central que contiene los campos del formulario.
-     * Incluye la instanciación de los campos de email, usuario, contraseña y confirmación,
-     * así como el botón de registro y el enlace de navegación hacia el login.
      *
      * @return Un {@link RoundedPanel} con todos los elementos interactivos del registro.
      */
     private JPanel createCardPanel() {
         JPanel cardPanel = new RoundedPanel(100, CARD_COLOR);
         cardPanel.setLayout(new BoxLayout(cardPanel, BoxLayout.Y_AXIS));
-        cardPanel.setMaximumSize(new Dimension(380, 560)); // Aumentado un poco el alto para el nuevo campo
+        cardPanel.setMaximumSize(new Dimension(380, 560));
 
         RoundedBorder lineBorder = new RoundedBorder(BACKGROUND_COLOR, 50, 25);
         Border padding = BorderFactory.createEmptyBorder(0, 20, 30, 20);
         cardPanel.setBorder(BorderFactory.createCompoundBorder(lineBorder, padding));
 
-        // Titulo Card
         JLabel welcomeLabel = new JLabel("Welcome here!");
         welcomeLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
         welcomeLabel.setForeground(TEXT_DARK);
@@ -164,7 +155,6 @@ public class RegisterWindow extends JPanel {
         cardPanel.add(welcomeLabel);
         cardPanel.add(Box.createVerticalStrut(5));
 
-        // Card Subtitulo
         JLabel signinSubLabel = new JLabel("Sign up to continue your coffee journey");
         signinSubLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         signinSubLabel.setForeground(TEXT_LIGHT);
@@ -172,36 +162,22 @@ public class RegisterWindow extends JPanel {
         cardPanel.add(signinSubLabel);
         cardPanel.add(Box.createVerticalStrut(20));
 
-        // Email
         this.mailField = createUsernameField("Enter email");
         cardPanel.add(createInputGroup("Email", this.mailField));
         cardPanel.add(Box.createVerticalStrut(10));
 
-        // Username
         this.userField = createUsernameField("Enter username");
         cardPanel.add(createInputGroup("Username", this.userField));
         cardPanel.add(Box.createVerticalStrut(10));
 
-        // Password
         this.passwordField = createPasswordField("Enter password");
         cardPanel.add(createInputGroup("Password", this.passwordField));
         cardPanel.add(Box.createVerticalStrut(10));
 
-        // Confirmar Password
         this.confirmField = createPasswordField("Confirm password");
         cardPanel.add(createInputGroup("Confirm Password", this.confirmField));
-        cardPanel.add(Box.createVerticalStrut(10));
+        cardPanel.add(Box.createVerticalStrut(20));
 
-        // Texto Error
-        this.errorLabel = new JLabel(" ");
-        this.errorLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        this.errorLabel.setForeground(Color.RED);
-        this.errorLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        this.errorLabel.setVisible(false);
-        cardPanel.add(this.errorLabel);
-        cardPanel.add(Box.createVerticalStrut(10));
-
-        // Botón Registro
         this.registerBtn = new RoundedButton("Sign Up", 20, BUTTON_COLOR, CARD_COLOR, Color.WHITE, BUTTON_COLOR);
         this.registerBtn.setActionCommand(BTN_REGISTER);
         this.registerBtn.setFont(new Font("Segoe UI", Font.BOLD, 14));
@@ -209,11 +185,9 @@ public class RegisterWindow extends JPanel {
         this.registerBtn.setPreferredSize(new Dimension(300, 35));
         this.registerBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         this.registerBtn.setBorder(new RoundedBorder(BUTTON_COLOR, 20, 1f));
-
         cardPanel.add(this.registerBtn);
         cardPanel.add(Box.createVerticalStrut(20));
 
-        // Footer
         JPanel footerPanel = new JPanel();
         footerPanel.setLayout(new BoxLayout(footerPanel, BoxLayout.X_AXIS));
         footerPanel.setOpaque(false);
@@ -223,12 +197,10 @@ public class RegisterWindow extends JPanel {
         textLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         textLabel.setForeground(TEXT_DARK);
 
-        // Botón Login
         this.footerLabel = new JLabel("Sign in");
         this.footerLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
         this.footerLabel.setForeground(BUTTON_COLOR);
         this.footerLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
         this.footerLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseExited(java.awt.event.MouseEvent evt) {
@@ -238,15 +210,15 @@ public class RegisterWindow extends JPanel {
 
         footerPanel.add(textLabel);
         footerPanel.add(this.footerLabel);
-
         cardPanel.add(footerPanel);
+
         return cardPanel;
     }
 
     /**
      * Crea grupos de inputs etiquetados.
      *
-     * @param labelText Texto de la etiqueta.
+     * @param labelText  Texto de la etiqueta.
      * @param inputField Componente de entrada (texto o contraseña).
      * @return Panel agrupador configurado.
      */
@@ -254,14 +226,12 @@ public class RegisterWindow extends JPanel {
         JPanel group = new JPanel();
         group.setLayout(new BoxLayout(group, BoxLayout.Y_AXIS));
         group.setBackground(CARD_COLOR);
-
         group.setAlignmentX(Component.CENTER_ALIGNMENT);
         group.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
 
         JLabel label = new JLabel(labelText);
         label.setFont(new Font("Segoe UI", Font.BOLD, 12));
         label.setForeground(TEXT_DARK);
-
         label.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         inputField.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -300,7 +270,6 @@ public class RegisterWindow extends JPanel {
                 }
             }
         });
-
         return textField;
     }
 
@@ -315,7 +284,6 @@ public class RegisterWindow extends JPanel {
         passField.setPreferredSize(new Dimension(Integer.MAX_VALUE, 35));
 
         char defaultEchoChar = passField.getEchoChar();
-
         passField.setText(placeholder);
         passField.setForeground(TEXT_LIGHT);
         passField.setEchoChar((char) 0);
@@ -338,52 +306,53 @@ public class RegisterWindow extends JPanel {
                 }
             }
         });
-
         return passField;
     }
 
     /**
-     * @return Referencia al campo de nombre de usuario.
+     * Vincula el controlador de eventos a los botones principales de la vista de registro.
+     *
+     * @param e El {@link ActionListener} que procesará las acciones.
      */
-    public JTextField getUserField(){ return userField;}
+    public void setActionListener(ActionListener e) {
+        registerBtn.addActionListener(e);
+        footerLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                e.actionPerformed(
+                        new java.awt.event.ActionEvent(footerLabel, java.awt.event.ActionEvent.ACTION_PERFORMED, "GO_LOGIN")
+                );
+            }
+        });
+    }
 
     /**
-     * @return Referencia al campo de correo electrónico.
+     * @return Nombre de usuario introducido.
      */
-    public JTextField getMailField(){ return mailField;}
+    public String getUsername() { return userField.getText().trim(); }
 
     /**
-     * @return Referencia al campo de contraseña principal.
+     * @return Email introducido.
      */
-    public JPasswordField getPasswordField(){ return passwordField;}
+    public String getEmail() { return mailField.getText().trim(); }
 
     /**
-     * @return Referencia al campo de confirmación de contraseña.
+     * @return Contraseña introducida.
      */
-    public JPasswordField getConfirmField() { return confirmField;}
+    public String getPassword() { return new String(passwordField.getPassword()).trim(); }
 
     /**
-     * @return Referencia a la etiqueta de errores.
+     * @return Confirmación de contraseña introducida.
      */
-    public JLabel getErrorLabel(){ return errorLabel;}
-
-    /**
-     * @return Referencia a la etiqueta del pie de página.
-     */
-    public JLabel getFooterLabel(){ return footerLabel;}
-
-    /**
-     * @return Referencia al botón principal de registro.
-     */
-    public JButton getRegisterButton(){ return registerBtn;}
+    public String getConfirm() { return new String(confirmField.getPassword()).trim(); }
 
     /**
      * Actualiza y hace visible la etiqueta de error con un mensaje específico.
      *
      * @param message El mensaje de error a mostrar al usuario.
      */
-    public void showError(String message){
-        errorLabel.setText(message);
-        errorLabel.setVisible(true);
+    public void showError(String message) {
+        CustomUIException uiEx = new CustomUIException(message, "Error", JOptionPane.ERROR_MESSAGE);
+        uiEx.showDialog(null);
     }
 }
