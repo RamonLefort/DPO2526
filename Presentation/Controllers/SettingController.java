@@ -11,46 +11,44 @@ import java.awt.event.ActionListener;
 
 public class SettingController implements ActionListener {
 
-	private final SettingView settingView;
-	private final UserLogic userLogic;
-	private final ViewController viewController;
+    private final SettingView settingView;
+    private final UserLogic userLogic;
+    private final ViewController viewController;
 
-	public SettingController(SettingView settingView, UserLogic userLogic, ViewController viewController) {
-		this.settingView = settingView;
-		this.userLogic = userLogic;
-		this.viewController = viewController;
+    public SettingController(SettingView settingView, UserLogic userLogic, ViewController viewController) {
+        this.settingView = settingView;
+        this.userLogic = userLogic;
+        this.viewController = viewController;
+        this.settingView.setActionListener(this);
+    }
 
-		this.settingView.getLogoutBtn().addActionListener(this);
-		this.settingView.getDeleteAccountBtn().addActionListener(this);
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		switch (e.getActionCommand()) {
-			case SettingView.BTN_LOGOUT:
-				handleLogout();
-				break;
-			case SettingView.BTN_DELETE_ACCOUNT:
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        switch (e.getActionCommand()) {
+            case SettingView.BTN_LOGOUT:
+                handleLogout();
+                break;
+            case SettingView.BTN_DELETE_ACCOUNT:
                 handleDeleteAccount();
                 break;
-			default:
-				System.err.println("Comando desconocido: " + e.getActionCommand());
-		}
-	}
+            default:
+                System.err.println("Comando desconocido: " + e.getActionCommand());
+        }
+    }
 
-	public void handleLogout() {
-		userLogic.logout();
-		viewController.showView("LOGIN");
-	}
+    public void handleLogout() {
+        userLogic.logout();
+        viewController.showView("LOGIN");
+    }
 
-	public void handleDeleteAccount() {
-		String username = userLogic.getCurrentUser().getUsername();
+    public void handleDeleteAccount() {
+        String username = userLogic.getCurrentUser().getUsername();
         try {
             userLogic.deleteAccount(username);
         } catch (DAOException e) {
-			CustomUIException uiException = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-			uiException.showDialog(null);
+            CustomUIException uiException = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
+            uiException.showDialog(null);
         }
         viewController.showView("LOGIN");
-	}
+    }
 }
