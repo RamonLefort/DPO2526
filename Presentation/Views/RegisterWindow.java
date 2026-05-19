@@ -27,7 +27,7 @@ public class RegisterWindow extends JPanel {
     private final Color CARD_COLOR = Color.WHITE;
     private final Color TEXT_DARK = new Color(51, 51, 51);
     private final Color TEXT_LIGHT = new Color(136, 136, 136);
-    private final Color BUTTON_COLOR = new Color(139, 69, 19);
+    private final Color BUTTON_COLOR = new Color(74, 44, 23);
 
     private Timer animationTimer;
 

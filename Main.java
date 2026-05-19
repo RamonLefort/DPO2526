@@ -29,7 +29,10 @@ public class Main {
             MySQLDAO mySQLDAO = null;
             try {
                 mySQLDAO = MySQLDAO.getInstance(jsonDAO);
-            } catch (IOException e) {
+            } catch (SQLException e) {
+                CustomUIException uiException = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
+                uiException.showDialog(null);
+            } catch (IOException e){
                 CustomUIException uiException = new CustomUIException("No se ha podido realizar la lectura del archivo de configuración del sistema", "Error de Configuración", JOptionPane.ERROR_MESSAGE);
                 uiException.showDialog(null);
             }

@@ -218,13 +218,18 @@ public class MySQLDAO {
 	 * @param jsonDAO Objeto de acceso a datos para leer la configuración inicial.
 	 * @return La instancia única de MySQLDAO.
 	 */
-	public static MySQLDAO getInstance(JsonConfigurationDAO jsonDAO) throws IOException {
+	public static MySQLDAO getInstance(JsonConfigurationDAO jsonDAO) throws SQLException, IOException {
 		if (instance == null) {
-			Configuration config = jsonDAO.readJson();
+            Configuration config = null;
+            try {
+                config = jsonDAO.readJson();
+            } catch (IOException e) {
+                throw new IOException(e);
+            }
             try {
                 instance = new MySQLDAO(config);
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                throw new SQLException(e);
             }
         }
 		return instance;

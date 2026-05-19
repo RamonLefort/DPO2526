@@ -26,7 +26,7 @@ public class GameMenuView extends JPanel {
 
     private final Color BG_COLOR = new Color(248, 245, 240);
     private final Color CARD_COLOR = Color.WHITE;
-    private final Color PRIMARY_COFFEE = new Color(139, 69, 19);
+    private final Color PRIMARY_COFFEE = new Color(74, 44, 23);
     private JPanel currentGrid;
     private JPanel finishedGrid;
     private JPanel iconsRow;

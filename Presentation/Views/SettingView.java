@@ -20,7 +20,7 @@ public class SettingView extends JPanel {
 
     private final Color BACKGROUND_COLOR = new Color(248, 245, 240);
     private final Color DANGER_COLOR = new Color(220, 53, 69);
-    private final Color BUTTON_COLOR = new Color(139, 69, 19);
+    private final Color BUTTON_COLOR = new Color(74, 44, 23);
     private final Color CARD_COLOR = Color.WHITE;
 
     /**
