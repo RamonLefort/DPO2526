@@ -74,8 +74,39 @@ public class GameDAO {
 						rs.getInt("coffee_per_click"),
 						rs.getFloat("production_per_second"),
 						rs.getString("username"),
-						rs.getBoolean("finished")
-				));
+						rs.getBoolean("finished")));
+			}
+		} catch (SQLException e) {
+			throw new SQLException(e);
+		}
+		return games;
+	}
+
+	/**
+	 * Recupera el listado completo de partidas finalizadas de un jugador.
+	 *
+	 * @param username El nombre de usuario dueño de las partidas.
+	 * @return Una lista de objetos {@link Game} ordenados por la base de datos.
+	 * Devuelve una lista vacía si el usuario no tiene partidas finalizadas.
+	 */
+	public List<Game> getFinishedGamesByUser(String username) throws SQLException {
+		List<Game> games = new ArrayList<>();
+		String query = "SELECT * FROM game WHERE username = ? AND finished = 1";
+		try (PreparedStatement ps = mySQLDAO.getConnection().prepareStatement(query)) {
+			ps.setString(1, username);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				games.add(new Game(
+						rs.getInt("id_game"),
+						rs.getString("name_game"),
+						rs.getDouble("money"),
+						rs.getInt("hours"),
+						rs.getInt("minutes"),
+						rs.getInt("seconds"),
+						rs.getInt("coffee_per_click"),
+						rs.getFloat("production_per_second"),
+						rs.getString("username"),
+						rs.getBoolean("finished")));
 			}
 		} catch (SQLException e) {
 			throw new SQLException(e);
@@ -161,7 +192,7 @@ public class GameDAO {
 	 * @throws SQLException Si ocurre un fallo en el socket de conexión.
 	 */
 	public Game getGameById(int idGame) throws SQLException {
-		String query = "SELECT id_game, name_game, username, money, hours, minutes, seconds, coffeexclick, prodxsec, finished " +
+		String query = "SELECT id_game, name_game, username, money, hours, minutes, seconds, coffee_per_click, production_per_second, finished " +
 				"FROM Game WHERE id_game = ?";
 
 		Connection connection = mySQLDAO.getConnection();
@@ -171,7 +202,7 @@ public class GameDAO {
 
 			try (ResultSet resultSet = statement.executeQuery()) {
 				if (resultSet.next()) {
-					Game game = new Game(resultSet.getInt("id_game"), resultSet.getString("name_game"), resultSet.getDouble("money"), resultSet.getInt("hours") , resultSet.getInt("minutes"), resultSet.getInt("seconds"), resultSet.getInt("coffeexclick"), resultSet.getFloat("prodxsec"), resultSet.getString("username"), resultSet.getBoolean("finished"));
+					Game game = new Game(resultSet.getInt("id_game"), resultSet.getString("name_game"), resultSet.getDouble("money"), resultSet.getInt("hours") , resultSet.getInt("minutes"), resultSet.getInt("seconds"), resultSet.getInt("coffee_per_click"), resultSet.getFloat("production_per_second"), resultSet.getString("username"), resultSet.getBoolean("finished"));
 					return game;
 				}
 			}

@@ -36,21 +36,18 @@ public class StatsController implements ActionListener {
 	 */
 	public void loadStatsData(int idGame) {
 		try {
-			// 1. Obtener todos los usuarios de la base de datos para rellenar el primer filtro
 			List<String> usernames = statLogic.getAllUsernames();
 			statsView.populateUsers(usernames);
 
-			// 2. Encontrar a qué usuario pertenece la partida actual que se quiere examinar
 			String ownerUsername = statLogic.getGameOwner(idGame);
 			statsView.setSelectedUser(ownerUsername);
 
-			// 3. Cargar las partidas correspondientes a dicho usuario activo
 			updateGameComboBox(ownerUsername);
 
-			// 4. Seleccionar visualmente la partida y pintar las estadísticas correspondientes
+			// 4. Seleccionar visualmente la partida y pintar las estadísticas
 			int indexInList = currentFilteredGameIds.indexOf(idGame);
 			if (indexInList != -1) {
-				// Forzar refresco gráfico
+				statsView.setSelectedGameIndex(indexInList);
 				refreshStatsVisuals(idGame);
 			}
 
@@ -85,11 +82,9 @@ public class StatsController implements ActionListener {
 		if (selectedUser != null) {
 			try {
 				updateGameComboBox(selectedUser);
-				// Al cambiar el usuario, cargamos automáticamente los datos de su primera partida de la lista
 				if (!currentFilteredGameIds.isEmpty()) {
 					refreshStatsVisuals(currentFilteredGameIds.get(0));
 				} else {
-					// Si el usuario no tiene partidas, pasamos una lista vacía para limpiar las gráficas
 					statsView.displayStats(new ArrayList<>());
 				}
 			} catch (DAOException e) {
@@ -107,7 +102,6 @@ public class StatsController implements ActionListener {
 
 		if (selectedUser != null && selectedGame != null) {
 			try {
-				// Recuperamos el ID real buscando la correspondencia en base al nombre y al dueño
 				int idGame = statLogic.getGameIdByNameAndUser(selectedGame, selectedUser);
 				refreshStatsVisuals(idGame);
 			} catch (DAOException e) {
@@ -121,11 +115,11 @@ public class StatsController implements ActionListener {
 	 */
 	private void updateGameComboBox(String username) throws DAOException {
 		// Obtenemos los nombres legibles de las partidas para la interfaz
-		List<String> gameNames = statLogic.getGameNamesByUser(username);
+		List<String> gameNames = statLogic.getFinishedGameNamesByUser(username);
 		statsView.populateGames(gameNames);
 
 		// Almacenamos sincrónicamente sus IDs correspondientes en RAM para búsquedas rápidas locales
-		this.currentFilteredGameIds = statLogic.getGameIdsByUser(username);
+		this.currentFilteredGameIds = statLogic.getFinishedGameIdsByUser(username);
 	}
 
 	/**
@@ -150,11 +144,7 @@ public class StatsController implements ActionListener {
 	}
 
 	private void showDatabaseError() {
-		CustomUIException uiEx = new CustomUIException(
-				"No se ha podido establecer comunicación con el servidor para filtrar estadísticas.",
-				"Error de Conexión",
-				JOptionPane.ERROR_MESSAGE
-		);
+		CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor para filtrar estadísticas.", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
 		uiEx.showDialog(null);
 	}
 }

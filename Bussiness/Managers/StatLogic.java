@@ -76,9 +76,9 @@ public class StatLogic {
 	 * @return Lista de Strings con los nombres de sus partidas.
 	 * @throws DAOException Si falla la persistencia.
 	 */
-	public List<String> getGameNamesByUser(String username) throws DAOException {
+	public List<String> getFinishedGameNamesByUser(String username) throws DAOException {
 		try {
-			List<Game> games = gameDAO.getGamesByUser(username);
+			List<Game> games = gameDAO.getFinishedGamesByUser(username);
 			List<String> names = new ArrayList<>();
 			for (Game g : games) {
 				names.add(g.getNameGame());
@@ -97,9 +97,9 @@ public class StatLogic {
 	 * @return Lista de enteros con los IDs de las partidas.
 	 * @throws DAOException Si falla la consulta SQL.
 	 */
-	public List<Integer> getGameIdsByUser(String username) throws DAOException {
+	public List<Integer> getFinishedGameIdsByUser(String username) throws DAOException {
 		try {
-			List<Game> games = gameDAO.getGamesByUser(username);
+			List<Game> games = gameDAO.getFinishedGamesByUser(username);
 			List<Integer> ids = new ArrayList<>();
 			for (Game g : games) {
 				ids.add(g.getIdGame());

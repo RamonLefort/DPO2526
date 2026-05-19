@@ -236,6 +236,8 @@ public class StatsView extends JPanel {
     public void setActionListener(ActionListener l) {
         btnExit.addActionListener(l);
         btnSettings.addActionListener(l);
+        cbUsers.addActionListener(l);
+        cbGames.addActionListener(l);
     }
 
     public void populateUsers(List<String> usernames) {
@@ -278,6 +280,17 @@ public class StatsView extends JPanel {
         cbUsers.setSelectedItem(username);
     }
 
+    public void setSelectedGameIndex(int index) {
+        if (index >= 0 && index < cbGames.getItemCount()) {
+            ActionListener[] listeners = cbGames.getActionListeners();
+            for (ActionListener l : listeners) cbGames.removeActionListener(l);
+
+            cbGames.setSelectedIndex(index);
+
+            for (ActionListener l : listeners) cbGames.addActionListener(l);
+        }
+    }
+
     /**
      * Carga los datos finales y la tabla de progresión
      *
@@ -302,5 +315,7 @@ public class StatsView extends JPanel {
             }
         }
         graphPanel.setStats(stats);
+        graphPanel.revalidate();
+        graphPanel.repaint();
     }
 }

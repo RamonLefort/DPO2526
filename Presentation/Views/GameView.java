@@ -525,12 +525,12 @@ public class GameView extends JPanel {
 
         double globalTotal = 0;
         for (Generator g : generators) {
-            globalTotal += g.getEarning() * g.getQuantity();
+            globalTotal += g.getEarning() / (g.getPeriod() / 1000.0) * g.getQuantity();
         }
 
         for (Generator g : generators) {
             double rowTotal = (double) g.getEarning() / (g.getPeriod() / 1000.0);
-            double percentage = (globalTotal > 0) ? ((g.getEarning() * g.getQuantity()) / globalTotal) * 100 : 0;
+            double percentage = (globalTotal > 0) ? ((rowTotal * g.getQuantity()) / globalTotal) * 100 : 0;
 
             Object[] row = {
                     g.getName(),
