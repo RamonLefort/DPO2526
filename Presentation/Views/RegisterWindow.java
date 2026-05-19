@@ -327,24 +327,32 @@ public class RegisterWindow extends JPanel {
     }
 
     /**
-     * @return Nombre de usuario introducido.
+     * @return El componente del campo de texto para el nombre de usuario.
      */
-    public String getUsername() { return userField.getText().trim(); }
+    public JTextField getUserField() {
+        return userField;
+    }
 
     /**
-     * @return Email introducido.
+     * @return El componente del campo de texto para el correo electrónico.
      */
-    public String getEmail() { return mailField.getText().trim(); }
+    public JTextField getMailField() {
+        return mailField;
+    }
 
     /**
-     * @return Contraseña introducida.
+     * @return El componente del campo de contraseña.
      */
-    public String getPassword() { return new String(passwordField.getPassword()).trim(); }
+    public JPasswordField getPasswordField() {
+        return passwordField;
+    }
 
     /**
-     * @return Confirmación de contraseña introducida.
+     * @return El componente del campo de confirmación de contraseña.
      */
-    public String getConfirm() { return new String(confirmField.getPassword()).trim(); }
+    public JPasswordField getConfirmField() {
+        return confirmField;
+    }
 
     /**
      * Actualiza y hace visible la etiqueta de error con un mensaje específico.
