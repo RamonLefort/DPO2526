@@ -310,20 +310,19 @@ public class RegisterWindow extends JPanel {
     }
 
     /**
-     * Vincula el controlador de eventos a los botones principales de la vista de registro.
+     * Vincula un escuchador de acciones al botón de registro.
      *
-     * @param e El {@link ActionListener} que procesará las acciones.
+     * @param listener El {@link ActionListener} encargado de procesar el clic.
      */
-    public void setActionListener(ActionListener e) {
-        registerBtn.addActionListener(e);
-        footerLabel.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                e.actionPerformed(
-                        new java.awt.event.ActionEvent(footerLabel, java.awt.event.ActionEvent.ACTION_PERFORMED, "GO_LOGIN")
-                );
-            }
-        });
+    public void setActionListener(ActionListener listener) {
+        this.registerBtn.addActionListener(listener);
+    }
+
+    /**
+     * @return El componente de etiqueta del footer para la navegación.
+     */
+    public JLabel getFooterLabel() {
+        return footerLabel;
     }
 
     /**
