@@ -1,19 +1,13 @@
 package Presentation.Controllers;
 
-import Bussiness.Entities.User;
 import Bussiness.Exceptions.DAOException;
 import Bussiness.Managers.UserLogic;
 import Presentation.Exceptions.CustomUIException;
 import Presentation.Views.RegisterWindow;
 
 import javax.swing.*;
-import java.awt.event.MouseEvent;
-
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.sql.SQLException;
 
 /**
  * Controlador encargado de gestionar el proceso de registro de nuevos usuarios en el sistema.
@@ -25,30 +19,23 @@ public class RegisterController implements ActionListener {
 	private final RegisterWindow view;
 	private final UserLogic userLogic;
 	private final ViewController viewController;
-	private GameMenuController gameMenuController;
+	private final GameMenuController gameMenuController;
 
 	/**
 	 * Constructor que inicializa el controlador con las dependencias necesarias y
 	 * configura los escuchadores de eventos para los componentes de la vista de registro.
 	 *
-	 * @param view           Ventana que contiene el formulario de registro.
-	 * @param userLogic      Lógica de negocio para la validación y creación de usuarios.
-	 * @param viewController Gestor de navegación entre las diferentes vistas de la aplicación.
+	 * @param view               Ventana que contiene el formulario de registro.
+	 * @param userLogic          Lógica de negocio para la validación y creación de usuarios.
+	 * @param viewController     Gestor de navegación entre las diferentes vistas de la aplicación.
+	 * @param gameMenuController Controlador del menú de juego para cargar las partidas tras el registro.
 	 */
 	public RegisterController(RegisterWindow view, UserLogic userLogic, ViewController viewController, GameMenuController gameMenuController) {
 		this.view = view;
 		this.userLogic = userLogic;
 		this.viewController = viewController;
 		this.gameMenuController = gameMenuController;
-
-		this.view.getRegisterButton().addActionListener(this);
-
-		this.view.getFooterLabel().addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				moveToLogin();
-			}
-		});
+		this.view.setActionListener(this);
 	}
 
 	/**
@@ -62,24 +49,32 @@ public class RegisterController implements ActionListener {
 			case RegisterWindow.BTN_REGISTER:
 				handleRegister();
 				break;
+			case "GO_LOGIN":
+				moveToLogin();
+				break;
 			default:
 				System.err.println("Comando desconocido: " + e.getActionCommand());
 		}
 	}
 
+	/**
+	 * Procesa la solicitud de registro de un nuevo usuario.
+	 * Valida los campos del formulario y, si todo es correcto, registra al usuario
+	 * y redirige al menú de juego.
+	 */
 	private void handleRegister() {
 		try {
-			String username = view.getUserField().getText().trim();
-			String email    = view.getMailField().getText().trim();
-			String password = new String(view.getPasswordField().getPassword()).trim();
-			String confirm  = new String(view.getConfirmField().getPassword()).trim();
+			String username = view.getUsername();
+			String email    = view.getEmail();
+			String password = view.getPassword();
+			String confirm  = view.getConfirm();
 
 			if (!userLogic.validateEmail(email)) {
 				throw new CustomUIException("El email no tiene un formato válido (@gmail.com).", "Formato Inválido", JOptionPane.WARNING_MESSAGE);
 			}
 
 			if (!userLogic.validatePassword(password)) {
-				throw new CustomUIException("La contraseña debe tener 8 caracteres con, al menos, una letra, un número número y una mayúscula.", "Contraseña Débil", JOptionPane.WARNING_MESSAGE);
+				throw new CustomUIException("La contraseña debe tener 8 caracteres con, al menos, una letra, un número y una mayúscula.", "Contraseña Débil", JOptionPane.WARNING_MESSAGE);
 			}
 
 			if (!password.equals(confirm)) {
@@ -103,20 +98,18 @@ public class RegisterController implements ActionListener {
 					userLogic.login(username, password);
 					gameMenuController.loadGames();
 					viewController.showView("GAME MENU");
-				} catch (DAOException e) {
-					CustomUIException uiException = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-					uiException.showDialog(null);
+				} catch (DAOException ex) {
+					throw new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
 				}
-
 
 			} catch (DAOException daoEx) {
 				throw new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
 			}
 
 		} catch (CustomUIException uiEx) {
-			uiEx.showDialog(view);
+			uiEx.showDialog(null);
 		}
-    }
+	}
 
 	/**
 	 * Redirige el flujo de la aplicación hacia la vista de inicio de sesión.
