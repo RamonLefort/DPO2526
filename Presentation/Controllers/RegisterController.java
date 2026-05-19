@@ -64,10 +64,10 @@ public class RegisterController implements ActionListener {
 	 */
 	private void handleRegister() {
 		try {
-			String username = view.getUsername();
-			String email    = view.getEmail();
-			String password = view.getPassword();
-			String confirm  = view.getConfirm();
+			String username = view.getUserField().getText().trim();
+			String email    = view.getMailField().getText().trim();
+			String password = new String(view.getPasswordField().getPassword()).trim();
+			String confirm  = new String(view.getConfirmField().getPassword()).trim();
 
 			if (!userLogic.validateEmail(email)) {
 				throw new CustomUIException("El email no tiene un formato válido (@gmail.com).", "Formato Inválido", JOptionPane.WARNING_MESSAGE);
