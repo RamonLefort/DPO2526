@@ -24,18 +24,21 @@ public class RegisterController implements ActionListener {
 	/**
 	 * Constructor que inicializa el controlador con las dependencias necesarias y
 	 * configura los escuchadores de eventos para los componentes de la vista de registro.
-	 *
-	 * @param view               Ventana que contiene el formulario de registro.
-	 * @param userLogic          Lógica de negocio para la validación y creación de usuarios.
-	 * @param viewController     Gestor de navegación entre las diferentes vistas de la aplicación.
-	 * @param gameMenuController Controlador del menú de juego para cargar las partidas tras el registro.
 	 */
 	public RegisterController(RegisterWindow view, UserLogic userLogic, ViewController viewController, GameMenuController gameMenuController) {
 		this.view = view;
 		this.userLogic = userLogic;
 		this.viewController = viewController;
 		this.gameMenuController = gameMenuController;
+
 		this.view.setActionListener(this);
+
+		this.view.getFooterLabel().addMouseListener(new java.awt.event.MouseAdapter() {
+			@Override
+			public void mouseClicked(java.awt.event.MouseEvent e) {
+				viewController.showView("LOGIN");
+			}
+		});
 	}
 
 	/**
@@ -118,3 +121,4 @@ public class RegisterController implements ActionListener {
 		viewController.showView("LOGIN");
 	}
 }
+
