@@ -23,15 +23,33 @@ public class ViewController {
     private final UserLogic userLogic;
     private final GameLogic gameLogic;
     private final GameplayLogic gameplayLogic;
-    private GameCreatorController gameCreatorController;
-    private GameController gameController;
-    private StatsController statsController;
     private final StatLogic statLogic;
-    private GameMenuController gameMenuController;
+
+    /** Vista de inicio de sesión. */
+    private final LoginWindow loginView;
+
+    /** Vista de registro de nuevos usuarios. */
+    private final RegisterWindow registerView;
+
+    /** Vista principal del juego. */
+    private final GameView gameView;
+
+    /** Vista de configuración de la aplicación. */
+    private final SettingView settingView;
+
+    /** Vista del menú de partidas. */
+    private final GameMenuView gameMenuView;
+
+    /** Vista de estadísticas del usuario. */
+    private final StatsView statsView;
+
+    /** Vista de creación de partidas. */
+    private final GameCreator gameCreator;
 
     /**
      * Constructor que inicializa el marco principal (JFrame) y configura el sistema de navegación.
-     * Carga el icono de la aplicación y prepara el panel raíz para albergar las distintas vistas.
+     * Instancia todas las vistas como atributos de la clase para mantener una asociación permanente,
+     * carga el icono de la aplicación y prepara el panel raíz para albergar las distintas vistas.
      *
      * @param userLogic     Lógica de gestión de usuarios.
      * @param gameLogic     Lógica de gestión de partidas.
@@ -42,10 +60,18 @@ public class ViewController {
         this.userLogic = userLogic;
         this.gameLogic = gameLogic;
         this.gameplayLogic = gameplayLogic;
+        this.statLogic = statLogic;
         this.frame = new JFrame("Coffee Clicker");
         this.cardLayout = new CardLayout();
         this.rootPanel = new JPanel(cardLayout);
-        this.statLogic = statLogic;
+
+        this.loginView = new LoginWindow();
+        this.registerView = new RegisterWindow();
+        this.gameView = new GameView();
+        this.settingView = new SettingView();
+        this.gameMenuView = new GameMenuView();
+        this.statsView = new StatsView();
+        this.gameCreator = new GameCreator();
 
         Image icon = new ImageIcon("assets/icono.png").getImage();
         frame.setIconImage(icon);
@@ -55,29 +81,20 @@ public class ViewController {
     }
 
     /**
-     * Instancia todas las vistas de la aplicación y sus respectivos controladores.
+     * Instancia todos los controladores de la aplicación y los asocia con sus respectivas vistas.
      * Registra cada vista en el CardLayout asignándole un identificador textual único (String ID).
      */
     private void setupViews() {
-        LoginWindow loginView = new LoginWindow();
-        RegisterWindow registerView = new RegisterWindow();
-        GameView gameView = new GameView();
-        SettingView settingView = new SettingView();
-        GameMenuView gameMenuView = new GameMenuView();
-        StatsView statsView = new StatsView();
-        GameCreator gameCreator = new GameCreator();
-
-        gameMenuController = new GameMenuController(gameMenuView, gameLogic, statLogic, userLogic, this);
-        gameController = new GameController(gameView, gameplayLogic, this, 0, "", gameLogic, statLogic, gameMenuController);
+        GameMenuController gameMenuController = new GameMenuController(gameMenuView, gameLogic, statLogic, userLogic, this);
+        GameController gameController = new GameController(gameView, gameplayLogic, this, 0, "", gameLogic, statLogic, gameMenuController);
         gameMenuController.setGameController(gameController);
-        gameCreatorController = new GameCreatorController(gameCreator, gameLogic, userLogic, statLogic,this, gameController, gameMenuController, "");
+        new GameCreatorController(gameCreator, gameLogic, userLogic, statLogic, this, gameController, gameMenuController, "");
 
         new LoginController(loginView, userLogic, this, gameMenuController);
         new RegisterController(registerView, userLogic, this, gameMenuController);
         new SettingController(settingView, userLogic, this);
-        statsController = new StatsController(statsView, statLogic, this, gameMenuController);
+        StatsController statsController = new StatsController(statsView, statLogic, this, gameMenuController);
         gameMenuController.setStatsController(statsController);
-
 
         rootPanel.add(statsView, "STATS");
         rootPanel.add(loginView, "LOGIN");
@@ -90,7 +107,6 @@ public class ViewController {
 
     /**
      * Cambia la visibilidad hacia una vista específica identificada por su nombre.
-     * Si la vista es el menú de juego, activa la recarga automática de las partidas del usuario.
      *
      * @param viewName Nombre identificador de la vista a mostrar.
      */
