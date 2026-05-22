@@ -123,7 +123,7 @@ public class GameDAO {
 	public void deleteGame(int idGame) throws PersistanceException {
         try {
             mySQLDAO.deleteObject("game", "id_game", String.valueOf(idGame));
-        } catch (SQLException e) {
+        } catch (PersistanceException e) {
             throw new PersistanceException(e);
         }
     }

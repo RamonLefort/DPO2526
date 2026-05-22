@@ -355,6 +355,7 @@ public class GameView extends JPanel {
         JLabel lblRate = new JLabel("+" + rate + " per unit");
         lblRate.setForeground(new Color(210, 105, 30));
         lblRate.setFont(new Font("Segoe UI", Font.BOLD, 11));
+        lblRate.setBorder(new EmptyBorder(0, 5, 0, 0));
 
         textContainer.add(lblTitle);
         textContainer.add(Box.createRigidArea(new Dimension(0, 2)));
@@ -388,7 +389,6 @@ public class GameView extends JPanel {
         btnBuy.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnBuy.setBorder(new RoundedBorder(PRIMARY_COFFEE, 20, 1));
 
-        item.add(icon, BorderLayout.WEST);
         item.add(textContainer, BorderLayout.CENTER);
         item.add(btnBuy, BorderLayout.SOUTH);
 
@@ -510,7 +510,7 @@ public class GameView extends JPanel {
      * @param production Valor flotante de la producción actual por segundo.
      */
     public void updateProductionXSec(float production){
-        gameProduction.setText("+ " + String.format("%.2f/s", production) + " per second");
+        gameProduction.setText("+ " + String.format("%.2f coffees", production) + " per second");
     }
 
     /**

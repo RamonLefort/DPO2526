@@ -230,6 +230,7 @@ public class GameController implements ActionListener {
 	 * Regresa al usuario a la pantalla de configuración del sistema.
 	 */
 	private void handleSettings() {
+		saveCurrentProgress();
 		viewController.showView("SETTINGS");
 	}
 
@@ -414,6 +415,7 @@ public class GameController implements ActionListener {
 			gameView.updateCoffeeCount((int) currentGame.getMoney());
 			gameView.updateProductionXSec(currentGame.getProduction_per_sec());
 			gameView.updateUpgradeBaristaText();
+			gameView.updateGenerationsData(generators);
 		}else{
 			PresentationException presentationException = new PresentationException();
 			presentationException.showErrorDialog("No tienes suficiente dinero para comprar el generador", "Falta de Fondos");
@@ -463,6 +465,7 @@ public class GameController implements ActionListener {
 			gameView.updateCoffeeCount((int) currentGame.getMoney());
 			gameView.updateProductionXSec(currentGame.getProduction_per_sec());
 			gameView.updateUpgradeMachineText();
+			gameView.updateGenerationsData(generators);
 		}else{
 			PresentationException presentationException = new PresentationException();
 			presentationException.showErrorDialog("No tienes suficiente dinero para comprar el generador", "Falta de Fondos");
@@ -512,6 +515,7 @@ public class GameController implements ActionListener {
 			gameView.updateCoffeeCount((int) currentGame.getMoney());
 			gameView.updateProductionXSec(currentGame.getProduction_per_sec());
 			gameView.updateUpgradePlantationText();
+			gameView.updateGenerationsData(generators);
 		}else{
 			PresentationException presentationException = new PresentationException();
 			presentationException.showErrorDialog("No tienes suficiente dinero para comprar el generador", "Falta de Fondos");

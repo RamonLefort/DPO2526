@@ -126,7 +126,7 @@ public class UserDAO {
 	public void delete(String username) throws PersistanceException {
         try {
             mySQLDAO.deleteObject("user", "username", username);
-        } catch (SQLException e) {
+        } catch (PersistanceException e) {
             throw new PersistanceException(e);
         }
     }
