@@ -1,8 +1,9 @@
 package Bussiness.Managers;
 
 import Bussiness.Entities.User;
-import Bussiness.Exceptions.DAOException;
+import Bussiness.Exceptions.BusinessException;
 import Persistance.DAO.UserDAO;
+import Persistance.Exceptions.PersistanceException;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.SQLException;
@@ -33,26 +34,26 @@ public class UserLogic {
 	 * @param confirm Repetición de la contraseña para validación de coincidencia.
 	 * @return true si el registro fue exitoso tras aplicar el hashing de BCrypt; false en caso contrario.
 	 */
-	public boolean register(String username, String email, String password, String confirm) throws DAOException {
+	public boolean register(String username, String email, String password, String confirm) throws BusinessException {
 		if (!password.equals(confirm) || !validateEmail(email) || !validatePassword(password)) {
 			return false;
 		}
         try {
             if (userDAO.usernameExists(username)) return false;
-        } catch (SQLException e) {
-            throw new DAOException(e);
+        } catch (PersistanceException e) {
+            throw new BusinessException(e);
         }
         try {
             if (userDAO.emailExists(email)) return false;
-        } catch (SQLException e) {
-            throw new DAOException(e);
+        } catch (PersistanceException e) {
+            throw new BusinessException(e);
         }
 
         String hashed = BCrypt.hashpw(password, BCrypt.gensalt());
         try {
             return userDAO.create(new User(username, email, hashed));
-        } catch (SQLException e) {
-            throw new DAOException(e);
+        } catch (PersistanceException e) {
+            throw new BusinessException(e);
         }
     }
 
@@ -63,12 +64,12 @@ public class UserLogic {
 	 * @param pass Contraseña en texto plano a verificar.
 	 * @return El objeto {@link User} autenticado si las credenciales coinciden; null en caso de error.
 	 */
-	public User login(String usernameOrEmail, String pass) throws DAOException {
+	public User login(String usernameOrEmail, String pass) throws BusinessException {
         User user = null;
         try {
             user = userDAO.loginCheck(usernameOrEmail);
-        } catch (SQLException e) {
-            throw new DAOException(e);
+        } catch (PersistanceException e) {
+            throw new BusinessException(e);
         }
         if (user != null && BCrypt.checkpw(pass, user.getPassword())) {
 			this.currentUser = user;
@@ -83,11 +84,11 @@ public class UserLogic {
 	 * @param username Nombre a verificar.
 	 * @return true si ya existe en la base de datos; false en caso contrario.
 	 */
-	public boolean usernameExists(String username) throws DAOException {
+	public boolean usernameExists(String username) throws BusinessException {
         try {
             return userDAO.usernameExists(username);
-        } catch (SQLException e) {
-            throw new DAOException(e);
+        } catch (PersistanceException e) {
+            throw new BusinessException(e);
         }
     }
 
@@ -97,11 +98,11 @@ public class UserLogic {
 	 * @param email Correo a verificar.
 	 * @return true si el correo ya está en uso.
 	 */
-	public boolean emailExists(String email) throws DAOException {
+	public boolean emailExists(String email) throws BusinessException {
         try {
             return userDAO.emailExists(email);
-        } catch (SQLException e) {
-            throw new DAOException(e);
+        } catch (PersistanceException e) {
+            throw new BusinessException(e);
         }
     }
 
@@ -118,11 +119,11 @@ public class UserLogic {
 	 *
 	 * @param username Nombre del usuario cuya cuenta se desea eliminar.
 	 */
-	public void deleteAccount(String username) throws DAOException {
+	public void deleteAccount(String username) throws BusinessException {
         try {
             userDAO.delete(username);
-        } catch (SQLException e) {
-            throw new DAOException(e.getCause());
+        } catch (PersistanceException e) {
+            throw new BusinessException(e.getCause());
         }
         if (currentUser != null && currentUser.getUsername().equals(username)) {
 			logout();

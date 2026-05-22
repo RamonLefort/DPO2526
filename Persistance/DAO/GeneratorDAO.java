@@ -2,6 +2,8 @@ package Persistance.DAO;
 
 import Bussiness.Entities.Generator;
 import Persistance.Configuration.MySQLDAO;
+import Persistance.Exceptions.PersistanceException;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,7 +33,7 @@ public class GeneratorDAO {
 	 * @param idGame El identificador único de la partida.
 	 * @return Una lista de objetos {@link Generator} poblados con sus estadísticas actuales.
 	 */
-	public List<Generator> readByGame(int idGame) throws SQLException {
+	public List<Generator> readByGame(int idGame) throws PersistanceException {
 		List<Generator> generators = new ArrayList<>();
 		String query = "SELECT * FROM generador WHERE id_game = ?";
 
@@ -52,7 +54,7 @@ public class GeneratorDAO {
 				generators.add(gen);
 			}
 		} catch (SQLException e) {
-			throw new SQLException(e);
+			throw new PersistanceException(e);
 		}
 		return generators;
 	}
@@ -63,7 +65,7 @@ public class GeneratorDAO {
 	 * @param idGame    ID de la partida a la que pertenece el generador.
 	 * @param generator Objeto {@link Generator} con los nuevos valores de cantidad y precio.
 	 */
-	public void update(int idGame, Generator generator) throws SQLException {
+	public void update(int idGame, Generator generator) throws PersistanceException {
 		String query = "UPDATE generador SET quantity = ?, price = ? WHERE id_generator = ? AND id_game = ?";
 		try (PreparedStatement ps = mySQLDAO.getConnection().prepareStatement(query)) {
 			ps.setInt(1, generator.getQuantity());
@@ -72,7 +74,7 @@ public class GeneratorDAO {
 			ps.setInt(4, idGame);
 			ps.executeUpdate();
 		} catch (SQLException e) {
-			throw new SQLException(e);
+			throw new PersistanceException(e);
 		}
 	}
 
@@ -82,7 +84,7 @@ public class GeneratorDAO {
 	 * @param idGame El identificador de la partida recién creada.
 	 * @return La lista de generadores recién insertados.
 	 */
-	public List<Generator> createInitialGenerators(int idGame) throws SQLException {
+	public List<Generator> createInitialGenerators(int idGame) throws PersistanceException {
 		String query = "INSERT INTO generador (name, id_game, quantity, price, period, earning) VALUES (?, ?, ?, ?, ?, ?)";
 
 		try (PreparedStatement ps = mySQLDAO.getConnection().prepareStatement(query)) {
@@ -115,7 +117,7 @@ public class GeneratorDAO {
 
 			ps.executeBatch(); // Ejecución eficiente de las tres inserciones
 		} catch (SQLException e) {
-			throw new SQLException(e);
+			throw new PersistanceException(e);
 		}
 		return readByGame(idGame);
 	}

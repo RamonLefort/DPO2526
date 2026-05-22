@@ -2,6 +2,7 @@ package Persistance.DAO;
 
 import Bussiness.Entities.Game;
 import Persistance.Configuration.MySQLDAO;
+import Persistance.Exceptions.PersistanceException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public class GameDAO {
 	 * @param username Nombre del usuario al que pertenece la partida.
 	 * @return El ID numérico autogenerado por la base de datos para la nueva partida, o 0 si falla.
 	 */
-	public int createGame(String nameGame, String username) throws SQLException {
+	public int createGame(String nameGame, String username) throws PersistanceException {
 		String query = "INSERT INTO game (name_game, username, money, minutes, seconds, coffee_per_click) VALUES (?, ?, 0, 0, 0, 1)";
 		int gameId = -1;
 		try (PreparedStatement ps = mySQLDAO.getConnection().prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
@@ -46,7 +47,7 @@ public class GameDAO {
 			}
 			return gameId;
 		} catch (SQLException e) {
-			throw new SQLException(e);
+			throw new PersistanceException(e);
 		}
 	}
 
@@ -57,7 +58,7 @@ public class GameDAO {
 	 * @return Una lista de objetos {@link Game} ordenados por la base de datos.
 	 * Devuelve una lista vacía si el usuario no tiene partidas registradas.
 	 */
-	public List<Game> getGamesByUser(String username) throws SQLException {
+	public List<Game> getGamesByUser(String username) throws PersistanceException {
 		List<Game> games = new ArrayList<>();
 		String query = "SELECT * FROM game WHERE username = ?";
 		try (PreparedStatement ps = mySQLDAO.getConnection().prepareStatement(query)) {
@@ -77,7 +78,7 @@ public class GameDAO {
 						rs.getBoolean("finished")));
 			}
 		} catch (SQLException e) {
-			throw new SQLException(e);
+			throw new PersistanceException(e);
 		}
 		return games;
 	}
@@ -89,7 +90,7 @@ public class GameDAO {
 	 * @return Una lista de objetos {@link Game} ordenados por la base de datos.
 	 * Devuelve una lista vacía si el usuario no tiene partidas finalizadas.
 	 */
-	public List<Game> getFinishedGamesByUser(String username) throws SQLException {
+	public List<Game> getFinishedGamesByUser(String username) throws PersistanceException {
 		List<Game> games = new ArrayList<>();
 		String query = "SELECT * FROM game WHERE username = ? AND finished = 1";
 		try (PreparedStatement ps = mySQLDAO.getConnection().prepareStatement(query)) {
@@ -109,7 +110,7 @@ public class GameDAO {
 						rs.getBoolean("finished")));
 			}
 		} catch (SQLException e) {
-			throw new SQLException(e);
+			throw new PersistanceException(e);
 		}
 		return games;
 	}
@@ -119,16 +120,20 @@ public class GameDAO {
 	 *
 	 * @param idGame El identificador único de la partida a destruir.
 	 */
-	public void deleteGame(int idGame) throws SQLException {
-		mySQLDAO.deleteObject("game", "id_game", String.valueOf(idGame));
-	}
+	public void deleteGame(int idGame) throws PersistanceException {
+        try {
+            mySQLDAO.deleteObject("game", "id_game", String.valueOf(idGame));
+        } catch (SQLException e) {
+            throw new PersistanceException(e);
+        }
+    }
 
 	/**
 	 * Actualiza el estado de una partida para marcarla como terminada.
 	 *
 	 * @param idGame El identificador único de la partida que se da por concluida.
 	 */
-	public void finishGame(int idGame) throws SQLException {
+	public void finishGame(int idGame) throws PersistanceException {
 		String query = "UPDATE game SET finished = ? WHERE id_game = ?";
 
 		try (PreparedStatement ps = mySQLDAO.getConnection().prepareStatement(query)) {
@@ -136,7 +141,7 @@ public class GameDAO {
 			ps.setInt(2, idGame);
 			ps.executeUpdate();
 		} catch (SQLException e) {
-			throw new SQLException(e);
+			throw new PersistanceException(e);
 		}
 	}
 
@@ -146,12 +151,12 @@ public class GameDAO {
 	 * @param nameGame Nombre a verificar.
 	 * @return {@code true} si ya existe una partida con ese nombre, {@code false} en caso contrario.
 	 */
-	public boolean existsByName(String nameGame) throws SQLException {
-		ResultSet rs = mySQLDAO.readSpecific("game", "name_game", nameGame);
+	public boolean existsByName(String nameGame) throws PersistanceException {
 		try {
+			ResultSet rs = mySQLDAO.readSpecific("game", "name_game", nameGame);
 			return rs != null && rs.next();
 		} catch (SQLException e) {
-			throw new SQLException(e);
+			throw new PersistanceException(e);
 		}
 	}
 
@@ -167,7 +172,7 @@ public class GameDAO {
 	 * @param coffeexclicks         Nivel actual de producción por cada click manual.
 	 * @param production_per_second Tasa actual de generación automática.
 	 */
-	public void updateGame(String username, int idGame, double money, int hours, int minutes, int seconds, int coffeexclicks, float production_per_second) throws SQLException {
+	public void updateGame(String username, int idGame, double money, int hours, int minutes, int seconds, int coffeexclicks, float production_per_second) throws PersistanceException {
 		String query = "UPDATE game SET money = ?, minutes = ?, seconds = ?, hours = ?, coffee_per_click = ?, production_per_second = ? WHERE id_game = ?";
 
 		try (PreparedStatement ps = mySQLDAO.getConnection().prepareStatement(query)) {
@@ -180,7 +185,7 @@ public class GameDAO {
 			ps.setInt(7, idGame);
 			ps.executeUpdate();
 		} catch (SQLException e) {
-			throw new SQLException(e);
+			throw new PersistanceException(e);
 		}
 	}
 
@@ -191,7 +196,7 @@ public class GameDAO {
 	 * @return Un objeto Game mapeado, o null si no se encuentra correspondencia.
 	 * @throws SQLException Si ocurre un fallo en el socket de conexión.
 	 */
-	public Game getGameById(int idGame) throws SQLException {
+	public Game getGameById(int idGame) throws PersistanceException {
 		String query = "SELECT id_game, name_game, username, money, hours, minutes, seconds, coffee_per_click, production_per_second, finished " +
 				"FROM Game WHERE id_game = ?";
 
@@ -206,6 +211,8 @@ public class GameDAO {
 					return game;
 				}
 			}
+		} catch (SQLException e) {
+			throw new PersistanceException(e);
 		}
 		return null;
 	}
@@ -214,7 +221,7 @@ public class GameDAO {
 	 * Devuelve una lista ordenada con las claves primarias (IDs) de las partidas de un usuario.
 	 * Es crucial para que el controlador pueda sincronizar el índice del JComboBox con el ID real.
 	 */
-	public List<Integer> getGameIdsByUser(String username) throws SQLException {
+	public List<Integer> getGameIdsByUser(String username) throws PersistanceException {
 		List<Integer> ids = new ArrayList<>();
 		String query = "SELECT id_game FROM Game WHERE username = ? ORDER BY id_game ASC";
 
@@ -228,6 +235,8 @@ public class GameDAO {
 					ids.add(resultSet.getInt("id_game"));
 				}
 			}
+		} catch (SQLException e) {
+			throw new PersistanceException(e);
 		}
 		return ids;
 	}
@@ -239,7 +248,7 @@ public class GameDAO {
 	 * @param username El nombre de usuario dueño de las partidas.
 	 * @return Una lista de objetos {@link Game} cuyo campo {@code finished} es verdadero.
 	 */
-	public List<Game> readFinishedGames(String username) throws SQLException {
+	public List<Game> readFinishedGames(String username) throws PersistanceException {
 		List<Game> games = new ArrayList<>();
 		String query = "SELECT * FROM game WHERE username = ? AND finished = true";
 		try (PreparedStatement ps = mySQLDAO.getConnection().prepareStatement(query)) {
@@ -260,7 +269,7 @@ public class GameDAO {
 				));
 			}
 		} catch (SQLException e) {
-			throw new SQLException(e);
+			throw new PersistanceException(e);
 		}
 		return games;
 	}

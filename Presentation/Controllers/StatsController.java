@@ -1,12 +1,11 @@
 package Presentation.Controllers;
 
 import Bussiness.Entities.Stat;
-import Bussiness.Exceptions.DAOException;
+import Bussiness.Exceptions.BusinessException;
 import Bussiness.Managers.StatLogic;
-import Presentation.Exceptions.CustomUIException;
+import Presentation.Views.PresentationException;
 import Presentation.Views.StatsView;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -51,7 +50,7 @@ public class StatsController implements ActionListener {
 				refreshStatsVisuals(idGame);
 			}
 
-		} catch (DAOException e) {
+		} catch (BusinessException e) {
 			showDatabaseError();
 		}
 	}
@@ -87,7 +86,7 @@ public class StatsController implements ActionListener {
 				} else {
 					statsView.displayStats(new ArrayList<>());
 				}
-			} catch (DAOException e) {
+			} catch (BusinessException e) {
 				showDatabaseError();
 			}
 		}
@@ -104,7 +103,7 @@ public class StatsController implements ActionListener {
 			try {
 				int idGame = statLogic.getGameIdByNameAndUser(selectedGame, selectedUser);
 				refreshStatsVisuals(idGame);
-			} catch (DAOException e) {
+			} catch (BusinessException e) {
 				showDatabaseError();
 			}
 		}
@@ -113,7 +112,7 @@ public class StatsController implements ActionListener {
 	/**
 	 * Actualiza el combo secundario de partidas basándose en el nombre de usuario.
 	 */
-	private void updateGameComboBox(String username) throws DAOException {
+	private void updateGameComboBox(String username) throws BusinessException {
 		// Obtenemos los nombres legibles de las partidas para la interfaz
 		List<String> gameNames = statLogic.getFinishedGameNamesByUser(username);
 		statsView.populateGames(gameNames);
@@ -129,7 +128,7 @@ public class StatsController implements ActionListener {
 		try {
 			List<Stat> gameHistory = statLogic.getAllStats(idGame);
 			statsView.displayStats(gameHistory);
-		} catch (DAOException e) {
+		} catch (BusinessException e) {
 			showDatabaseError();
 		}
 	}
@@ -144,7 +143,7 @@ public class StatsController implements ActionListener {
 	}
 
 	private void showDatabaseError() {
-		CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor para filtrar estadísticas.", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-		uiEx.showDialog(null);
+		PresentationException presentationException = new PresentationException();
+		presentationException.showErrorDialog("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión");
 	}
 }

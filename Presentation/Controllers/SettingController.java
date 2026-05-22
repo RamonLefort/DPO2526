@@ -1,11 +1,10 @@
 package Presentation.Controllers;
 
-import Bussiness.Exceptions.DAOException;
+import Bussiness.Exceptions.BusinessException;
 import Bussiness.Managers.UserLogic;
-import Presentation.Exceptions.CustomUIException;
+import Presentation.Views.PresentationException;
 import Presentation.Views.SettingView;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -45,9 +44,9 @@ public class SettingController implements ActionListener {
         String username = userLogic.getCurrentUser().getUsername();
         try {
             userLogic.deleteAccount(username);
-        } catch (DAOException e) {
-            CustomUIException uiException = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-            uiException.showDialog(null);
+        } catch (BusinessException e) {
+            PresentationException presentationException = new PresentationException();
+            presentationException.showErrorDialog("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión");
         }
         viewController.showView("LOGIN");
     }

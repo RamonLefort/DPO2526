@@ -1,7 +1,5 @@
 package Presentation.Views;
 
-import Presentation.Exceptions.CustomUIException;
-
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
@@ -91,8 +89,8 @@ public class LoginWindow extends JPanel {
         try {
             cupGif = new JImagePanel(CUP1);
         } catch (IOException e) {
-            CustomUIException uiEx = new CustomUIException("No se pudo cargar la imagen. Intentalo de nuevo.", "Error en la imagen", JOptionPane.ERROR_MESSAGE);
-            uiEx.showDialog(null);
+            PresentationException presentationException = new PresentationException();
+            presentationException.showErrorDialog("No se ha podido cargar la imagen, revisa la url!", "Error de Imagen");
         }
         ArrayList<String> cupGifList = new ArrayList<>(Arrays.asList(
                 CUP1, CUP2, CUP3, CUP4, CUP5, CUP6, CUP7, CUP8, CUP9, CUP10, CUP11, CUP12
@@ -106,8 +104,8 @@ public class LoginWindow extends JPanel {
         try {
             animationTimer = cupGif.configureAnimation(200, cupGifList);
         } catch (IOException e) {
-            CustomUIException uiEx = new CustomUIException("No se pudo cargar la imagen. Intentalo de nuevo.", "Error en la imagen", JOptionPane.ERROR_MESSAGE);
-            uiEx.showDialog(null);
+            PresentationException presentationException = new PresentationException();
+            presentationException.showErrorDialog("No se ha podido cargar la imagen, revisa la url!", "Error de Imagen");
         }
         cupGif.setMinimumSize(new Dimension(50, 50));
         cupGif.setPreferredSize(new Dimension(50, 50));

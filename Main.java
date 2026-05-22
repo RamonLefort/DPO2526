@@ -6,7 +6,7 @@ import Persistance.Configuration.JsonConfigurationDAO;
 import Persistance.Configuration.MySQLDAO;
 import Persistance.DAO.*;
 import Presentation.Controllers.ViewController;
-import Presentation.Exceptions.CustomUIException;
+import Presentation.Views.PresentationException;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -29,32 +29,27 @@ public class Main {
             MySQLDAO mySQLDAO = null;
             try {
                 mySQLDAO = MySQLDAO.getInstance(jsonDAO);
-            } catch (SQLException e) {
-                CustomUIException uiException = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-                uiException.showDialog(null);
-            } catch (IOException e){
-                CustomUIException uiException = new CustomUIException("No se ha podido realizar la lectura del archivo de configuración del sistema", "Error de Configuración", JOptionPane.ERROR_MESSAGE);
-                uiException.showDialog(null);
-            }
-            try {
                 mySQLDAO.connect();
+
+                UserDAO userDAO = new UserDAO(mySQLDAO);
+                GameDAO gameDAO = new GameDAO(mySQLDAO);
+                GeneratorDAO generatorDAO = new GeneratorDAO(mySQLDAO);
+                StatDAO statDAO = new StatDAO(mySQLDAO);
+                UpgradeDAO upgradeDAO = new UpgradeDAO(mySQLDAO);
+                UserLogic userLogic = new UserLogic(userDAO);
+                GameLogic gameLogic = new GameLogic(gameDAO, generatorDAO, upgradeDAO);
+                GameplayLogic gameplayLogic = new GameplayLogic(generatorDAO, upgradeDAO, gameLogic);
+                StatLogic statLogic = new StatLogic(statDAO, gameDAO, userDAO);
+
+                ViewController viewController = new ViewController(userLogic, gameLogic, gameplayLogic, statLogic);
+                viewController.start();
             } catch (SQLException e) {
-                CustomUIException uiException = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-                uiException.showDialog(null);
+                PresentationException presentationException = new PresentationException();
+                presentationException.showErrorDialog("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión");
+            } catch (IOException e){
+                PresentationException presentationException = new PresentationException();
+                presentationException.showErrorDialog("No se ha podido realizar la lectura del archivo de configuración del sistema", "Error de Configuración");
             }
-
-            UserDAO userDAO = new UserDAO(mySQLDAO);
-            GameDAO gameDAO = new GameDAO(mySQLDAO);
-            GeneratorDAO generatorDAO = new GeneratorDAO(mySQLDAO);
-            StatDAO statDAO = new StatDAO(mySQLDAO);
-            UpgradeDAO upgradeDAO = new UpgradeDAO(mySQLDAO);
-            UserLogic userLogic = new UserLogic(userDAO);
-            GameLogic gameLogic = new GameLogic(gameDAO, generatorDAO, upgradeDAO);
-            GameplayLogic gameplayLogic = new GameplayLogic(generatorDAO, upgradeDAO, gameLogic);
-            StatLogic statLogic = new StatLogic(statDAO, gameDAO, userDAO);
-
-            ViewController viewController = new ViewController(userLogic, gameLogic, gameplayLogic, statLogic);
-            viewController.start();
         });
     }
 }

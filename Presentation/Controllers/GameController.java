@@ -4,10 +4,10 @@ import Bussiness.Entities.Game;
 import Bussiness.Entities.Generator;
 import Bussiness.Entities.Stat;
 import Bussiness.Entities.Upgrade;
-import Bussiness.Exceptions.DAOException;
+import Bussiness.Exceptions.BusinessException;
 import Bussiness.Managers.*;
-import Presentation.Exceptions.CustomUIException;
 import Presentation.Views.GameView;
+import Presentation.Views.PresentationException;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -100,21 +100,11 @@ public class GameController implements ActionListener {
 		this.coffeeCount = 1;
         try {
             this.currentGame = gameLogic.loadGame(username, idGame);
-        } catch (DAOException e) {
-			CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-			uiEx.showDialog(null);
-        }
-        try {
-            generators = gameLogic.getGenerators(idGame);
-        } catch (DAOException e) {
-			CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-			uiEx.showDialog(null);
-        }
-        try {
-            upgrades = gameLogic.getUpgrades(idGame);
-        } catch (DAOException e) {
-			CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-			uiEx.showDialog(null);
+			generators = gameLogic.getGenerators(idGame);
+			upgrades = gameLogic.getUpgrades(idGame);
+        } catch (BusinessException e) {
+			PresentationException presentationException = new PresentationException();
+			presentationException.showErrorDialog("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión");
         }
         gameView.updateCoffeeCount((int) currentGame.getMoney());
 		gameView.updateGameName(currentGame.getNameGame());
@@ -144,9 +134,9 @@ public class GameController implements ActionListener {
         Stat stat = null;
         try {
             stat = statLogic.getLastMinuteStat(idGame);
-        } catch (DAOException e) {
-			CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-			uiEx.showDialog(null);
+        } catch (BusinessException e) {
+			PresentationException presentationException = new PresentationException();
+			presentationException.showErrorDialog("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión");
         }
         clicks = stat.getManualClicksTotal();
 		maxprod = stat.getMaxProductionRate();
@@ -174,9 +164,9 @@ public class GameController implements ActionListener {
 				maxprod = Math.max(maxprod, temp_maxprod);
                 try {
                     statLogic.saveStat(idGame, currentGame.getMinutes(), currentGame.getMoney(), clicks, autogen, maxprod, expenses);
-                } catch (DAOException ex) {
-					CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-					uiEx.showDialog(null);
+                } catch (BusinessException ex) {
+					PresentationException presentationException = new PresentationException();
+					presentationException.showErrorDialog("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión");
                 }
                 autogen = clicks_per_min = 0;
 			} else {
@@ -201,9 +191,9 @@ public class GameController implements ActionListener {
 	private void saveCurrentProgress() {
         try {
             gameLogic.saveGame(username, idGame, currentGame.getMoney(), currentGame.getHours(), currentGame.getMinutes(), currentGame.getSeconds(), currentGame.getCoffeePerClick(), currentGame.getProduction_per_sec());
-        } catch (DAOException e) {
-			CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-			uiEx.showDialog(null);
+        } catch (BusinessException e) {
+			PresentationException presentationException = new PresentationException();
+			presentationException.showErrorDialog("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión");
         }
     }
 
@@ -225,15 +215,10 @@ public class GameController implements ActionListener {
 		saveCurrentProgress();
         try {
             gameLogic.finishGame(idGame);
-        } catch (DAOException e) {
-			CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-			uiEx.showDialog(null);
-        }
-        try {
-            statLogic.saveStat(idGame, currentGame.getMinutes(), currentGame.getMoney(), clicks, currentGame.getProduction_per_sec(), maxprod, expenses);
-        } catch (DAOException e) {
-			CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-			uiEx.showDialog(null);
+			statLogic.saveStat(idGame, currentGame.getMinutes(), currentGame.getMoney(), clicks, currentGame.getProduction_per_sec(), maxprod, expenses);
+		} catch (BusinessException e) {
+			PresentationException presentationException = new PresentationException();
+			presentationException.showErrorDialog("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión");
         }
         gameplayLogic.stopAutoGenerators();
 		gameTimer.stop();
@@ -287,21 +272,16 @@ public class GameController implements ActionListener {
 				// Persistencia
                 try {
                     gameLogic.updateGenerators(idGame, barista);
-                } catch (DAOException e) {
-					CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-					uiEx.showDialog(null);
-                }
-                try {
-                    gameLogic.saveGame(username, idGame, currentGame.getMoney(), currentGame.getHours(), currentGame.getMinutes(), currentGame.getSeconds(), currentGame.getCoffeePerClick(), currentGame.getProduction_per_sec());
-                } catch (DAOException e) {
-					CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-					uiEx.showDialog(null);
+					gameLogic.saveGame(username, idGame, currentGame.getMoney(), currentGame.getHours(), currentGame.getMinutes(), currentGame.getSeconds(), currentGame.getCoffeePerClick(), currentGame.getProduction_per_sec());
+				} catch (BusinessException e) {
+					PresentationException presentationException = new PresentationException();
+					presentationException.showErrorDialog("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión");
                 }
                 gameView.updateCoffeeCount((int) currentGame.getMoney());
 				gameView.updateGenerationsData(generators);
 			} else {
-				CustomUIException uiException = new CustomUIException("No tienes suficiente dinero para comprar el generador", "Falta de Fondos", JOptionPane.ERROR_MESSAGE);
-				uiException.showDialog(null);
+				PresentationException presentationException = new PresentationException();
+				presentationException.showErrorDialog("No tienes suficiente dinero para comprar el generador", "Falta de Fondos");
 			}
 		}
 	}
@@ -334,22 +314,17 @@ public class GameController implements ActionListener {
 				// Persistencia
                 try {
                     gameLogic.updateGenerators(idGame, machine);
-                } catch (DAOException e) {
-					CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-					uiEx.showDialog(null);
-                }
-                try {
                     gameLogic.saveGame(username, idGame, currentGame.getMoney(), currentGame.getHours(), currentGame.getMinutes(), currentGame.getSeconds(), currentGame.getCoffeePerClick(), currentGame.getProduction_per_sec());
-                } catch (DAOException e) {
-					CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-					uiEx.showDialog(null);
+                } catch (BusinessException e) {
+					PresentationException presentationException = new PresentationException();
+					presentationException.showErrorDialog("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión");
                 }
 
                 gameView.updateCoffeeCount((int) currentGame.getMoney());
 				gameView.updateGenerationsData(generators);
 			} else {
-				CustomUIException uiException = new CustomUIException("No tienes suficiente dinero para comprar el generador", "Falta de Fondos", JOptionPane.ERROR_MESSAGE);
-				uiException.showDialog(null);
+				PresentationException presentationException = new PresentationException();
+				presentationException.showErrorDialog("No tienes suficiente dinero para comprar el generador", "Falta de Fondos");
 			}
 		}
 	}
@@ -381,22 +356,17 @@ public class GameController implements ActionListener {
 				gameView.updateProductionXSec(currentGame.getProduction_per_sec());
                 try {
                     gameLogic.updateGenerators(idGame, plantation);
-                } catch (DAOException e) {
-					CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-					uiEx.showDialog(null);
-                }
-                try {
                     gameLogic.saveGame(username, idGame, currentGame.getMoney(), currentGame.getHours(), currentGame.getMinutes(), currentGame.getSeconds(), currentGame.getCoffeePerClick(), currentGame.getProduction_per_sec());
-                } catch (DAOException e) {
-					CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-					uiEx.showDialog(null);
+                } catch (BusinessException e) {
+					PresentationException presentationException = new PresentationException();
+					presentationException.showErrorDialog("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión");
                 }
 
                 gameView.updateCoffeeCount((int) currentGame.getMoney());
 				gameView.updateGenerationsData(generators);
 			} else {
-				CustomUIException uiException = new CustomUIException("No tienes suficiente dinero para comprar el generador", "Falta de Fondos", JOptionPane.ERROR_MESSAGE);
-				uiException.showDialog(null);
+				PresentationException presentationException = new PresentationException();
+				presentationException.showErrorDialog("No tienes suficiente dinero para comprar el generador", "Falta de Fondos");
 			}
 		}
 	}
@@ -434,15 +404,10 @@ public class GameController implements ActionListener {
 
             try {
                 gameLogic.updateGenerators(idGame, barista);
-            } catch (DAOException e) {
-				CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-				uiEx.showDialog(null);
-            }
-            try {
                 gameLogic.updateUpgrades(idGame, barista.getIdGenerator());
-            } catch (DAOException e) {
-				CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-				uiEx.showDialog(null);
+            } catch (BusinessException e) {
+				PresentationException presentationException = new PresentationException();
+				presentationException.showErrorDialog("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión");
             }
             saveCurrentProgress();
 
@@ -450,8 +415,8 @@ public class GameController implements ActionListener {
 			gameView.updateProductionXSec(currentGame.getProduction_per_sec());
 			gameView.updateUpgradeBaristaText();
 		}else{
-			CustomUIException uiException = new CustomUIException("No tienes suficiente dinero para comprar la mejora", "Falta de Fondos", JOptionPane.ERROR_MESSAGE);
-			uiException.showDialog(null);
+			PresentationException presentationException = new PresentationException();
+			presentationException.showErrorDialog("No tienes suficiente dinero para comprar el generador", "Falta de Fondos");
 		}
 	}
 
@@ -488,15 +453,10 @@ public class GameController implements ActionListener {
 
             try {
                 gameLogic.updateGenerators(idGame, machine);
-            } catch (DAOException e) {
-				CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-				uiEx.showDialog(null);
-            }
-            try {
                 gameLogic.updateUpgrades(idGame, machine.getIdGenerator());
-            } catch (DAOException e) {
-				CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-				uiEx.showDialog(null);
+            } catch (BusinessException e) {
+				PresentationException presentationException = new PresentationException();
+				presentationException.showErrorDialog("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión");
             }
             saveCurrentProgress();
 
@@ -504,8 +464,8 @@ public class GameController implements ActionListener {
 			gameView.updateProductionXSec(currentGame.getProduction_per_sec());
 			gameView.updateUpgradeMachineText();
 		}else{
-			CustomUIException uiException = new CustomUIException("No tienes suficiente dinero para comprar la mejora", "Falta de Fondos", JOptionPane.ERROR_MESSAGE);
-			uiException.showDialog(null);
+			PresentationException presentationException = new PresentationException();
+			presentationException.showErrorDialog("No tienes suficiente dinero para comprar el generador", "Falta de Fondos");
 		}
 	}
 
@@ -542,15 +502,10 @@ public class GameController implements ActionListener {
 
             try {
                 gameLogic.updateGenerators(idGame, plantation);
-            } catch (DAOException e) {
-				CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-				uiEx.showDialog(null);
-            }
-            try {
                 gameLogic.updateUpgrades(idGame, plantation.getIdGenerator());
-            } catch (DAOException e) {
-				CustomUIException uiEx = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-				uiEx.showDialog(null);
+            } catch (BusinessException e) {
+				PresentationException presentationException = new PresentationException();
+				presentationException.showErrorDialog("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión");
             }
             saveCurrentProgress();
 
@@ -558,8 +513,8 @@ public class GameController implements ActionListener {
 			gameView.updateProductionXSec(currentGame.getProduction_per_sec());
 			gameView.updateUpgradePlantationText();
 		}else{
-			CustomUIException uiException = new CustomUIException("No tienes suficiente dinero para comprar la mejora", "Falta de Fondos", JOptionPane.ERROR_MESSAGE);
-			uiException.showDialog(null);
+			PresentationException presentationException = new PresentationException();
+			presentationException.showErrorDialog("No tienes suficiente dinero para comprar el generador", "Falta de Fondos");
 		}
 	}
 

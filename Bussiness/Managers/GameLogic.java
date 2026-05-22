@@ -3,10 +3,11 @@ package Bussiness.Managers;
 import Bussiness.Entities.Game;
 import Bussiness.Entities.Generator;
 import Bussiness.Entities.Upgrade;
-import Bussiness.Exceptions.DAOException;
+import Bussiness.Exceptions.BusinessException;
 import Persistance.DAO.GameDAO;
 import Persistance.DAO.GeneratorDAO;
 import Persistance.DAO.UpgradeDAO;
+import Persistance.Exceptions.PersistanceException;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -43,12 +44,12 @@ public class GameLogic {
 	 * @param username Usuario que crea la partida.
 	 * @return El ID de la partida creada, o -1 si ya existe una partida con ese nombre.
 	 */
-	public int createGame(String nameGame, String username) throws DAOException {
+	public int createGame(String nameGame, String username) throws BusinessException {
         List<Game> userGames = null;
         try {
             userGames = gameDAO.getGamesByUser(username);
-        } catch (SQLException e) {
-            throw new DAOException(e);
+        } catch (PersistanceException e) {
+            throw new BusinessException(e);
         }
         for (int i = 0; i < userGames.size(); i++) {
 			if (userGames.get(i).getNameGame().equalsIgnoreCase(nameGame)) {
@@ -57,8 +58,8 @@ public class GameLogic {
 		}
         try {
             return gameDAO.createGame(nameGame, username);
-        } catch (SQLException e) {
-            throw new DAOException(e);
+        } catch (PersistanceException e) {
+            throw new BusinessException(e);
         }
     }
 
@@ -74,11 +75,11 @@ public class GameLogic {
 	 * @param coffeexclick Cafés obtenidos por click manual.
 	 * @param prodxsec Tasa de producción automática por segundo.
 	 */
-	public void saveGame(String username, int idGame, double money, int hours, int minutes, int seconds, int coffeexclick, float prodxsec) throws DAOException {
+	public void saveGame(String username, int idGame, double money, int hours, int minutes, int seconds, int coffeexclick, float prodxsec) throws BusinessException {
         try {
             gameDAO.updateGame(username, idGame, money, hours, minutes, seconds, coffeexclick, prodxsec);
-        } catch (SQLException e) {
-            throw new DAOException(e);
+        } catch (PersistanceException e) {
+            throw new BusinessException(e);
         }
     }
 
@@ -96,11 +97,11 @@ public class GameLogic {
 	 *
 	 * @param idGame ID de la partida a terminar.
 	 */
-	public void finishGame(int idGame) throws DAOException {
+	public void finishGame(int idGame) throws BusinessException {
         try {
             gameDAO.finishGame(idGame);
-        } catch (SQLException e) {
-            throw new DAOException(e);
+        } catch (PersistanceException e) {
+            throw new BusinessException(e);
         }
     }
 
@@ -112,12 +113,12 @@ public class GameLogic {
 	 * @return El objeto {@link Game} correspondiente.
 	 * @throws IllegalArgumentException si no se encuentra la partida.
 	 */
-    public Game loadGame(String username, int idGame) throws DAOException {
+    public Game loadGame(String username, int idGame) throws BusinessException {
         List<Game> games = null;
         try {
             games = gameDAO.getGamesByUser(username);
-        } catch (SQLException e) {
-            throw new DAOException(e);
+        } catch (PersistanceException e) {
+            throw new BusinessException(e);
         }
         for (int i = 0; i < games.size(); i++) {
             if (games.get(i).getIdGame() == idGame) {
@@ -133,11 +134,11 @@ public class GameLogic {
 	 * @param username Nombre del usuario.
 	 * @return Lista de partidas {@link Game}.
 	 */
-	public List<Game> getUserGames(String username) throws DAOException {
+	public List<Game> getUserGames(String username) throws BusinessException {
         try {
             return gameDAO.getGamesByUser(username);
-        } catch (SQLException e) {
-            throw new DAOException(e);
+        } catch (PersistanceException e) {
+            throw new BusinessException(e);
         }
     }
 
@@ -147,11 +148,11 @@ public class GameLogic {
 	 * @param nameGame Nombre a verificar.
 	 * @return true si el nombre ya está registrado.
 	 */
-	public boolean gameNameExists(String nameGame) throws DAOException {
+	public boolean gameNameExists(String nameGame) throws BusinessException {
         try {
             return gameDAO.existsByName(nameGame);
-        } catch (SQLException e) {
-            throw new DAOException(e);
+        } catch (PersistanceException e) {
+            throw new BusinessException(e);
         }
     }
 
@@ -161,11 +162,11 @@ public class GameLogic {
 	 * @param idGame ID de la partida.
 	 * @return Lista de generadores {@link Generator}.
 	 */
-	public List<Generator> getGenerators(int idGame) throws DAOException {
+	public List<Generator> getGenerators(int idGame) throws BusinessException {
         try {
             return generatorDAO.readByGame(idGame);
-        } catch (SQLException e) {
-            throw new DAOException(e);
+        } catch (PersistanceException e) {
+            throw new BusinessException(e);
         }
     }
 
@@ -175,11 +176,11 @@ public class GameLogic {
 	 * @param idGame ID de la partida recién creada.
 	 * @return Lista de los generadores creados.
 	 */
-	public List<Generator> createGenerators(int idGame) throws DAOException {
+	public List<Generator> createGenerators(int idGame) throws BusinessException {
         try {
             return generatorDAO.createInitialGenerators(idGame);
-        } catch (SQLException e) {
-            throw new DAOException(e);
+        } catch (PersistanceException e) {
+            throw new BusinessException(e);
         }
     }
 
@@ -189,11 +190,11 @@ public class GameLogic {
 	 * @param idGame ID de la partida.
 	 * @param generator Objeto generador con los datos actualizados.
 	 */
-	public void updateGenerators(int idGame, Generator generator) throws DAOException {
+	public void updateGenerators(int idGame, Generator generator) throws BusinessException {
         try {
             generatorDAO.update(idGame, generator);
-        } catch (SQLException e) {
-            throw new DAOException(e);
+        } catch (PersistanceException e) {
+            throw new BusinessException(e);
         }
     }
 
@@ -204,7 +205,7 @@ public class GameLogic {
 	 * @param idGame ID de la partida.
 	 * @param generators Lista de generadores de los cuales se extraerán los IDs.
 	 */
-	public void createUpgrades(int idGame, List<Generator> generators) throws DAOException {
+	public void createUpgrades(int idGame, List<Generator> generators) throws BusinessException {
 		int idBarista = 0, idMachine = 0, idPlantation = 0;
 		for(Generator g: generators){
 			if(g.getName().equals("Barista")){
@@ -217,8 +218,8 @@ public class GameLogic {
 		}
         try {
             upgradeDAO.createInitialUpgrades(idGame, idBarista, idMachine, idPlantation);
-        } catch (SQLException e) {
-            throw new DAOException(e);
+        } catch (PersistanceException e) {
+            throw new BusinessException(e);
         }
     }
 
@@ -228,11 +229,11 @@ public class GameLogic {
 	 * @param idGame ID de la partida.
 	 * @param idGenerator ID del generador cuya mejora se activa.
 	 */
-	public void updateUpgrades(int idGame, int idGenerator) throws DAOException {
+	public void updateUpgrades(int idGame, int idGenerator) throws BusinessException {
         try {
             upgradeDAO.update(idGame, idGenerator, true);
-        } catch (SQLException e) {
-            throw new DAOException(e);
+        } catch (PersistanceException e) {
+            throw new BusinessException(e);
         }
     }
 
@@ -242,11 +243,11 @@ public class GameLogic {
 	 * @param idGame ID de la partida.
 	 * @return Lista de mejoras {@link Upgrade}.
 	 */
-	public List<Upgrade> getUpgrades(int idGame) throws DAOException {
+	public List<Upgrade> getUpgrades(int idGame) throws BusinessException {
         try {
             return upgradeDAO.readByGame(idGame);
-        } catch (SQLException e) {
-            throw new DAOException(e);
+        } catch (PersistanceException e) {
+            throw new BusinessException(e);
         }
     }
 }

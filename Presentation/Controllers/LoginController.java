@@ -1,9 +1,8 @@
 package Presentation.Controllers;
 
 import Bussiness.Entities.User;
-import Bussiness.Exceptions.DAOException;
+import Bussiness.Exceptions.BusinessException;
 import Bussiness.Managers.UserLogic;
-import Presentation.Exceptions.CustomUIException;
 import Presentation.Views.LoginWindow;
 
 import javax.swing.*;
@@ -76,7 +75,7 @@ public class LoginController implements ActionListener {
         User user = null;
         try {
             user = userLogic.login(username, password);
-        } catch (DAOException e) {
+        } catch (BusinessException e) {
 			CustomUIException uiException = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
 			uiException.showDialog(null);
         }

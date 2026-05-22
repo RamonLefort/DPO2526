@@ -2,6 +2,7 @@ package Persistance.DAO;
 
 import Bussiness.Entities.Stat;
 import Persistance.Configuration.MySQLDAO;
+import Persistance.Exceptions.PersistanceException;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -38,7 +39,7 @@ public class StatDAO {
 	 * @param maxProd  Tasa de producción máxima alcanzada en ese punto.
 	 * @param expenses Dinero total invertido en mejoras y generadores.
 	 */
-	public void create(int idGame, int minute, double money, int clicks, double autoGen, float maxProd, double expenses) throws SQLException {
+	public void create(int idGame, int minute, double money, int clicks, double autoGen, float maxProd, double expenses) throws PersistanceException {
 		String query = "INSERT INTO stat (id_games, minute_mark, money_at_minute, manual_clicks_total, " +
 				"auto_generated_total, max_production_rate, upgrades_expenses) " +
 				"VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -54,7 +55,7 @@ public class StatDAO {
 
 			ps.executeUpdate();
 		} catch (SQLException e) {
-			throw new SQLException(e);
+			throw new PersistanceException(e);
 		}
 	}
 
@@ -69,7 +70,7 @@ public class StatDAO {
 	 * @param maxProd  Producción máxima.
 	 * @param expenses Gastos totales en mejoras.
 	 */
-	public void saveMinuteStat(int idGame, int minute, double money, int clicks, double autoGen, float maxProd, double expenses) throws SQLException {
+	public void saveMinuteStat(int idGame, int minute, double money, int clicks, double autoGen, float maxProd, double expenses) throws PersistanceException {
 		String query = "INSERT INTO stat (id_games, minute_mark, money_at_minute, manual_clicks_total, " +
 				"auto_generated_total, max_production_rate, upgrades_expenses) " +
 				"VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -84,7 +85,7 @@ public class StatDAO {
 			ps.setDouble(7, expenses);
 			ps.executeUpdate();
 		} catch (SQLException e) {
-			throw new SQLException(e);
+			throw new PersistanceException(e);
 		}
 	}
 
@@ -94,7 +95,7 @@ public class StatDAO {
 	 * @param idGame ID de la partida a consultar.
 	 * @return Lista de objetos Stat ordenada por minuto.
 	 */
-	public List<Stat> readByGame(int idGame) throws SQLException {
+	public List<Stat> readByGame(int idGame) throws PersistanceException {
 		List<Stat> stats = new ArrayList<>();
 		String query = "SELECT * FROM stat WHERE id_games = ? ORDER BY minute_mark ASC";
 
@@ -116,7 +117,7 @@ public class StatDAO {
 				}
 			}
 		} catch (SQLException e) {
-			throw new SQLException(e);
+			throw new PersistanceException(e);
 		}
 		return stats;
 	}
@@ -127,7 +128,7 @@ public class StatDAO {
 	 * @param idGame ID de la partida.
 	 * @return El objeto Stat más reciente o null si no hay registros.
 	 */
-	public Stat getLastMinuteStat(int idGame) throws SQLException {
+	public Stat getLastMinuteStat(int idGame) throws PersistanceException {
 		Stat lastStat = null;
 		// Buscamos el minuto máximo usando ORDER BY y LIMIT 1 para optimizar la consulta.
 		String query = "SELECT * FROM stat WHERE id_games = ? ORDER BY minute_mark DESC LIMIT 1";
@@ -150,7 +151,7 @@ public class StatDAO {
 				}
 			}
 		} catch (SQLException e) {
-			throw new SQLException(e);
+			throw new PersistanceException(e);
 		}
 		return lastStat;
 	}

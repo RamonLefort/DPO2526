@@ -1,7 +1,5 @@
 package Presentation.Views;
 
-import Presentation.Exceptions.CustomUIException;
-
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
@@ -91,8 +89,8 @@ public class RegisterWindow extends JPanel {
         try {
             cupGif = new JImagePanel(CUP1);
         } catch (IOException e) {
-            CustomUIException uiEx = new CustomUIException("No se pudo cargar la imagen. Intentalo de nuevo.", "Error en la imagen", JOptionPane.ERROR_MESSAGE);
-            uiEx.showDialog(null);
+            PresentationException presentationException = new PresentationException();
+            presentationException.showErrorDialog("No se ha podido cargar la imagen, revisa la url!", "Error de Imagen");
         }
 
         ArrayList<String> cupGifList = new ArrayList<>(Arrays.asList(
@@ -107,8 +105,8 @@ public class RegisterWindow extends JPanel {
         try {
             animationTimer = cupGif.configureAnimation(200, cupGifList);
         } catch (IOException e) {
-            CustomUIException uiEx = new CustomUIException("No se pudo cargar la imagen. Intentalo de nuevo.", "Error en la imagen", JOptionPane.ERROR_MESSAGE);
-            uiEx.showDialog(null);
+            PresentationException presentationException = new PresentationException();
+            presentationException.showErrorDialog("No se ha podido cargar la imagen, revisa la url!", "Error de Imagen");
         }
 
         cupGif.setMinimumSize(new Dimension(50, 50));
@@ -359,7 +357,7 @@ public class RegisterWindow extends JPanel {
      * @param message El mensaje de error a mostrar al usuario.
      */
     public void showError(String message) {
-        CustomUIException uiEx = new CustomUIException(message, "Error", JOptionPane.ERROR_MESSAGE);
-        uiEx.showDialog(null);
+        PresentationException presentationException = new PresentationException();
+        presentationException.showErrorDialog(message, "Error de Registro");
     }
 }

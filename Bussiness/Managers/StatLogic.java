@@ -3,10 +3,11 @@ package Bussiness.Managers;
 import Bussiness.Entities.Game;
 import Bussiness.Entities.Stat;
 import Bussiness.Entities.User;
-import Bussiness.Exceptions.DAOException;
+import Bussiness.Exceptions.BusinessException;
 import Persistance.DAO.GameDAO;
 import Persistance.DAO.StatDAO;
 import Persistance.DAO.UserDAO;
+import Persistance.Exceptions.PersistanceException;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -39,14 +40,14 @@ public class StatLogic {
 	 * Útil para rellenar el JComboBox primario de filtrado.
 	 *
 	 * @return Lista de cadenas con los nombres de usuario.
-	 * @throws DAOException Si falla la comunicación con la base de datos.
+	 * @throws BusinessException Si falla la comunicación con la base de datos.
 	 */
-	public List<String> getAllUsernames() throws DAOException {
+	public List<String> getAllUsernames() throws BusinessException {
 		try {
 			// Nota: Asumimos que tu userDAO expone un método para listar usuarios o cadenas
 			return userDAO.getAllUsernames();
-		} catch (SQLException e) {
-			throw new DAOException(e);
+		} catch (PersistanceException e) {
+			throw new BusinessException(e);
 		}
 	}
 
@@ -56,15 +57,15 @@ public class StatLogic {
 	 *
 	 * @param idGame Identificador de la partida.
 	 * @return El nombre de usuario del propietario.
-	 * @throws DAOException Si ocurre un error en la consulta física.
+	 * @throws BusinessException Si ocurre un error en la consulta física.
 	 */
-	public String getGameOwner(int idGame) throws DAOException {
+	public String getGameOwner(int idGame) throws BusinessException {
 		try {
 			// Buscamos la partida directamente en el DAO
 			Game game = gameDAO.getGameById(idGame);
 			return game.getUsername(); // Retorna el dueño asignado de la partida
-		} catch (SQLException e) {
-			throw new DAOException(e);
+		} catch (PersistanceException e) {
+			throw new BusinessException(e);
 		}
 	}
 
@@ -74,9 +75,9 @@ public class StatLogic {
 	 *
 	 * @param username Nombre del usuario a filtrar.
 	 * @return Lista de Strings con los nombres de sus partidas.
-	 * @throws DAOException Si falla la persistencia.
+	 * @throws BusinessException Si falla la persistencia.
 	 */
-	public List<String> getFinishedGameNamesByUser(String username) throws DAOException {
+	public List<String> getFinishedGameNamesByUser(String username) throws BusinessException {
 		try {
 			List<Game> games = gameDAO.getFinishedGamesByUser(username);
 			List<String> names = new ArrayList<>();
@@ -84,8 +85,8 @@ public class StatLogic {
 				names.add(g.getNameGame());
 			}
 			return names;
-		} catch (SQLException e) {
-			throw new DAOException(e);
+		} catch (PersistanceException e) {
+			throw new BusinessException(e);
 		}
 	}
 
@@ -95,9 +96,9 @@ public class StatLogic {
 	 *
 	 * @param username Nombre del usuario.
 	 * @return Lista de enteros con los IDs de las partidas.
-	 * @throws DAOException Si falla la consulta SQL.
+	 * @throws BusinessException Si falla la consulta SQL.
 	 */
-	public List<Integer> getFinishedGameIdsByUser(String username) throws DAOException {
+	public List<Integer> getFinishedGameIdsByUser(String username) throws BusinessException {
 		try {
 			List<Game> games = gameDAO.getFinishedGamesByUser(username);
 			List<Integer> ids = new ArrayList<>();
@@ -105,8 +106,8 @@ public class StatLogic {
 				ids.add(g.getIdGame());
 			}
 			return ids;
-		} catch (SQLException e) {
-			throw new DAOException(e);
+		} catch (PersistanceException e) {
+			throw new BusinessException(e);
 		}
 	}
 
@@ -116,9 +117,9 @@ public class StatLogic {
 	 * @param gameName Nombre de la partida seleccionado en el combo.
 	 * @param username Dueño de la partida seleccionado en el combo.
 	 * @return El ID numérico de la partida.
-	 * @throws DAOException Si no se encuentra correspondencia o falla el canal.
+	 * @throws BusinessException Si no se encuentra correspondencia o falla el canal.
 	 */
-	public int getGameIdByNameAndUser(String gameName, String username) throws DAOException {
+	public int getGameIdByNameAndUser(String gameName, String username) throws BusinessException {
 		try {
 			List<Game> userGames = gameDAO.getGamesByUser(username);
 			for (Game g : userGames) {
@@ -126,8 +127,8 @@ public class StatLogic {
 					return g.getIdGame();
 				}
 			}
-		} catch (SQLException e) {
-			throw new DAOException(e);
+		} catch (PersistanceException e) {
+			throw new BusinessException(e);
 		}
 		return 0;
 	}
@@ -138,11 +139,11 @@ public class StatLogic {
 	 * @param idGame Identificador único de la partida.
 	 * @return Lista de objetos {@link Stat} que representan la evolución temporal del juego.
 	 */
-	public List<Stat> getAllStats(int idGame) throws DAOException {
+	public List<Stat> getAllStats(int idGame) throws BusinessException {
         try {
             return statDAO.readByGame(idGame);
-        } catch (SQLException e) {
-            throw new DAOException(e);
+        } catch (PersistanceException e) {
+            throw new BusinessException(e);
         }
     }
 
@@ -152,11 +153,11 @@ public class StatLogic {
 	 * @param username Nombre del usuario propietario de las partidas.
 	 * @return Listado de objetos {@link Game} cuyo estado es finalizado.
 	 */
-	public List<Game> getFinishedGames(String username) throws DAOException {
+	public List<Game> getFinishedGames(String username) throws BusinessException {
         try {
             return gameDAO.readFinishedGames(username);
-        } catch (SQLException e) {
-            throw new DAOException(e);
+        } catch (PersistanceException e) {
+            throw new BusinessException(e);
         }
     }
 
@@ -171,11 +172,11 @@ public class StatLogic {
 	 * @param maxprod Tasa máxima de producción alcanzada.
 	 * @param expenses Inversión total realizada en mejoras.
 	 */
-	public void saveStat(int idGame, int minute, double money, int clicks, double autogen, float maxprod, double expenses) throws DAOException {
+	public void saveStat(int idGame, int minute, double money, int clicks, double autogen, float maxprod, double expenses) throws BusinessException {
         try {
             statDAO.saveMinuteStat(idGame, minute, money, clicks, autogen, maxprod, expenses);
-        } catch (SQLException e) {
-            throw new DAOException(e);
+        } catch (PersistanceException e) {
+            throw new BusinessException(e);
         }
     }
 
@@ -184,11 +185,11 @@ public class StatLogic {
 	 *
 	 * @param idGame Identificador de la partida recién creada.
 	 */
-	public void createStat(int idGame) throws DAOException {
+	public void createStat(int idGame) throws BusinessException {
         try {
             statDAO.create(idGame, 0, 0, 0, 0, 0, 0);
-        } catch (SQLException e) {
-            throw new DAOException(e);
+        } catch (PersistanceException e) {
+            throw new BusinessException(e);
         }
     }
 
@@ -198,11 +199,11 @@ public class StatLogic {
 	 * @param idGame Identificador de la partida.
 	 * @return El objeto {@link Stat} más actual o null si no existen registros.
 	 */
-	public Stat getLastMinuteStat(int idGame) throws DAOException {
+	public Stat getLastMinuteStat(int idGame) throws BusinessException {
         try {
             return statDAO.getLastMinuteStat(idGame);
-        } catch (SQLException e) {
-            throw new DAOException(e);
+        } catch (PersistanceException e) {
+            throw new BusinessException(e);
         }
     }
 
@@ -211,11 +212,11 @@ public class StatLogic {
 	 *
 	 * @return Lista con todos los objetos {@link User} de la base de datos.
 	 */
-	public List<User> getAllUsers() throws DAOException {
+	public List<User> getAllUsers() throws BusinessException {
         try {
             return userDAO.readAllUsers();
-        } catch (SQLException e) {
-            throw new DAOException(e);
+        } catch (PersistanceException e) {
+            throw new BusinessException(e);
         }
     }
 }

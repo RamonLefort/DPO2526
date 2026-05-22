@@ -1,16 +1,14 @@
 package Presentation.Controllers;
 
-import Bussiness.Exceptions.DAOException;
+import Bussiness.Exceptions.BusinessException;
 import Bussiness.Managers.GameLogic;
 import Bussiness.Managers.StatLogic;
-import Presentation.Exceptions.CustomUIException;
 import Presentation.Views.GameCreator;
 import Bussiness.Managers.UserLogic;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import Bussiness.Entities.User;
-
-import javax.swing.*;
+import Presentation.Views.PresentationException;
 
 /**
  * Controlador encargado de gestionar la vista de creación de nuevas partidas.
@@ -120,8 +118,8 @@ public class GameCreatorController implements ActionListener {
 
         User currentUser = userLogic.getCurrentUser();
         if (currentUser == null) {
-            CustomUIException uiEx = new CustomUIException("Sesión inválida. Por favor, vuelve a iniciar sesión.", "Sesión Expirada", JOptionPane.ERROR_MESSAGE);
-            uiEx.showDialog(view);
+            PresentationException presentationException = new PresentationException();
+            presentationException.showErrorDialog("La sesión actual es inválida, por favor, vuelve a inciar sesión", "Sesión Expirada");
             return;
         }
         String currentUsername = currentUser.getUsername();
@@ -130,14 +128,14 @@ public class GameCreatorController implements ActionListener {
             int idGame = gameLogic.createGame(gameName, currentUsername);
 
             if (idGame == -1) {
-                CustomUIException uiEx = new CustomUIException("Ya tienes una partida con ese nombre.", "Nombre Repetido", JOptionPane.WARNING_MESSAGE);
-                uiEx.showDialog(view);
+                PresentationException presentationException = new PresentationException();
+                presentationException.showErrorDialog("Ya tienes una partida con ese nombre, puedes ser más original!", "Nombre Repetido");
                 return;
             }
 
             if (idGame == 0) {
-                CustomUIException uiEx = new CustomUIException("No se pudo crear la partida de forma interna. Inténtalo de nuevo.", "Partida Incorrecta", JOptionPane.ERROR_MESSAGE);
-                uiEx.showDialog(view);
+                PresentationException presentationException = new PresentationException();
+                presentationException.showErrorDialog("Debido a un error interno no se pudo crear la partida", "Partida incorrecta");
                 return;
             }
 
@@ -148,13 +146,9 @@ public class GameCreatorController implements ActionListener {
             gameController.loadGame(idGame, currentUsername);
             viewController.showView("GAME");
 
-        } catch (DAOException e) {
-            CustomUIException uiEx = new CustomUIException(
-                    "No se ha podido establecer comunicación con el servidor de base de datos durante la creación.",
-                    "Error de Conexión",
-                    JOptionPane.ERROR_MESSAGE
-            );
-            uiEx.showDialog(view);
+        } catch (BusinessException e) {
+            PresentationException presentationException = new PresentationException();
+            presentationException.showErrorDialog("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión");
         }
     }
 }
