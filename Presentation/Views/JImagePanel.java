@@ -1,5 +1,7 @@
 package Presentation.Views;
 
+import Persistance.Exceptions.PersistanceException;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;

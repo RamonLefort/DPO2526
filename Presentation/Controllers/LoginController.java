@@ -4,6 +4,7 @@ import Bussiness.Entities.User;
 import Bussiness.Exceptions.BusinessException;
 import Bussiness.Managers.UserLogic;
 import Presentation.Views.LoginWindow;
+import Presentation.Views.PresentationException;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -76,8 +77,8 @@ public class LoginController implements ActionListener {
         try {
             user = userLogic.login(username, password);
         } catch (BusinessException e) {
-			CustomUIException uiException = new CustomUIException("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-			uiException.showDialog(null);
+			PresentationException presentationException = new PresentationException();
+			presentationException.showErrorDialog("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión");
         }
 
         if (user != null) {

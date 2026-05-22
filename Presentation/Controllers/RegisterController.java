@@ -73,33 +73,33 @@ public class RegisterController implements ActionListener {
 
 		if (!userLogic.validateEmail(email)) {
 			PresentationException presentationException = new PresentationException();
-			presentationException.showErrorDialog("El email no tiene un formato válido (@gmail.com).", "Formato Inválido", JOptionPane.WARNING_MESSAGE);
+			presentationException.showErrorDialog("El email no tiene un formato válido (@gmail.com).", "Formato Inválido");
 		}
 
 		if (!userLogic.validatePassword(password)) {
 			PresentationException presentationException = new PresentationException();
-			presentationException.showErrorDialog("La contraseña debe tener 8 caracteres con, al menos, una letra, un número y una mayúscula.", "Contraseña Débil", JOptionPane.WARNING_MESSAGE);
+			presentationException.showErrorDialog("La contraseña debe tener 8 caracteres con, al menos, una letra, un número y una mayúscula.", "Contraseña Débil");
 		}
 
 		if (!password.equals(confirm)) {
 			PresentationException presentationException = new PresentationException();
-			presentationException.showErrorDialog("Las contraseñas introducidas no coinciden.", "Error de Coincidencia", JOptionPane.WARNING_MESSAGE);
+			presentationException.showErrorDialog("Las contraseñas introducidas no coinciden.", "Error de Coincidencia");
 		}
 
 		try {
 			if (userLogic.usernameExists(username)) {
 				PresentationException presentationException = new PresentationException();
-				presentationException.showErrorDialog("El nombre de usuario ya está en uso por otra cuenta.", "Usuario Duplicado", JOptionPane.ERROR_MESSAGE);
+				presentationException.showErrorDialog("El nombre de usuario ya está en uso por otra cuenta.", "Usuario Duplicado");
 			}
 
 			if (userLogic.emailExists(email)) {
 				PresentationException presentationException = new PresentationException();
-				presentationException.showErrorDialog("El email ya está registrado en el sistema.", "Email Duplicado", JOptionPane.ERROR_MESSAGE);
+				presentationException.showErrorDialog("El email ya está registrado en el sistema.", "Email Duplicado");
 			}
 
 			if (!userLogic.register(username, email, password, confirm)) {
 				PresentationException presentationException = new PresentationException();
-				presentationException.showErrorDialog("No se ha podido procesar el alta del usuario. Verifica los campos.", "Error de Negocio", JOptionPane.ERROR_MESSAGE);
+				presentationException.showErrorDialog("No se ha podido procesar el alta del usuario. Verifica los campos.", "Error de Negocio");
 			}
 
 			try {
@@ -108,12 +108,12 @@ public class RegisterController implements ActionListener {
 				viewController.showView("GAME MENU");
 			} catch (BusinessException ex) {
 				PresentationException presentationException = new PresentationException();
-				presentationException.showErrorDialog("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
+				presentationException.showErrorDialog("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión");
 			}
 
 		} catch (BusinessException daoEx) {
 			PresentationException presentationException = new PresentationException();
-			presentationException.showErrorDialog("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
+			presentationException.showErrorDialog("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión");
 		}
 	}
 

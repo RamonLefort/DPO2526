@@ -1,6 +1,8 @@
 package Persistance.Configuration;
 
 import Bussiness.Entities.Configuration;
+import Persistance.Exceptions.PersistanceException;
+import Presentation.Views.PresentationException;
 
 import java.io.IOException;
 import java.sql.*;
@@ -23,7 +25,7 @@ public class MySQLDAO {
 	 *
 	 * @param config Configuración de la conexión
 	 */
-	private MySQLDAO(Configuration config) throws SQLException {
+	private MySQLDAO(Configuration config) throws PersistanceException {
 		if (config != null) {
 			this.url = "jdbc:mysql://" + config.getDatabaseHost() + ":" +
 					config.getDatabasePort() + "/" + config.getDatabaseName();
@@ -34,7 +36,7 @@ public class MySQLDAO {
 		}
 	}
 
-	private void createDatabaseIfNotExists(Configuration config) throws SQLException {
+	private void createDatabaseIfNotExists(Configuration config) throws PersistanceException {
 
 		String serverUrl = "jdbc:mysql://" + config.getDatabaseHost() + ":" + config.getDatabasePort();
 
@@ -52,6 +54,8 @@ public class MySQLDAO {
 			statement.executeUpdate(query);
 
 			System.out.println("Base de datos verificada/creada correctamente.");
+		}catch (SQLException e){
+			throw new PersistanceException(e);
 		}
 	}
 
@@ -59,7 +63,7 @@ public class MySQLDAO {
 	 * Crea todas las tablas necesarias si no existen.
 	 * Debe ejecutarse después de connect().
 	 */
-	public void createTablesIfNotExists() throws SQLException {
+	public void createTablesIfNotExists() throws PersistanceException {
 
 		try (Statement statement = connection.createStatement()) {
 
@@ -203,11 +207,7 @@ public class MySQLDAO {
 			System.out.println("Tablas verificadas/creadas correctamente.");
 
 		} catch (SQLException e) {
-
-			throw new SQLException(
-					"Error al crear las tablas: " + e.getMessage(),
-					e
-			);
+			throw new PersistanceException(e);
 		}
 	}
 
@@ -218,18 +218,18 @@ public class MySQLDAO {
 	 * @param jsonDAO Objeto de acceso a datos para leer la configuración inicial.
 	 * @return La instancia única de MySQLDAO.
 	 */
-	public static MySQLDAO getInstance(JsonConfigurationDAO jsonDAO) throws SQLException, IOException {
+	public static MySQLDAO getInstance(JsonConfigurationDAO jsonDAO) throws PersistanceException {
 		if (instance == null) {
             Configuration config = null;
             try {
                 config = jsonDAO.readJson();
-            } catch (IOException e) {
-                throw new IOException(e);
+            } catch (PersistanceException e) {
+                throw new PersistanceException(e);
             }
             try {
                 instance = new MySQLDAO(config);
-            } catch (SQLException e) {
-                throw new SQLException(e);
+            } catch (PersistanceException e) {
+                throw new PersistanceException(e);
             }
         }
 		return instance;
@@ -239,17 +239,14 @@ public class MySQLDAO {
 	 * Establece la conexión física con el motor de base de datos.
 	 * Es seguro llamarlo múltiples veces, ya que verifica si la conexión está cerrada previamente.
 	 */
-	public void connect() throws SQLException {
+	public void connect() throws PersistanceException {
 		try {
 			if (connection == null || connection.isClosed()) {
 				connection = DriverManager.getConnection(url, username, password);
 				createTablesIfNotExists();
-
-				System.out.println("Conexión exitosa a XAMPP");
-
 			}
 		} catch (SQLException e) {
-			throw new SQLException(e);
+			throw new PersistanceException(e);
 		}
 	}
 
@@ -261,14 +258,14 @@ public class MySQLDAO {
 	 * @param attribute Valor a buscar en la columna especificada.
 	 * @return Un ResultSet con los datos obtenidos, o null si ocurre una SQLException.
 	 */
-	public ResultSet readSpecific(String nameTable, String column, String attribute) throws SQLException {
+	public ResultSet readSpecific(String nameTable, String column, String attribute) throws PersistanceException {
 		try {
 			String query = "SELECT * FROM " + nameTable + " WHERE " + column + " = ?";
 			PreparedStatement statement = connection.prepareStatement(query);
 			statement.setString(1, attribute);
 			return statement.executeQuery();
 		} catch (SQLException e) {
-			throw new SQLException(e);
+			throw new PersistanceException(e);
 		}
 	}
 
@@ -281,14 +278,14 @@ public class MySQLDAO {
 	 * @param refColumn Columna de referencia para la cláusula WHERE.
 	 * @param refValue  Valor de referencia para la cláusula WHERE.
 	 */
-	public void updateField(String table, String field, String value, String refColumn, String refValue) throws SQLException {
+	public void updateField(String table, String field, String value, String refColumn, String refValue) throws PersistanceException {
 		String query = "UPDATE " + table + " SET " + field + " = ? WHERE " + refColumn + " = ?";
 		try (PreparedStatement statement = connection.prepareStatement(query)) {
 			statement.setString(1, value);
 			statement.setString(2, refValue);
 			statement.executeUpdate();
 		} catch (SQLException e) {
-			throw new SQLException(e);
+			throw new PersistanceException(e);
 		}
 	}
 
@@ -299,13 +296,13 @@ public class MySQLDAO {
 	 * @param column    La columna que se evaluará para la eliminación.
 	 * @param attribute El valor de la columna que determinará qué filas serán borradas.
 	 */
-	public void deleteObject(String nameTable, String column, String attribute) throws SQLException {
+	public void deleteObject(String nameTable, String column, String attribute) throws PersistanceException {
 		String query = "DELETE FROM " + nameTable + " WHERE " + column + " = ?";
 		try (PreparedStatement statement = connection.prepareStatement(query)) {
 			statement.setString(1, attribute);
 			statement.executeUpdate();
 		} catch (SQLException e) {
-			throw new SQLException(e);
+			throw new PersistanceException(e);
 		}
 	}
 
@@ -315,12 +312,12 @@ public class MySQLDAO {
 	 * @param nameTable El nombre de la tabla a consultar completamente.
 	 * @return Un {@link ResultSet} con todas las filas de la tabla, o null si la consulta falla.
 	 */
-	public ResultSet readAllTable(String nameTable) throws SQLException {
+	public ResultSet readAllTable(String nameTable) throws PersistanceException {
 		try {
 			Statement statement = connection.createStatement();
 			return statement.executeQuery("SELECT * FROM " + nameTable);
 		} catch (SQLException e) {
-			throw new SQLException(e);
+			throw new PersistanceException(e);
 		}
 	}
 
@@ -328,14 +325,13 @@ public class MySQLDAO {
 	 * Cierra de manera segura la conexión activa con la base de datos.
 	 * Libera los recursos de red y previene fugas de memoria.
 	 */
-	public void disconnect() throws SQLException {
+	public void disconnect() throws PersistanceException {
 		try {
 			if (connection != null && !connection.isClosed()) {
 				connection.close();
-				System.out.println("Conexión cerrada con éxito.");
 			}
 		} catch (SQLException e) {
-			throw new SQLException(e);
+			throw new PersistanceException(e);
 		}
 	}
 

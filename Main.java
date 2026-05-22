@@ -5,12 +5,11 @@ import Bussiness.Managers.UserLogic;
 import Persistance.Configuration.JsonConfigurationDAO;
 import Persistance.Configuration.MySQLDAO;
 import Persistance.DAO.*;
+import Persistance.Exceptions.PersistanceException;
 import Presentation.Controllers.ViewController;
 import Presentation.Views.PresentationException;
 
 import javax.swing.*;
-import java.io.IOException;
-import java.sql.SQLException;
 
 /**
  * Clase principal que actúa como el motor de arranque de la aplicación.
@@ -43,12 +42,9 @@ public class Main {
 
                 ViewController viewController = new ViewController(userLogic, gameLogic, gameplayLogic, statLogic);
                 viewController.start();
-            } catch (SQLException e) {
+            } catch (PersistanceException e) {
                 PresentationException presentationException = new PresentationException();
                 presentationException.showErrorDialog("No se ha podido establecer comunicación con el servidor de base de datos", "Error de Conexión");
-            } catch (IOException e){
-                PresentationException presentationException = new PresentationException();
-                presentationException.showErrorDialog("No se ha podido realizar la lectura del archivo de configuración del sistema", "Error de Configuración");
             }
         });
     }

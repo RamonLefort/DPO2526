@@ -1,6 +1,7 @@
 package Persistance.Configuration;
 
 import Bussiness.Entities.Configuration;
+import Persistance.Exceptions.PersistanceException;
 import com.google.gson.Gson;
 import java.io.FileReader;
 import java.io.IOException;
@@ -30,11 +31,11 @@ public class JsonConfigurationDAO {
 	 * @return Un objeto {@link Configuration} con los datos del archivo si la lectura es exitosa,
 	 * o {@code null} si el archivo no existe, no hay permisos de lectura, o ocurre un error de I/O.
 	 */
-	public Configuration readJson() throws IOException {
+	public Configuration readJson() throws PersistanceException {
 		try (FileReader reader = new FileReader(path)) {
 			return gson.fromJson(reader, Configuration.class);
 		} catch (IOException e) {
-			throw new IOException(e);
+			throw new PersistanceException(e);
 		}
 	}
 }
