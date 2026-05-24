@@ -47,8 +47,6 @@ public class SettingController implements ActionListener {
             case SettingView.BTN_DELETE_ACCOUNT:
                 handleDeleteAccount();
                 break;
-            default:
-                System.err.println("Comando desconocido: " + e.getActionCommand());
         }
     }
 

@@ -60,8 +60,6 @@ public class RegisterController implements ActionListener {
 			case "GO_LOGIN":
 				moveToLogin();
 				break;
-			default:
-				System.err.println("Comando desconocido: " + e.getActionCommand());
 		}
 	}
 

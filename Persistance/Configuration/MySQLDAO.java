@@ -53,7 +53,6 @@ public class MySQLDAO {
 
 			statement.executeUpdate(query);
 
-			System.out.println("Base de datos verificada/creada correctamente.");
 		}catch (SQLException e){
 			throw new PersistanceException(e);
 		}
@@ -204,8 +203,6 @@ public class MySQLDAO {
             DEFAULT CHARSET=utf8mb4
             COLLATE=utf8mb4_general_ci
         """);
-
-			System.out.println("Tablas verificadas/creadas correctamente.");
 
 		} catch (SQLException e) {
 			throw new PersistanceException(e);

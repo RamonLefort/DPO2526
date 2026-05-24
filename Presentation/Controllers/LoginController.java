@@ -59,8 +59,6 @@ public class LoginController implements ActionListener {
 			case LoginWindow.BTN_LOGIN:
 				handleLogin();
                 break;
-			default:
-				System.err.println("Comando desconocido: " + e.getActionCommand());
 		}
 	}
 
