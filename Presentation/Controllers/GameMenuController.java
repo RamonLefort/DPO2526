@@ -46,14 +46,24 @@ public class GameMenuController implements ActionListener {
 		this.gameMenuView.setActionListener(this);
 	}
 
-	public void setGameController(GameController gameController){
+	/**
+	 * Establece el controlador de juego asociado a esta instancia.
+	 *
+	 * @param gameController El controlador de lógica de juego a inyectar.
+	 */
+	public void setGameController(GameController gameController) {
 		this.gameController = gameController;
 	}
 
-	public void setStatsController(StatsController statsController){
+	/**
+	 * Establece el controlador de estadísticas asociado a esta instancia.
+	 *
+	 * @param statsController El controlador encargado de gestionar y reportar
+	 *                        las estadísticas del usuario a inyectar.
+	 */
+	public void setStatsController(StatsController statsController) {
 		this.statsController = statsController;
 	}
-
 	/**
 	 * Procesa los eventos de acción disparados desde el menú de partidas.
 	 * Gestiona comandos estáticos (atrás, logout, nueva partida) y comandos dinámicos

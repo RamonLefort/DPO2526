@@ -30,6 +30,7 @@ public class JsonConfigurationDAO {
 	 *
 	 * @return Un objeto {@link Configuration} con los datos del archivo si la lectura es exitosa,
 	 * o {@code null} si el archivo no existe, no hay permisos de lectura, o ocurre un error de I/O.
+	 * @throws PersistanceException Si ocurre un error de comunicación o ejecución durante la inserción en la base de datos.
 	 */
 	public Configuration readJson() throws PersistanceException {
 		try (FileReader reader = new FileReader(path)) {

@@ -62,6 +62,7 @@ public class MySQLDAO {
 	/**
 	 * Crea todas las tablas necesarias si no existen.
 	 * Debe ejecutarse después de connect().
+	 * @throws PersistanceException Si ocurre un error de comunicación o ejecución durante la inserción en la base de datos.
 	 */
 	public void createTablesIfNotExists() throws PersistanceException {
 
@@ -217,6 +218,7 @@ public class MySQLDAO {
 	 *
 	 * @param jsonDAO Objeto de acceso a datos para leer la configuración inicial.
 	 * @return La instancia única de MySQLDAO.
+	 * @throws PersistanceException Si ocurre un error de comunicación o ejecución durante la inserción en la base de datos.
 	 */
 	public static MySQLDAO getInstance(JsonConfigurationDAO jsonDAO) throws PersistanceException {
 		if (instance == null) {
@@ -238,6 +240,7 @@ public class MySQLDAO {
 	/**
 	 * Establece la conexión física con el motor de base de datos.
 	 * Es seguro llamarlo múltiples veces, ya que verifica si la conexión está cerrada previamente.
+	 * @throws PersistanceException Si ocurre un error de comunicación o ejecución durante la inserción en la base de datos.
 	 */
 	public void connect() throws PersistanceException {
 		try {
@@ -257,6 +260,7 @@ public class MySQLDAO {
 	 * @param column    Nombre de la columna para la cláusula WHERE.
 	 * @param attribute Valor a buscar en la columna especificada.
 	 * @return Un ResultSet con los datos obtenidos, o null si ocurre una SQLException.
+	 * @throws PersistanceException Si ocurre un error de comunicación o ejecución durante la inserción en la base de datos.
 	 */
 	public ResultSet readSpecific(String nameTable, String column, String attribute) throws PersistanceException {
 		try {
@@ -277,6 +281,7 @@ public class MySQLDAO {
 	 * @param value     Nuevo valor a establecer.
 	 * @param refColumn Columna de referencia para la cláusula WHERE.
 	 * @param refValue  Valor de referencia para la cláusula WHERE.
+	 * @throws PersistanceException Si ocurre un error de comunicación o ejecución durante la inserción en la base de datos.
 	 */
 	public void updateField(String table, String field, String value, String refColumn, String refValue) throws PersistanceException {
 		String query = "UPDATE " + table + " SET " + field + " = ? WHERE " + refColumn + " = ?";
@@ -295,6 +300,7 @@ public class MySQLDAO {
 	 * @param nameTable El nombre de la tabla de la cual se eliminarán los datos.
 	 * @param column    La columna que se evaluará para la eliminación.
 	 * @param attribute El valor de la columna que determinará qué filas serán borradas.
+	 * @throws PersistanceException Si ocurre un error de comunicación o ejecución durante la inserción en la base de datos.
 	 */
 	public void deleteObject(String nameTable, String column, String attribute) throws PersistanceException {
 		String query = "DELETE FROM " + nameTable + " WHERE " + column + " = ?";
@@ -311,6 +317,7 @@ public class MySQLDAO {
 	 *
 	 * @param nameTable El nombre de la tabla a consultar completamente.
 	 * @return Un {@link ResultSet} con todas las filas de la tabla, o null si la consulta falla.
+	 * @throws PersistanceException Si ocurre un error de comunicación o ejecución durante la inserción en la base de datos.
 	 */
 	public ResultSet readAllTable(String nameTable) throws PersistanceException {
 		try {
@@ -324,6 +331,7 @@ public class MySQLDAO {
 	/**
 	 * Cierra de manera segura la conexión activa con la base de datos.
 	 * Libera los recursos de red y previene fugas de memoria.
+	 * @throws PersistanceException Si ocurre un error de comunicación o ejecución durante la inserción en la base de datos.
 	 */
 	public void disconnect() throws PersistanceException {
 		try {

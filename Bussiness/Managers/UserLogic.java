@@ -6,8 +6,6 @@ import Persistance.DAO.UserDAO;
 import Persistance.Exceptions.PersistanceException;
 import org.mindrot.jbcrypt.BCrypt;
 
-import java.sql.SQLException;
-
 /**
  * Clase de lógica de negocio encargada de la gestión de cuentas de usuario y seguridad.
  */
@@ -33,6 +31,7 @@ public class UserLogic {
 	 * @param password Contraseña proporcionada por el usuario.
 	 * @param confirm Repetición de la contraseña para validación de coincidencia.
 	 * @return true si el registro fue exitoso tras aplicar el hashing de BCrypt; false en caso contrario.
+	 * @throws BusinessException Si el proceso de persistencia falla durante la validación o la creación de la partida.
 	 */
 	public boolean register(String username, String email, String password, String confirm) throws BusinessException {
 		if (!password.equals(confirm) || !validateEmail(email) || !validatePassword(password)) {
@@ -63,6 +62,7 @@ public class UserLogic {
 	 * @param usernameOrEmail Identificador proporcionado (usuario o correo).
 	 * @param pass Contraseña en texto plano a verificar.
 	 * @return El objeto {@link User} autenticado si las credenciales coinciden; null en caso de error.
+	 * @throws BusinessException Si el proceso de persistencia falla durante la validación o la creación de la partida.
 	 */
 	public User login(String usernameOrEmail, String pass) throws BusinessException {
         User user = null;
@@ -83,6 +83,7 @@ public class UserLogic {
 	 *
 	 * @param username Nombre a verificar.
 	 * @return true si ya existe en la base de datos; false en caso contrario.
+	 * @throws BusinessException Si el proceso de persistencia falla durante la validación o la creación de la partida.
 	 */
 	public boolean usernameExists(String username) throws BusinessException {
         try {
@@ -97,6 +98,7 @@ public class UserLogic {
 	 *
 	 * @param email Correo a verificar.
 	 * @return true si el correo ya está en uso.
+	 * @throws BusinessException Si el proceso de persistencia falla durante la validación o la creación de la partida.
 	 */
 	public boolean emailExists(String email) throws BusinessException {
         try {
@@ -118,6 +120,7 @@ public class UserLogic {
 	 * Si el usuario eliminado es el que tiene la sesión activa, se procede al cierre automático de la misma.
 	 *
 	 * @param username Nombre del usuario cuya cuenta se desea eliminar.
+	 * @throws BusinessException Si el proceso de persistencia falla durante la validación o la creación de la partida.
 	 */
 	public void deleteAccount(String username) throws BusinessException {
         try {

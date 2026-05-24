@@ -43,6 +43,7 @@ public class GameLogic {
 	 * @param nameGame Nombre deseado para la partida.
 	 * @param username Usuario que crea la partida.
 	 * @return El ID de la partida creada, o -1 si ya existe una partida con ese nombre.
+	 * @throws BusinessException Si el proceso de persistencia falla durante la validación o la creación de la partida.
 	 */
 	public int createGame(String nameGame, String username) throws BusinessException {
         List<Game> userGames = null;
@@ -74,6 +75,7 @@ public class GameLogic {
 	 * @param seconds Segundos transcurridos.
 	 * @param coffeexclick Cafés obtenidos por click manual.
 	 * @param prodxsec Tasa de producción automática por segundo.
+     * @throws BusinessException Si el proceso de persistencia falla durante la validación o la creación de la partida.
 	 */
 	public void saveGame(String username, int idGame, double money, int hours, int minutes, int seconds, int coffeexclick, float prodxsec) throws BusinessException {
         try {
@@ -87,8 +89,9 @@ public class GameLogic {
 	 * Elimina una partida específica del sistema.
 	 *
 	 * @param idGame ID de la partida a borrar.
+	 * @throws BusinessException Si el proceso de persistencia falla durante la validación o la creación de la partida.
 	 */
-	public void deleteGame(int idGame) throws SQLException {
+	public void deleteGame(int idGame) throws BusinessException {
 		gameDAO.deleteGame(idGame);
 	}
 
@@ -96,6 +99,7 @@ public class GameLogic {
 	 * Marca una partida como finalizada.
 	 *
 	 * @param idGame ID de la partida a terminar.
+	 * @throws BusinessException Si el proceso de persistencia falla durante la validación o la creación de la partida.
 	 */
 	public void finishGame(int idGame) throws BusinessException {
         try {
@@ -111,7 +115,7 @@ public class GameLogic {
 	 * @param username Usuario propietario.
 	 * @param idGame ID de la partida buscada.
 	 * @return El objeto {@link Game} correspondiente.
-	 * @throws IllegalArgumentException si no se encuentra la partida.
+	 * @throws BusinessException Si el proceso de persistencia falla durante la validación o la creación de la partida.
 	 */
     public Game loadGame(String username, int idGame) throws BusinessException {
         List<Game> games = null;
@@ -133,6 +137,7 @@ public class GameLogic {
 	 *
 	 * @param username Nombre del usuario.
 	 * @return Lista de partidas {@link Game}.
+	 * @throws BusinessException Si el proceso de persistencia falla durante la validación o la creación de la partida.
 	 */
 	public List<Game> getUserGames(String username) throws BusinessException {
         try {
@@ -147,6 +152,7 @@ public class GameLogic {
 	 *
 	 * @param nameGame Nombre a verificar.
 	 * @return true si el nombre ya está registrado.
+	 * @throws BusinessException Si el proceso de persistencia falla durante la validación o la creación de la partida.
 	 */
 	public boolean gameNameExists(String nameGame) throws BusinessException {
         try {
@@ -161,6 +167,7 @@ public class GameLogic {
 	 *
 	 * @param idGame ID de la partida.
 	 * @return Lista de generadores {@link Generator}.
+	 * @throws BusinessException Si el proceso de persistencia falla durante la validación o la creación de la partida.
 	 */
 	public List<Generator> getGenerators(int idGame) throws BusinessException {
         try {
@@ -175,6 +182,7 @@ public class GameLogic {
 	 *
 	 * @param idGame ID de la partida recién creada.
 	 * @return Lista de los generadores creados.
+	 * @throws BusinessException Si el proceso de persistencia falla durante la validación o la creación de la partida.
 	 */
 	public List<Generator> createGenerators(int idGame) throws BusinessException {
         try {
@@ -189,6 +197,7 @@ public class GameLogic {
 	 *
 	 * @param idGame ID de la partida.
 	 * @param generator Objeto generador con los datos actualizados.
+	 * @throws BusinessException Si el proceso de persistencia falla durante la validación o la creación de la partida.
 	 */
 	public void updateGenerators(int idGame, Generator generator) throws BusinessException {
         try {
@@ -204,6 +213,7 @@ public class GameLogic {
 	 *
 	 * @param idGame ID de la partida.
 	 * @param generators Lista de generadores de los cuales se extraerán los IDs.
+	 * @throws BusinessException Si el proceso de persistencia falla durante la validación o la creación de la partida.
 	 */
 	public void createUpgrades(int idGame, List<Generator> generators) throws BusinessException {
 		int idBarista = 0, idMachine = 0, idPlantation = 0;
@@ -228,6 +238,7 @@ public class GameLogic {
 	 *
 	 * @param idGame ID de la partida.
 	 * @param idGenerator ID del generador cuya mejora se activa.
+	 * @throws BusinessException Si el proceso de persistencia falla durante la validación o la creación de la partida.
 	 */
 	public void updateUpgrades(int idGame, int idGenerator) throws BusinessException {
         try {
@@ -242,6 +253,7 @@ public class GameLogic {
 	 *
 	 * @param idGame ID de la partida.
 	 * @return Lista de mejoras {@link Upgrade}.
+	 * @throws BusinessException Si el proceso de persistencia falla durante la validación o la creación de la partida.
 	 */
 	public List<Upgrade> getUpgrades(int idGame) throws BusinessException {
         try {

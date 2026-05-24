@@ -28,6 +28,7 @@ public class JImagePanel extends JPanel {
      * Instantiates a new J image panel.
      *
      * @param path the path
+     * @throws IOException Si falla la lectura de la imagen
      */
 // Constructor with parameters
     public JImagePanel(String path) throws IOException {
@@ -94,6 +95,7 @@ public class JImagePanel extends JPanel {
      * Sets image.
      *
      * @param path the path
+     * @throws IOException Si falla la lectura de la imagen
      */
     public void setImage(String path) throws IOException {
         try {
@@ -110,6 +112,7 @@ public class JImagePanel extends JPanel {
      * @param frameTimer the frame timer
      * @param framesList the frames list
      * @return the timer
+     * @throws IOException Si falla la lectura de la imagen
      */
     public Timer configureAnimation(int frameTimer, ArrayList<String> framesList) throws IOException {
         if (animationTimer != null && animationTimer.isRunning()) {

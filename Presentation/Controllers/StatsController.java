@@ -11,6 +11,10 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Controlador de la capa de presentación que gestiona la visualización y filtrado
+ * de las estadísticas de juego.
+ */
 public class StatsController implements ActionListener {
 
 	private final StatsView statsView;
@@ -18,9 +22,16 @@ public class StatsController implements ActionListener {
 	private final ViewController viewController;
 	private final GameMenuController gameMenuController;
 
-	// Lista auxiliar en memoria RAM para mapear el índice del ComboBox con los ID físicos reales de BD
 	private List<Integer> currentFilteredGameIds;
 
+	/**
+	 * Construye el controlador y establece las dependencias necesarias.
+	 *
+	 * @param statsView          La vista de estadísticas a gestionar.
+	 * @param statLogic          Servicio de lógica de negocio para obtener datos estadísticos.
+	 * @param viewController     Gestor de navegación de la aplicación.
+	 * @param gameMenuController Controlador del menú principal.
+	 */
 	public StatsController(StatsView statsView, StatLogic statLogic, ViewController viewController, GameMenuController gameMenuController) {
 		this.statsView = statsView;
 		this.statLogic = statLogic;
@@ -31,7 +42,9 @@ public class StatsController implements ActionListener {
 	}
 
 	/**
-	 * Carga inicial del panel de estadísticas. Carga la jerarquía completa de controles.
+	 * Inicializa la vista con los datos correspondientes a una partida específica.
+	 *
+	 * @param idGame El identificador de la partida que se debe seleccionar inicialmente.
 	 */
 	public void loadStatsData(int idGame) {
 		try {
@@ -43,7 +56,6 @@ public class StatsController implements ActionListener {
 
 			updateGameComboBox(ownerUsername);
 
-			// 4. Seleccionar visualmente la partida y pintar las estadísticas
 			int indexInList = currentFilteredGameIds.indexOf(idGame);
 			if (indexInList != -1) {
 				statsView.setSelectedGameIndex(indexInList);
@@ -113,11 +125,9 @@ public class StatsController implements ActionListener {
 	 * Actualiza el combo secundario de partidas basándose en el nombre de usuario.
 	 */
 	private void updateGameComboBox(String username) throws BusinessException {
-		// Obtenemos los nombres legibles de las partidas para la interfaz
 		List<String> gameNames = statLogic.getFinishedGameNamesByUser(username);
 		statsView.populateGames(gameNames);
 
-		// Almacenamos sincrónicamente sus IDs correspondientes en RAM para búsquedas rápidas locales
 		this.currentFilteredGameIds = statLogic.getFinishedGameIdsByUser(username);
 	}
 

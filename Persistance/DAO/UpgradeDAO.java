@@ -30,6 +30,7 @@ public class UpgradeDAO {
 	 * Inserta una nueva mejora en la base de datos.
 	 *
 	 * @param upgrade Objeto {@link Upgrade} que contiene la información de la mejora a persistir.
+	 * @throws PersistanceException Si ocurre un error de comunicación o ejecución durante la inserción en la base de datos.
 	 */
 	public void create(Upgrade upgrade) throws PersistanceException {
 		String query = "INSERT INTO upgrade (id_generator, id_game, active, price) VALUES (?, ?, ?, ?)";
@@ -51,6 +52,7 @@ public class UpgradeDAO {
 	 * @param idBarista    ID del generador 'Barista' en esta partida.
 	 * @param idMachine    ID del generador 'Espresso Machine' en esta partida.
 	 * @param idPlantation ID del generador 'Coffee Plantation' en esta partida.
+	 * @throws PersistanceException Si ocurre un error de comunicación o ejecución durante la inserción en la base de datos.
 	 */
 	public void createInitialUpgrades(int idGame, int idBarista, int idMachine, int idPlantation) throws PersistanceException {
 		String query = "INSERT INTO upgrade (id_generator, id_game, active, price) VALUES (?, ?, ?, ?)";
@@ -88,6 +90,7 @@ public class UpgradeDAO {
 	 *
 	 * @param idGame ID de la partida a consultar.
 	 * @return Lista de objetos {@link Upgrade} vinculados a la partida.
+	 * @throws PersistanceException Si ocurre un error de comunicación o ejecución durante la inserción en la base de datos.
 	 */
 	public List<Upgrade> readByGame(int idGame) throws PersistanceException {
 		List<Upgrade> upgrades = new ArrayList<>();
@@ -116,6 +119,7 @@ public class UpgradeDAO {
 	 *
 	 * @param idGenerator ID único del generador.
 	 * @return Lista de mejoras aplicables a dicho generador.
+	 * @throws PersistanceException Si ocurre un error de comunicación o ejecución durante la inserción en la base de datos.
 	 */
 	public List<Upgrade> readByGenerator(int idGenerator) throws PersistanceException {
 		List<Upgrade> upgrades = new ArrayList<>();
@@ -145,6 +149,7 @@ public class UpgradeDAO {
 	 * @param idGame      ID de la partida.
 	 * @param idGenerator ID del generador al que pertenece la mejora.
 	 * @param active      Nuevo estado de activación (true/false).
+	 * @throws PersistanceException Si ocurre un error de comunicación o ejecución durante la inserción en la base de datos.
 	 */
 	public void update(int idGame, int idGenerator, boolean active) throws PersistanceException {
 		String query = "UPDATE upgrade SET active = ? WHERE id_game = ? AND id_generator = ?";
@@ -162,6 +167,7 @@ public class UpgradeDAO {
 	 * Elimina físicamente una mejora de la base de datos mediante su identificador.
 	 *
 	 * @param idUpgrade Identificador único de la mejora a eliminar.
+	 * @throws PersistanceException Si ocurre un error de comunicación o ejecución durante la inserción en la base de datos.
 	 */
 	public void delete(int idUpgrade) throws PersistanceException {
 		String query = "DELETE FROM upgrade WHERE id_upgrade = ?";

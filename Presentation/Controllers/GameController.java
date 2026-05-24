@@ -49,6 +49,7 @@ public class GameController implements ActionListener {
 	 * @param username Nombre del usuario en sesión.
 	 * @param gameLogic Lógica de gestión de datos de partida.
 	 * @param statLogic Lógica de gestión de telemetría y estadísticas.
+	 * @param gameMenuController Controlador de la página de menú de los juegos
 	 */
 	public GameController(GameView gameView, GameplayLogic gameplayLogic, ViewController viewController, int idGame, String username, GameLogic gameLogic, StatLogic statLogic, GameMenuController gameMenuController) {
 		this.gameView = gameView;

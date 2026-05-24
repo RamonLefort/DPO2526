@@ -22,7 +22,10 @@ public class StatsView extends JPanel {
     /** Comando de acción para ir a la pantalla de settings. */
     public static final String BTN_SETTINGS = "SETTINGS";
 
+    /** Comando de acción disparado cuando se selecciona un nuevo usuario en el filtro. */
     public static final String COMBO_USER_CHANGED = "COMBO_USER_CHANGED";
+
+    /** Comando de acción disparado cuando se selecciona una nueva partida en el filtro. */
     public static final String COMBO_GAME_CHANGED = "COMBO_GAME_CHANGED";
 
     private final Color BG_COLOR = new Color(248, 245, 240);
@@ -240,6 +243,12 @@ public class StatsView extends JPanel {
         cbGames.addActionListener(l);
     }
 
+    /**
+     * Actualiza el contenido del selector de usuarios, eliminando los escuchadores
+     * previos para evitar disparar eventos durante la recarga.
+     *
+     * @param usernames Lista de nombres de usuario a poblar.
+     */
     public void populateUsers(List<String> usernames) {
         ActionListener[] listeners = cbUsers.getActionListeners();
         for (ActionListener l : listeners) cbUsers.removeActionListener(l);
@@ -254,6 +263,11 @@ public class StatsView extends JPanel {
         for (ActionListener l : listeners) cbUsers.addActionListener(l);
     }
 
+    /**
+     * Actualiza el contenido del selector de partidas.
+     *
+     * @param gameNames Lista de nombres de partida a poblar.
+     */
     public void populateGames(List<String> gameNames) {
         ActionListener[] listeners = cbGames.getActionListeners();
         for (ActionListener l : listeners) cbGames.removeActionListener(l);
@@ -268,18 +282,25 @@ public class StatsView extends JPanel {
         for (ActionListener l : listeners) cbGames.addActionListener(l);
     }
 
+    /** @return El nombre de usuario actualmente seleccionado en el combobox. */
     public String getSelectedUser() {
         return (String) cbUsers.getSelectedItem();
     }
 
+    /** @return El nombre de la partida actualmente seleccionada en el combobox. */
     public String getSelectedGame() {
         return (String) cbGames.getSelectedItem();
     }
 
+    /** @param username Nombre del usuario a seleccionar en la interfaz. */
     public void setSelectedUser(String username) {
         cbUsers.setSelectedItem(username);
     }
 
+    /**
+     * Selecciona una partida por su índice, evitando disparar eventos de acción durante el proceso.
+     * @param index Índice de la partida en el combo.
+     */
     public void setSelectedGameIndex(int index) {
         if (index >= 0 && index < cbGames.getItemCount()) {
             ActionListener[] listeners = cbGames.getActionListeners();

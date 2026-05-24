@@ -14,7 +14,6 @@ import java.awt.event.ActionListener;
  */
 public class GameCreator extends JPanel {
 
-    // Constantes de color para mantener la identidad visual
     private final Color BG_COLOR = new Color(248, 245, 240);
     private final Color PRIMARY_COFFEE = new Color(74, 44, 23);
     private final Color TEXT_SECONDARY = new Color(110, 110, 110);

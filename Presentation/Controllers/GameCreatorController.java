@@ -36,9 +36,11 @@ public class GameCreatorController implements ActionListener {
      * @param userLogic      Lógica de gestión de usuarios para identificar al creador.
      * @param statLogic      Lógica para inicializar el registro de estadísticas.
      * @param viewController Gestor de navegación entre ventanas.
+     * @param gameController Controlador de la pantalla del juego
+     * @param gameMenuController Controlador de la página de menú de los juegos
      * @param username       Nombre del usuario que está realizando la operación.
      */
-    public GameCreatorController(GameCreator view, GameLogic gameLogic, UserLogic userLogic, StatLogic statLogic, ViewController viewController,GameController gameController, GameMenuController gameMenuController, String username) {
+    public GameCreatorController(GameCreator view, GameLogic gameLogic, UserLogic userLogic, StatLogic statLogic, ViewController viewController, GameController gameController, GameMenuController gameMenuController, String username) {
         this.view = view;
         this.gameLogic = gameLogic;
         this.userLogic = userLogic;

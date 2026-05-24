@@ -8,15 +8,12 @@ import javax.swing.*;
 public class PresentationException {
 
     /**
-     * Muestra una ventana de error genérica.
+     * Muestra un diálogo de error modal con un icono de fallo.
      *
-     * @param message El mensaje detallado del error.
-     * @param title El título de la ventana.
+     * @param message El mensaje detallado que describe el problema ocurrido.
+     * @param title   El título que aparecerá en la barra superior de la ventana.
      */
     public void showErrorDialog(String message, String title) {
-        // Aquí encapsulamos la lógica de Swing. Si mañana quieres cambiar el diseño,
-        // poner un icono personalizado, o cambiar de JOptionPane a un JDialog a medida,
-        // solo tocas este archivo.
         JOptionPane.showMessageDialog(
                 null,
                 message,
@@ -26,7 +23,10 @@ public class PresentationException {
     }
 
     /**
-     * Muestra una ventana de advertencia.
+     * Muestra un diálogo de advertencia modal con un icono de precaución.
+     *
+     * @param message El mensaje de advertencia para el usuario.
+     * @param title   El título que aparecerá en la barra superior de la ventana.
      */
     public void showWarningDialog(String message, String title) {
         JOptionPane.showMessageDialog(

@@ -30,7 +30,7 @@ public class LoginController implements ActionListener {
 	 * @param view           Ventana de inicio de sesión.
 	 * @param userLogic      Lógica de negocio para la validación de credenciales.
 	 * @param viewController Gestor de navegación entre ventanas.
-	 *
+	 * @param gameMenuController Controlador de la página de menú de los juegos
 	 */
 	public LoginController(LoginWindow view, UserLogic userLogic, ViewController viewController, GameMenuController gameMenuController) {
 		this.view = view;

@@ -12,7 +12,14 @@ import java.awt.event.ActionListener;
  */
 public class SettingView extends JPanel {
 
+    /**
+     * Identificador de acción para el botón de cerrar sesión.
+     */
     public static final String BTN_LOGOUT = "BTN_LOGOUT";
+
+    /**
+     * Identificador de acción para el botón de eliminar cuenta.
+     */
     public static final String BTN_DELETE_ACCOUNT = "BTN_DELETE_ACCOUNT";
 
     private JButton logoutBtn;

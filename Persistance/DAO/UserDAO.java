@@ -32,7 +32,8 @@ public class UserDAO {
 	 *
 	 * @param user Objeto {@link User} que contiene la información del nuevo registro.
 	 * @return {@code true} si la inserción fue exitosa; {@code false} si ocurrió un error
-	 * de SQL (como violación de restricción de unicidad).
+	 * de SQL.
+	 * @throws PersistanceException Si ocurre un error de comunicación o ejecución durante la inserción en la base de datos.
 	 */
 	public boolean create(User user) throws PersistanceException {
 		String query = "INSERT INTO user (username, email, password) VALUES (?, ?, ?)";
@@ -52,6 +53,7 @@ public class UserDAO {
 	 * @param username El nombre de usuario a buscar.
 	 * @return Una instancia de {@link User} con los datos de la base de datos,
 	 * o {@code null} si no se encuentra ninguna coincidencia.
+	 * @throws PersistanceException Si ocurre un error de comunicación o ejecución durante la inserción en la base de datos.
 	 */
 	public User read(String username) throws PersistanceException {
 		try {
@@ -73,6 +75,7 @@ public class UserDAO {
 	 * Obtiene el listado completo de todos los usuarios registrados en el sistema.
 	 *
 	 * @return Una lista de objetos {@link User}.
+	 * @throws PersistanceException Si ocurre un error de comunicación o ejecución durante la inserción en la base de datos.
 	 */
 	public List<User> readAllUsers() throws PersistanceException {
 		List<User> users = new ArrayList<>();
@@ -97,13 +100,12 @@ public class UserDAO {
 	 * Al propagar SQLException, permitimos que la lógica capture fallos físicos de red.
 	 *
 	 * @return Lista de Strings con los nombres de usuario.
-	 * @throws SQLException Si el servidor de base de datos está caído o la consulta falla.
+	 * @throws PersistanceException Si ocurre un error de comunicación o ejecución durante la inserción en la base de datos.
 	 */
 	public List<String> getAllUsernames() throws PersistanceException {
 		List<String> usernames = new ArrayList<>();
 		String query = "SELECT username FROM User ORDER BY username ASC";
 
-		// Abrimos el canal de conexión a través de tu clase gestora de base de datos
 		Connection connection = mySQLDAO.getConnection();
 
 		try (PreparedStatement statement = connection.prepareStatement(query);
@@ -122,6 +124,7 @@ public class UserDAO {
 	 * Elimina permanentemente un usuario de la base de datos.
 	 *
 	 * @param username El identificador del usuario a eliminar.
+	 * @throws PersistanceException Si ocurre un error de comunicación o ejecución durante la inserción en la base de datos.
 	 */
 	public void delete(String username) throws PersistanceException {
         try {
@@ -136,6 +139,7 @@ public class UserDAO {
 	 *
 	 * @param username Nombre de usuario a comprobar.
 	 * @return {@code true} si el nombre ya existe; {@code false} en caso contrario.
+	 * @throws PersistanceException Si ocurre un error de comunicación o ejecución durante la inserción en la base de datos.
 	 */
 	public boolean usernameExists(String username) throws PersistanceException {
         try {
@@ -150,6 +154,7 @@ public class UserDAO {
 	 *
 	 * @param email Correo electrónico a comprobar.
 	 * @return {@code true} si el email ya existe en el sistema; {@code false} si está disponible.
+	 * @throws PersistanceException Si ocurre un error de comunicación o ejecución durante la inserción en la base de datos.
 	 */
 	public boolean emailExists(String email) throws PersistanceException {
 		try {
@@ -165,7 +170,8 @@ public class UserDAO {
 	 * como por correo electrónico.
 	 *
 	 * @param usernameOrEmail Cadena que representa el nombre de usuario o el email introducido.
-	 * @return El objeto {@link User} si las credenciales coinciden con algún registro,
+	 * @return El objeto {@link User} si las credenciales coinciden con algún registro
+	 * @throws PersistanceException Si ocurre un error de comunicación o ejecución durante la inserción en la base de datos.
 	 */
 	public User loginCheck(String usernameOrEmail) throws PersistanceException {
 		String query = "SELECT * FROM user WHERE username = ? OR email = ?";

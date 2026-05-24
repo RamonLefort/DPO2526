@@ -44,7 +44,6 @@ public class StatLogic {
 	 */
 	public List<String> getAllUsernames() throws BusinessException {
 		try {
-			// Nota: Asumimos que tu userDAO expone un método para listar usuarios o cadenas
 			return userDAO.getAllUsernames();
 		} catch (PersistanceException e) {
 			throw new BusinessException(e);
@@ -138,6 +137,7 @@ public class StatLogic {
 	 *
 	 * @param idGame Identificador único de la partida.
 	 * @return Lista de objetos {@link Stat} que representan la evolución temporal del juego.
+	 * @throws BusinessException Si el proceso de persistencia falla durante la validación o la creación de la partida.
 	 */
 	public List<Stat> getAllStats(int idGame) throws BusinessException {
         try {
@@ -152,6 +152,7 @@ public class StatLogic {
 	 *
 	 * @param username Nombre del usuario propietario de las partidas.
 	 * @return Listado de objetos {@link Game} cuyo estado es finalizado.
+	 * @throws BusinessException Si el proceso de persistencia falla durante la validación o la creación de la partida.
 	 */
 	public List<Game> getFinishedGames(String username) throws BusinessException {
         try {
@@ -171,6 +172,7 @@ public class StatLogic {
 	 * @param autogen Cantidad de recursos generados automáticamente.
 	 * @param maxprod Tasa máxima de producción alcanzada.
 	 * @param expenses Inversión total realizada en mejoras.
+	 * @throws BusinessException Si el proceso de persistencia falla durante la validación o la creación de la partida.
 	 */
 	public void saveStat(int idGame, int minute, double money, int clicks, double autogen, float maxprod, double expenses) throws BusinessException {
         try {
@@ -184,6 +186,7 @@ public class StatLogic {
 	 * Inicializa el registro estadístico para una nueva partida con valores a cero.
 	 *
 	 * @param idGame Identificador de la partida recién creada.
+	 * @throws BusinessException Si el proceso de persistencia falla durante la validación o la creación de la partida.
 	 */
 	public void createStat(int idGame) throws BusinessException {
         try {
@@ -198,6 +201,7 @@ public class StatLogic {
 	 *
 	 * @param idGame Identificador de la partida.
 	 * @return El objeto {@link Stat} más actual o null si no existen registros.
+	 * @throws BusinessException Si el proceso de persistencia falla durante la validación o la creación de la partida.
 	 */
 	public Stat getLastMinuteStat(int idGame) throws BusinessException {
         try {
@@ -211,6 +215,7 @@ public class StatLogic {
 	 * Obtiene el listado global de usuarios registrados en el sistema.
 	 *
 	 * @return Lista con todos los objetos {@link User} de la base de datos.
+	 * @throws BusinessException Si el proceso de persistencia falla durante la validación o la creación de la partida.
 	 */
 	public List<User> getAllUsers() throws BusinessException {
         try {

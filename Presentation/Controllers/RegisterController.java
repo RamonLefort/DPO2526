@@ -22,8 +22,13 @@ public class RegisterController implements ActionListener {
 	private final GameMenuController gameMenuController;
 
 	/**
-	 * Constructor que inicializa el controlador con las dependencias necesarias y
-	 * configura los escuchadores de eventos para los componentes de la vista de registro.
+	 * Inicializa el controlador de registro estableciendo sus dependencias y vinculando
+	 * los escuchadores de eventos necesarios para la interacción con la vista.
+	 *
+	 * @param view               La interfaz de registro que este controlador gestiona.
+	 * @param userLogic          Instancia de la capa de lógica de negocio para operaciones de usuario.
+	 * @param viewController     Gestor de navegación entre vistas de la aplicación.
+	 * @param gameMenuController Controlador del menú principal para transiciones post-registro.
 	 */
 	public RegisterController(RegisterWindow view, UserLogic userLogic, ViewController viewController, GameMenuController gameMenuController) {
 		this.view = view;

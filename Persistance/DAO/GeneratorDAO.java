@@ -32,6 +32,7 @@ public class GeneratorDAO {
 	 *
 	 * @param idGame El identificador único de la partida.
 	 * @return Una lista de objetos {@link Generator} poblados con sus estadísticas actuales.
+	 * @throws PersistanceException Si ocurre un error de comunicación o ejecución durante la inserción en la base de datos.
 	 */
 	public List<Generator> readByGame(int idGame) throws PersistanceException {
 		List<Generator> generators = new ArrayList<>();
@@ -64,6 +65,7 @@ public class GeneratorDAO {
 	 *
 	 * @param idGame    ID de la partida a la que pertenece el generador.
 	 * @param generator Objeto {@link Generator} con los nuevos valores de cantidad y precio.
+	 * @throws PersistanceException Si ocurre un error de comunicación o ejecución durante la inserción en la base de datos.
 	 */
 	public void update(int idGame, Generator generator) throws PersistanceException {
 		String query = "UPDATE generador SET quantity = ?, price = ? WHERE id_generator = ? AND id_game = ?";
@@ -83,6 +85,7 @@ public class GeneratorDAO {
 	 *
 	 * @param idGame El identificador de la partida recién creada.
 	 * @return La lista de generadores recién insertados.
+	 * @throws PersistanceException Si ocurre un error de comunicación o ejecución durante la inserción en la base de datos.
 	 */
 	public List<Generator> createInitialGenerators(int idGame) throws PersistanceException {
 		String query = "INSERT INTO generador (name, id_game, quantity, price, period, earning) VALUES (?, ?, ?, ?, ?, ?)";

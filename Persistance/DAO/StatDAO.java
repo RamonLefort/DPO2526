@@ -38,6 +38,7 @@ public class StatDAO {
 	 * @param autoGen  Cantidad total de recursos generados automáticamente.
 	 * @param maxProd  Tasa de producción máxima alcanzada en ese punto.
 	 * @param expenses Dinero total invertido en mejoras y generadores.
+	 * @throws PersistanceException Si ocurre un error de comunicación o ejecución durante la inserción en la base de datos.
 	 */
 	public void create(int idGame, int minute, double money, int clicks, double autoGen, float maxProd, double expenses) throws PersistanceException {
 		String query = "INSERT INTO stat (id_games, minute_mark, money_at_minute, manual_clicks_total, " +
@@ -69,6 +70,7 @@ public class StatDAO {
 	 * @param autoGen  Generación automática total.
 	 * @param maxProd  Producción máxima.
 	 * @param expenses Gastos totales en mejoras.
+	 * @throws PersistanceException Si ocurre un error de comunicación o ejecución durante la inserción en la base de datos.
 	 */
 	public void saveMinuteStat(int idGame, int minute, double money, int clicks, double autoGen, float maxProd, double expenses) throws PersistanceException {
 		String query = "INSERT INTO stat (id_games, minute_mark, money_at_minute, manual_clicks_total, " +
@@ -94,6 +96,7 @@ public class StatDAO {
 	 *
 	 * @param idGame ID de la partida a consultar.
 	 * @return Lista de objetos Stat ordenada por minuto.
+	 * @throws PersistanceException Si ocurre un error de comunicación o ejecución durante la inserción en la base de datos.
 	 */
 	public List<Stat> readByGame(int idGame) throws PersistanceException {
 		List<Stat> stats = new ArrayList<>();
@@ -127,6 +130,7 @@ public class StatDAO {
 	 *
 	 * @param idGame ID de la partida.
 	 * @return El objeto Stat más reciente o null si no hay registros.
+	 * @throws PersistanceException Si ocurre un error de comunicación o ejecución durante la inserción en la base de datos.
 	 */
 	public Stat getLastMinuteStat(int idGame) throws PersistanceException {
 		Stat lastStat = null;
