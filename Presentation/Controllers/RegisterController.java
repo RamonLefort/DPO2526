@@ -77,32 +77,38 @@ public class RegisterController implements ActionListener {
 		if (!userLogic.validateEmail(email)) {
 			PresentationException presentationException = new PresentationException();
 			presentationException.showErrorDialog("El email no tiene un formato válido (@gmail.com).", "Formato Inválido");
+			return;
 		}
 
 		if (!userLogic.validatePassword(password)) {
 			PresentationException presentationException = new PresentationException();
 			presentationException.showErrorDialog("La contraseña debe tener 8 caracteres con, al menos, una letra, un número y una mayúscula.", "Contraseña Débil");
+			return;
 		}
 
 		if (!password.equals(confirm)) {
 			PresentationException presentationException = new PresentationException();
 			presentationException.showErrorDialog("Las contraseñas introducidas no coinciden.", "Error de Coincidencia");
+			return;
 		}
 
 		try {
 			if (userLogic.usernameExists(username)) {
 				PresentationException presentationException = new PresentationException();
 				presentationException.showErrorDialog("El nombre de usuario ya está en uso por otra cuenta.", "Usuario Duplicado");
+				return;
 			}
 
 			if (userLogic.emailExists(email)) {
 				PresentationException presentationException = new PresentationException();
 				presentationException.showErrorDialog("El email ya está registrado en el sistema.", "Email Duplicado");
+				return;
 			}
 
 			if (!userLogic.register(username, email, password, confirm)) {
 				PresentationException presentationException = new PresentationException();
 				presentationException.showErrorDialog("No se ha podido procesar el alta del usuario. Verifica los campos.", "Error de Negocio");
+				return;
 			}
 
 			try {
